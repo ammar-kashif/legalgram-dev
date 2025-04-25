@@ -17,6 +17,7 @@ const Layout = memo(({ children }: LayoutProps) => {
   // Check if the current route is the dashboard
   const isDashboard = location.pathname.includes("/dashboard");
   const isDocumentsPage = location.pathname === "/documents";
+  const isHomePage = location.pathname === "/" || location.pathname === "/home";
 
   useEffect(() => {
     setMounted(true);
@@ -48,7 +49,10 @@ const Layout = memo(({ children }: LayoutProps) => {
       isDocumentsPage ? 'bg-gray-50' : 'bg-clean-white'
     )}>
       {!isDashboard && <Header />}
-      <main className="flex-grow w-full transition-all duration-300 text-deep-blue">
+      <main className={cn(
+        "flex-grow w-full transition-all duration-300 text-deep-blue",
+        isHomePage ? "flex flex-col" : ""
+      )}>
         {children}
       </main>
       <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>

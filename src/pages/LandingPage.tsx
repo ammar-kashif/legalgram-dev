@@ -1,4 +1,3 @@
-
 import { useEffect, useState, lazy, Suspense } from "react";
 import Layout from "@/components/layout/Layout";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -43,7 +42,6 @@ const LandingPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Added console log for debugging
   useEffect(() => {
     console.log("Landing page loaded, mobile:", isMobile);
   }, [isMobile]);
@@ -58,7 +56,7 @@ const LandingPage = () => {
         {/* Hero Section */}
         <section className={cn(
           "relative flex items-center justify-center overflow-hidden",
-          isMobile ? "min-h-[calc(var(--vh,1vh)*100-4rem)] py-16" : "min-h-[92vh]"
+          isMobile ? "min-h-[calc(var(--vh,1vh)*100-4rem)] py-16" : "min-h-screen"
         )}>
           <HeroBackgroundSlideshow />
           
