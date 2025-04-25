@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import type { CarouselApi } from "@/components/ui/carousel";
@@ -44,7 +43,7 @@ const ConfidenceSlider = () => {
   }, [api]);
 
   return (
-    <section className="relative w-full h-[500px] overflow-hidden">
+    <section className="relative w-full h-[600px] overflow-hidden">
       <Carousel setApi={setApi} className="h-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {slides.map((slide, index) => (
@@ -57,7 +56,7 @@ const ConfidenceSlider = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent">
                   <div className="container mx-auto h-full flex items-center px-4">
-                    <div className="max-w-2xl space-y-6">
+                    <div className="max-w-2xl space-y-8 py-12">
                       <h1 className="text-5xl md:text-6xl font-bold text-white">
                         {slide.title}
                       </h1>
@@ -66,7 +65,7 @@ const ConfidenceSlider = () => {
                       </p>
                       <Button 
                         size="lg"
-                        className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white px-8 py-6 text-lg h-auto"
+                        className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white px-8 py-6 text-lg h-auto mt-4"
                       >
                         {slide.cta}
                       </Button>
@@ -79,7 +78,7 @@ const ConfidenceSlider = () => {
         </CarouselContent>
       </Carousel>
       
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
         {slides.map((_, index) => (
           <button
             key={index}
