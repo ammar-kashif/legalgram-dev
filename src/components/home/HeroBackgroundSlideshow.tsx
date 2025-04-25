@@ -30,16 +30,16 @@ const HeroBackgroundSlideshow = () => {
   }, [api]);
 
   return (
-    <div className="absolute inset-0 z-0">
-      <Carousel setApi={setApi} className="h-full w-full" opts={{ loop: true }}>
+    <div className="absolute inset-0 z-0 w-full h-full">
+      <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {images.map((image, index) => (
             <CarouselItem key={index} className="h-full">
-              <div className="relative h-full w-full">
+              <div className="relative w-full h-full">
                 <img 
                   src={image}
                   alt={`Legal background ${index + 1}`}
-                  className="w-full h-full object-cover transition-all duration-700 ease-in-out"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className={cn(
                   "absolute inset-0 bg-gradient-to-br transition-opacity duration-700 ease-in-out backdrop-blur-sm",
