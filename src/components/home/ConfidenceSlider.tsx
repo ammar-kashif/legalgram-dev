@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import type { CarouselApi } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const ConfidenceSlider = () => {
   const [api, setApi] = useState<CarouselApi | null>(null);
@@ -44,7 +45,7 @@ const ConfidenceSlider = () => {
   }, [api]);
 
   return (
-    <section className="relative w-full h-[600px] overflow-hidden">
+    <section className="relative w-full h-[600px] overflow-hidden pb-16">
       <Carousel setApi={setApi} className="h-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {slides.map((slide, index) => (
@@ -56,20 +57,31 @@ const ConfidenceSlider = () => {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent">
-                  <div className="container mx-auto h-full flex items-center px-4">
-                    <div className="max-w-2xl space-y-8 py-12">
+                  <div className="container mx-auto h-full flex items-center">
+                    <div className="max-w-2xl space-y-6 px-4">
+                      <Badge 
+                        variant="outline" 
+                        className="bg-white/10 text-white border-white/20 backdrop-blur-sm"
+                      >
+                        Legal Solutions
+                      </Badge>
                       <h1 className="text-5xl md:text-6xl font-bold text-white">
                         {slide.title}
                       </h1>
                       <p className="text-xl md:text-2xl text-white/90">
                         {slide.subtitle}
                       </p>
-                      <Button 
-                        size="lg"
-                        className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white px-8 py-6 text-lg h-auto mt-4"
-                      >
-                        {slide.cta}
-                      </Button>
+                      <div className="space-y-4">
+                        <Button 
+                          size="lg"
+                          className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white px-8 py-6 text-lg h-auto"
+                        >
+                          {slide.cta}
+                        </Button>
+                        <p className="text-white/80 text-sm">
+                          Trusted legal help at your fingertips
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
