@@ -1,7 +1,7 @@
-
 import { useEffect, useState, lazy, Suspense } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
+import ConfidenceSlider from "@/components/home/ConfidenceSlider";
 
 const loadingConfig = {
   fallback: (
@@ -35,25 +35,13 @@ const LandingPage = () => {
       setIsLoaded(true);
     }, 100);
     
-    // Preload critical images
-    const preloadImages = [
-      "/lovable-uploads/f71dcb3e-44f6-47f2-a368-b65778dfe4da.png",
-      "/lovable-uploads/a5f2d63e-9556-45d9-a3cc-f9c6a97852df.png",
-      "/lovable-uploads/bbae67ec-7fdd-49d8-adfd-ca2a1c8a05a1.png",
-      "/lovable-uploads/c9d521b5-31e5-47a0-9d04-c2539ddd886e.png"
-    ];
-    
-    preloadImages.forEach(src => {
-      const img = new Image();
-      img.src = src;
-    });
-    
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <Layout>
       <div className={`w-full transition-all duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+        <ConfidenceSlider />
         <Hero />
         <Suspense {...loadingConfig}><TrustBadges /></Suspense>
         <Suspense {...loadingConfig}><ServicesGallery /></Suspense>
