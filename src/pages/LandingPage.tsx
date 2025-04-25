@@ -3,28 +3,29 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
 
-// Lazy loaded components for performance optimization
-const Testimonials = lazy(() => import("@/components/home/Testimonials"));
-const CTASection = lazy(() => import("@/components/home/CTASection"));
-const Features = lazy(() => import("@/components/home/Features"));
-const PracticeAreas = lazy(() => import("@/components/home/PracticeAreas"));
-const StatsSection = lazy(() => import("@/components/home/StatsSection"));
+const loadingConfig = {
+  fallback: (
+    <div className="w-full h-72 flex items-center justify-center">
+      <div className="w-12 h-12 border-4 border-t-bright-orange-500 border-gray-200 rounded-full animate-spin"></div>
+    </div>
+  )
+};
+
+// Lazy loaded components with descriptive chunk names
 const TrustBadges = lazy(() => import("@/components/home/TrustBadges"));
-const LegalConcernsSection = lazy(() => import("@/components/home/LegalConcernsSection"));
 const ServicesGallery = lazy(() => import("@/components/home/ServicesGallery"));
-const LegalTeamSection = lazy(() => import("@/components/home/LegalTeamSection"));
 const WhyChooseUsSection = lazy(() => import("@/components/home/WhyChooseUsSection"));
-const GettingStartedSection = lazy(() => import("@/components/home/GettingStartedSection"));
-const QASection = lazy(() => import("@/components/documents/QASection"));
 const LegalSolutionsSection = lazy(() => import("@/components/home/LegalSolutionsSection"));
 const DocumentsSection = lazy(() => import("@/components/home/DocumentsSection"));
-
-// Loading placeholder for suspense
-const SectionPlaceholder = () => (
-  <div className="w-full h-72 flex items-center justify-center">
-    <div className="w-12 h-12 border-4 border-t-bright-orange-500 border-gray-200 rounded-full animate-spin"></div>
-  </div>
-);
+const QASection = lazy(() => import("@/components/documents/QASection"));
+const GettingStartedSection = lazy(() => import("@/components/home/GettingStartedSection"));
+const Features = lazy(() => import("@/components/home/Features"));
+const LegalTeamSection = lazy(() => import("@/components/home/LegalTeamSection"));
+const StatsSection = lazy(() => import("@/components/home/StatsSection"));
+const PracticeAreas = lazy(() => import("@/components/home/PracticeAreas"));
+const LegalConcernsSection = lazy(() => import("@/components/home/LegalConcernsSection"));
+const Testimonials = lazy(() => import("@/components/home/Testimonials"));
+const CTASection = lazy(() => import("@/components/home/CTASection"));
 
 const LandingPage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -54,62 +55,20 @@ const LandingPage = () => {
     <Layout>
       <div className={`w-full transition-all duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
         <Hero />
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <TrustBadges />
-        </Suspense>
-
-        <Suspense fallback={<SectionPlaceholder />}>
-          <ServicesGallery />
-        </Suspense>
-
-        <Suspense fallback={<SectionPlaceholder />}>
-          <WhyChooseUsSection />
-        </Suspense>
-
-        <Suspense fallback={<SectionPlaceholder />}>
-          <LegalSolutionsSection />
-        </Suspense>
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <QASection />
-        </Suspense>
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <GettingStartedSection />
-        </Suspense>
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <Features />
-        </Suspense>
-
-        <Suspense fallback={<SectionPlaceholder />}>
-          <LegalTeamSection />
-        </Suspense>
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <StatsSection />
-        </Suspense>
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <PracticeAreas />
-        </Suspense>
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <LegalConcernsSection />
-        </Suspense>
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <DocumentsSection />
-        </Suspense>
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <Testimonials />
-        </Suspense>
-        
-        <Suspense fallback={<SectionPlaceholder />}>
-          <CTASection />
-        </Suspense>
+        <Suspense {...loadingConfig}><TrustBadges /></Suspense>
+        <Suspense {...loadingConfig}><ServicesGallery /></Suspense>
+        <Suspense {...loadingConfig}><WhyChooseUsSection /></Suspense>
+        <Suspense {...loadingConfig}><LegalSolutionsSection /></Suspense>
+        <Suspense {...loadingConfig}><QASection /></Suspense>
+        <Suspense {...loadingConfig}><GettingStartedSection /></Suspense>
+        <Suspense {...loadingConfig}><Features /></Suspense>
+        <Suspense {...loadingConfig}><LegalTeamSection /></Suspense>
+        <Suspense {...loadingConfig}><StatsSection /></Suspense>
+        <Suspense {...loadingConfig}><PracticeAreas /></Suspense>
+        <Suspense {...loadingConfig}><LegalConcernsSection /></Suspense>
+        <Suspense {...loadingConfig}><DocumentsSection /></Suspense>
+        <Suspense {...loadingConfig}><Testimonials /></Suspense>
+        <Suspense {...loadingConfig}><CTASection /></Suspense>
       </div>
     </Layout>
   );

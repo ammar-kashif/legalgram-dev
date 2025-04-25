@@ -1,7 +1,6 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FileText, CheckCircle, Fingerprint } from "lucide-react";
+import { FileText, CheckCircle, Fingerprint, ArrowRight } from "lucide-react";
 
 const LegalSolutionsSection = () => {
   return (
