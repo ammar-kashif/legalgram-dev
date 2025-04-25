@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -9,9 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const AskLegalAdvice = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState({
     question: "",
     situation: "",
@@ -29,112 +33,140 @@ const AskLegalAdvice = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 pt-24 pb-12 max-w-3xl">
-        <h1 className="text-4xl font-bold mb-8 text-center">Ask Legal Advice</h1>
+      <div className={cn(
+        "container mx-auto px-4 max-w-3xl",
+        isMobile ? "pt-16 pb-8" : "pt-24 pb-12"
+      )}>
+        <h1 className={cn(
+          "font-bold mb-8 text-center",
+          isMobile ? "text-2xl" : "text-4xl"
+        )}>
+          Ask Legal Advice
+        </h1>
         
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="space-y-4">
-              <Label htmlFor="question">Ask your question</Label>
+        <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+            <div className="space-y-3 sm:space-y-4">
+              <Label htmlFor="question" className="text-base sm:text-lg font-medium">
+                Ask your question
+              </Label>
               <Textarea 
                 id="question"
                 placeholder="What legal issue can we help you with?"
                 value={formData.question}
                 onChange={(e) => setFormData({ ...formData, question: e.target.value })}
                 required
-                className="min-h-[100px]"
+                className="min-h-[100px] text-sm sm:text-base"
               />
             </div>
 
-            <div className="space-y-4">
-              <Label htmlFor="situation">Explain your situation</Label>
+            <div className="space-y-3 sm:space-y-4">
+              <Label htmlFor="situation" className="text-base sm:text-lg font-medium">
+                Explain your situation
+              </Label>
               <Textarea 
                 id="situation"
                 placeholder="Please provide relevant details about your situation"
                 value={formData.situation}
                 onChange={(e) => setFormData({ ...formData, situation: e.target.value })}
                 required
-                className="min-h-[150px]"
+                className="min-h-[150px] text-sm sm:text-base"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <Label htmlFor="city">City</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-3">
+                <Label htmlFor="city" className="text-base sm:text-lg font-medium">City</Label>
                 <Input
                   id="city"
                   placeholder="Your city"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   required
+                  className="text-sm sm:text-base"
                 />
               </div>
 
-              <div className="space-y-4">
-                <Label htmlFor="state">State</Label>
+              <div className="space-y-3">
+                <Label htmlFor="state" className="text-base sm:text-lg font-medium">State</Label>
                 <Select 
                   value={formData.state} 
                   onValueChange={(value) => setFormData({ ...formData, state: value })}
                   required
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm sm:text-base">
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="CA">California</SelectItem>
                     <SelectItem value="NY">New York</SelectItem>
                     <SelectItem value="TX">Texas</SelectItem>
-                    {/* Add more states as needed */}
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <Label>Do you plan to hire an attorney?</Label>
+            <div className="space-y-3 sm:space-y-4">
+              <Label className="text-base sm:text-lg font-medium">
+                Do you plan to hire an attorney?
+              </Label>
               <RadioGroup 
                 value={formData.planToHire}
                 onValueChange={(value) => setFormData({ ...formData, planToHire: value })}
-                className="flex flex-col space-y-2"
+                className="flex flex-col space-y-2 sm:space-y-3"
               >
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <RadioGroupItem value="yes" id="yes" />
-                  <Label htmlFor="yes">Yes</Label>
+                  <Label htmlFor="yes" className="text-sm sm:text-base">Yes</Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <RadioGroupItem value="not-sure" id="not-sure" />
-                  <Label htmlFor="not-sure">Not Sure</Label>
+                  <Label htmlFor="not-sure" className="text-sm sm:text-base">Not Sure</Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <RadioGroupItem value="no" id="no" />
-                  <Label htmlFor="no">No</Label>
+                  <Label htmlFor="no" className="text-sm sm:text-base">No</Label>
                 </div>
               </RadioGroup>
             </div>
 
-            <div className="space-y-4">
-              <Label>When do you want the advice?</Label>
+            <div className="space-y-3 sm:space-y-4">
+              <Label className="text-base sm:text-lg font-medium">
+                When do you want the advice?
+              </Label>
               <RadioGroup 
                 value={formData.timing}
                 onValueChange={(value) => setFormData({ ...formData, timing: value })}
-                className="flex flex-col space-y-2"
+                className="flex flex-col space-y-2 sm:space-y-3"
               >
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <RadioGroupItem value="standard" id="standard" />
-                  <Label htmlFor="standard">More than 4 Days (Free)</Label>
+                  <Label htmlFor="standard" className="text-sm sm:text-base">
+                    More than 4 Days (Free)
+                  </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <RadioGroupItem value="express" id="express" />
-                  <Label htmlFor="express">Within 2 Days ($100)</Label>
+                  <Label htmlFor="express" className="text-sm sm:text-base">
+                    Within 2 Days ($100)
+                  </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <RadioGroupItem value="urgent" id="urgent" />
-                  <Label htmlFor="urgent">Within 24 hours ($200)</Label>
+                  <Label htmlFor="urgent" className="text-sm sm:text-base">
+                    Within 24 hours ($200)
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
 
-            <Button type="submit" className="w-full bg-bright-orange-500 hover:bg-bright-orange-600 text-white">
+            <Button 
+              type="submit" 
+              className={cn(
+                "w-full bg-bright-orange-500 hover:bg-bright-orange-600 text-white",
+                isMobile ? "text-sm py-5" : "text-base py-6"
+              )}
+            >
               Submit Question
             </Button>
           </form>
@@ -145,3 +177,4 @@ const AskLegalAdvice = () => {
 };
 
 export default AskLegalAdvice;
+
