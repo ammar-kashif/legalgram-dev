@@ -34,12 +34,12 @@ const HeroBackgroundSlideshow = () => {
   }, [api]);
 
   return (
-    <div className="absolute inset-0 z-0">
+    <div className="absolute inset-0 z-0 min-h-[100vh]">
       <Carousel setApi={setApi} className="h-full w-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {images.map((image, index) => (
             <CarouselItem key={index} className="h-full">
-              <div className="relative h-full w-full transition-all duration-700 transform">
+              <div className="relative h-[100vh] w-full transition-all duration-700 transform">
                 <img 
                   src={image}
                   alt={`Legal background ${index + 1}`}
