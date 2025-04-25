@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
@@ -13,7 +12,6 @@ interface PricingHeroProps {
 const PricingHero = ({ billingCycle, setBillingCycle }: PricingHeroProps) => {
   return (
     <div className="relative min-h-[80vh] overflow-hidden flex items-center">
-      {/* Hero background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img 
           src="/lovable-uploads/32617276-d4d0-4419-bffd-02f96a981caf.png"
@@ -24,7 +22,6 @@ const PricingHero = ({ billingCycle, setBillingCycle }: PricingHeroProps) => {
         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
       </div>
 
-      {/* Enhanced decorative elements with darker colors */}
       <div className="absolute -left-20 top-20 w-60 h-60 bg-deep-blue-900/30 rounded-full blur-3xl animate-pulse" />
       <div className="absolute -right-20 bottom-20 w-60 h-60 bg-deep-blue-900/30 rounded-full blur-3xl animate-pulse delay-300" />
       <div className="absolute left-1/4 top-1/3 w-40 h-40 bg-deep-blue-900/30 rounded-full blur-2xl animate-pulse delay-200" />
@@ -67,37 +64,41 @@ const PricingHero = ({ billingCycle, setBillingCycle }: PricingHeroProps) => {
           >
             <span className={cn(
               "text-lg font-semibold transition-colors duration-200",
-              billingCycle === "monthly" ? "text-white" : "text-white/80 hover:text-white"
+              billingCycle === "monthly" 
+                ? "text-bright-orange-400" 
+                : "text-white/80 hover:text-white"
             )}>Monthly</span>
             
             <div className="relative">
               <div className={cn(
-                "absolute -inset-3 rounded-lg bg-white/20 blur-lg transition-opacity duration-500 animate-pulse",
+                "absolute -inset-3 rounded-lg bg-bright-orange-500/30 blur-lg transition-opacity duration-500",
                 billingCycle === "annually" ? "opacity-100" : "opacity-0"
               )} />
               <Switch
                 checked={billingCycle === "annually"}
                 onCheckedChange={() => setBillingCycle(billingCycle === "monthly" ? "annually" : "monthly")}
-                className="relative bg-white/20 data-[state=checked]:bg-white"
+                className="relative data-[state=checked]:bg-bright-orange-500 data-[state=unchecked]:bg-white/30"
               />
             </div>
             
             <span className={cn(
               "text-lg font-semibold transition-colors duration-200",
-              billingCycle === "annually" ? "text-white" : "text-white/80 hover:text-white"
+              billingCycle === "annually" 
+                ? "text-bright-orange-400" 
+                : "text-white/80 hover:text-white"
             )}>Annual</span>
           </motion.div>
 
           {billingCycle === "annually" && (
             <motion.div 
-              className="mt-8 inline-flex animate-float items-center rounded-full bg-black/40 backdrop-blur-md px-8 py-4 transition-all duration-500 hover:scale-105 shadow-lg border border-white/20"
+              className="mt-8 inline-flex animate-float items-center rounded-full bg-bright-orange-500/20 backdrop-blur-md px-8 py-4 transition-all duration-500 hover:scale-105 shadow-lg border border-bright-orange-400/30"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <Sparkle className="mr-3 h-5 w-5 text-white animate-pulse" />
+              <Sparkle className="mr-3 h-5 w-5 text-bright-orange-400 animate-pulse" />
               <span className="relative font-semibold text-white">
-                Save up to <span className="font-bold animate-pulse">33%</span> with annual billing
+                Save up to <span className="font-bold text-bright-orange-400 animate-pulse">33%</span> with annual billing
               </span>
             </motion.div>
           )}
