@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import type { CarouselApi } from "@/components/ui/carousel";
@@ -34,7 +35,7 @@ const ConfidenceSlider = () => {
     
     const interval = setInterval(() => {
       api.scrollNext();
-    }, 5000);
+    }, 3000); // Reduced from 5000ms to 3000ms for faster transitions
     
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap());
@@ -44,7 +45,7 @@ const ConfidenceSlider = () => {
   }, [api]);
 
   return (
-    <section className="relative w-full h-full overflow-hidden pb-16">
+    <section className="relative w-full h-[50vh] overflow-hidden pb-16">
       <Carousel setApi={setApi} className="h-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {slides.map((slide, index) => (
@@ -108,3 +109,4 @@ const ConfidenceSlider = () => {
 };
 
 export default ConfidenceSlider;
+
