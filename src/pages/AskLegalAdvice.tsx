@@ -29,7 +29,7 @@ const AskLegalAdvice = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12 max-w-3xl">
+      <div className="container mx-auto px-4 pt-24 pb-12 max-w-3xl">
         <h1 className="text-4xl font-bold mb-8 text-center">Ask Legal Advice</h1>
         
         <div className="bg-white rounded-xl shadow-lg p-8">
