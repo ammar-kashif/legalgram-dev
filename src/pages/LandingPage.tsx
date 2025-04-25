@@ -1,6 +1,6 @@
+
 import { useEffect, useState, lazy, Suspense } from "react";
 import Layout from "@/components/layout/Layout";
-import Hero from "@/components/home/Hero";
 import ConfidenceSlider from "@/components/home/ConfidenceSlider";
 
 const loadingConfig = {
@@ -42,7 +42,6 @@ const LandingPage = () => {
     <Layout>
       <div className={`w-full transition-all duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
         <ConfidenceSlider />
-        <Hero />
         <Suspense {...loadingConfig}><TrustBadges /></Suspense>
         <Suspense {...loadingConfig}><ServicesGallery /></Suspense>
         <Suspense {...loadingConfig}><WhyChooseUsSection /></Suspense>
@@ -63,3 +62,4 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
