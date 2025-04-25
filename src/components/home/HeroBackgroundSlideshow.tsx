@@ -5,6 +5,7 @@ import type { CarouselApi } from "@/components/ui/carousel";
 
 const HeroBackgroundSlideshow = () => {
   const [api, setApi] = useState<CarouselApi | null>(null);
+  const [current, setCurrent] = useState(0);
   
   const images = [
     "/lovable-uploads/697f8a63-6e9a-41a0-9995-812ce5ce9381.png",
@@ -24,6 +25,10 @@ const HeroBackgroundSlideshow = () => {
     const interval = setInterval(() => {
       api.scrollNext();
     }, 3000);
+    
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
     
     return () => clearInterval(interval);
   }, [api]);
@@ -46,6 +51,21 @@ const HeroBackgroundSlideshow = () => {
           ))}
         </CarouselContent>
       </Carousel>
+      
+      <div className="absolute bottom-8 left-0 right-0 flex items-center justify-center gap-2 z-10">
+        {images.map((_, index) => (
+          <button
+            key={index}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              index === current 
+                ? "w-8 bg-bright-orange-500" 
+                : "w-2 bg-white/50 hover:bg-white/80"
+            }`}
+            onClick={() => api?.scrollTo(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
   );
 };
