@@ -1,7 +1,7 @@
 
 import React from "react";
 import Layout from "@/components/layout/Layout";
-import { EmailSignupForm } from "@/components/auth/EmailSignupForm";
+import EmailSignupForm from "@/components/auth/EmailSignupForm";
 
 const Register = () => {
   return (
