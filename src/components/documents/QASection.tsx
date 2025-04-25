@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -103,12 +102,14 @@ const QASection = () => {
                   </p>
                 </div>
 
-                <Link to="/ask-lawyer">
-                  <Button size="lg" className="bg-[#0077CC] hover:bg-[#0066B2] text-white px-8">
-                    <MessageSquare className="mr-2 h-5 w-5" />
-                    Ask a Question
-                  </Button>
-                </Link>
+                <div className="mt-12">
+                  <Link to="/ask-lawyer">
+                    <Button variant="orange" size="lg" className="px-8">
+                      <MessageSquare className="mr-2 h-5 w-5" />
+                      Ask a Question
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
