@@ -16,18 +16,18 @@ const PricingHero = ({ billingCycle, setBillingCycle }: PricingHeroProps) => {
       {/* Hero background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/lovable-uploads/7386c995-bf25-47e2-a3bb-095150b52e65.png"
-          alt="Professional legal consultation"
+          src="/lovable-uploads/32617276-d4d0-4419-bffd-02f96a981caf.png"
+          alt="Legal office at night"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-bright-orange-500/90 via-bright-orange-400/80 to-soft-peach-50/90 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/80 to-black/70 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
       </div>
 
-      {/* Enhanced decorative elements */}
-      <div className="absolute -left-20 top-20 w-60 h-60 bg-soft-peach-200/30 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute -right-20 bottom-20 w-60 h-60 bg-soft-peach-200/30 rounded-full blur-3xl animate-pulse delay-300" />
-      <div className="absolute left-1/4 top-1/3 w-40 h-40 bg-soft-peach-200/30 rounded-full blur-2xl animate-pulse delay-200" />
+      {/* Enhanced decorative elements with darker colors */}
+      <div className="absolute -left-20 top-20 w-60 h-60 bg-deep-blue-900/30 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute -right-20 bottom-20 w-60 h-60 bg-deep-blue-900/30 rounded-full blur-3xl animate-pulse delay-300" />
+      <div className="absolute left-1/4 top-1/3 w-40 h-40 bg-deep-blue-900/30 rounded-full blur-2xl animate-pulse delay-200" />
       
       <div className="container relative mx-auto px-4 py-24 sm:px-6 lg:px-8 z-10">
         <div className="mx-auto max-w-4xl text-center relative backdrop-blur-sm p-8 rounded-3xl">
@@ -51,7 +51,7 @@ const PricingHero = ({ billingCycle, setBillingCycle }: PricingHeroProps) => {
           </motion.h1>
           
           <motion.p 
-            className="mt-6 text-xl text-black drop-shadow-lg"
+            className="mt-6 text-xl text-white/90 font-medium drop-shadow-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -90,7 +90,7 @@ const PricingHero = ({ billingCycle, setBillingCycle }: PricingHeroProps) => {
 
           {billingCycle === "annually" && (
             <motion.div 
-              className="mt-8 inline-flex animate-float items-center rounded-full bg-white/10 backdrop-blur-md px-8 py-4 transition-all duration-500 hover:scale-105 shadow-lg border border-white/20"
+              className="mt-8 inline-flex animate-float items-center rounded-full bg-black/40 backdrop-blur-md px-8 py-4 transition-all duration-500 hover:scale-105 shadow-lg border border-white/20"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
