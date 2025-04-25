@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -18,7 +17,8 @@ const AskLegalAdvice = () => {
     situation: "",
     city: "",
     state: "",
-    planToHire: ""
+    planToHire: "",
+    timing: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -108,6 +108,28 @@ const AskLegalAdvice = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="no" id="no" />
                   <Label htmlFor="no">No</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-4">
+              <Label>When do you want the advice?</Label>
+              <RadioGroup 
+                value={formData.timing}
+                onValueChange={(value) => setFormData({ ...formData, timing: value })}
+                className="flex flex-col space-y-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="standard" id="standard" />
+                  <Label htmlFor="standard">More than 4 Days (Free)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="express" id="express" />
+                  <Label htmlFor="express">Within 2 Days ($100)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="urgent" id="urgent" />
+                  <Label htmlFor="urgent">Within 24 hours ($200)</Label>
                 </div>
               </RadioGroup>
             </div>
