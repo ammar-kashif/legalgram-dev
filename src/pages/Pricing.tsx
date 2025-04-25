@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import Layout from "@/components/layout/Layout";
+import PricingSlider from "@/components/pricing/PricingSlider";
 import PricingHero from "@/components/pricing/PricingHero";
 import PricingCard from "@/components/pricing/PricingCard";
 import PricingFaq from "@/components/pricing/PricingFaq";
@@ -127,6 +127,7 @@ const Pricing = () => {
       </Helmet>
 
       <div className="bg-gradient-to-b from-soft-peach-50 to-white">
+        <PricingSlider />
         <PricingHero billingCycle={billingCycle} setBillingCycle={setBillingCycle} />
 
         <div className="relative -mt-32 px-4 pb-20">
