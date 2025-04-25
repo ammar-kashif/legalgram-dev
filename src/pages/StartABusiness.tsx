@@ -21,29 +21,20 @@ const StartABusiness = () => {
         <BusinessBackgroundSlideshow />
         
         <div className="container-custom relative z-10">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="text-left">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">
-                Start Your Business the Right Way
-              </h1>
-              <p className="text-lg md:text-xl text-white mb-8 drop-shadow-md">
-                Get your business up and running with professional legal documents and expert guidance.
-              </p>
-              <Button 
-                size="lg" 
-                className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white shadow-lg"
-                asChild
-              >
-                <Link to="/signup">Start Now</Link>
-              </Button>
-            </div>
-            <div className="relative">
-              <img 
-                src="/lovable-uploads/64df2e75-5059-4c45-b91a-1ab540ddf735.png"
-                alt="Start your business" 
-                className="w-full h-auto rounded-lg shadow-2xl"
-              />
-            </div>
+          <div className="text-center max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">
+              Start Your Business the Right Way
+            </h1>
+            <p className="text-lg md:text-xl text-white mb-8 drop-shadow-md">
+              Get your business up and running with professional legal documents and expert guidance.
+            </p>
+            <Button 
+              size="lg" 
+              className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white shadow-lg"
+              asChild
+            >
+              <Link to="/signup">Start Now</Link>
+            </Button>
           </div>
         </div>
       </section>
