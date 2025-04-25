@@ -29,8 +29,13 @@ const HeroBackgroundSlideshow = () => {
     return () => clearInterval(interval);
   }, [api]);
 
+  // Add console logging to help debug
+  useEffect(() => {
+    console.info("Mobile status:", isMobile);
+  }, [isMobile]);
+
   return (
-    <div className="absolute inset-0 z-0">
+    <div className="absolute inset-0 z-0 w-full h-full overflow-hidden">
       <Carousel setApi={setApi} className="h-full w-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {images.map((image, index) => (
@@ -39,7 +44,11 @@ const HeroBackgroundSlideshow = () => {
                 <img 
                   src={image}
                   alt={`Legal background ${index + 1}`}
-                  className="w-full h-full object-cover transition-all duration-700 ease-in-out"
+                  className={cn(
+                    "w-full h-full object-cover transition-all duration-700 ease-in-out",
+                    isMobile ? "object-center" : "object-cover"
+                  )}
+                  style={isMobile ? { minHeight: "100vh" } : {}}
                 />
                 <div className={cn(
                   "absolute inset-0 bg-gradient-to-br transition-opacity duration-700 ease-in-out backdrop-blur-sm",

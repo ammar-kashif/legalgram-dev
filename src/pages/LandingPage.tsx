@@ -48,12 +48,12 @@ const LandingPage = () => {
       <div className={cn(
         "w-full transition-all duration-700",
         isLoaded ? 'opacity-100' : 'opacity-0',
-        isMobile ? 'min-h-[calc(var(--vh,1vh)*100)]' : 'min-h-screen'
+        isMobile ? 'min-h-[100svh]' : 'min-h-screen'
       )}>
         {/* Hero Section */}
         <section className={cn(
           "relative flex items-center justify-center overflow-hidden",
-          isMobile ? "min-h-[calc(var(--vh,1vh)*100-4rem)]" : "min-h-[92vh]"
+          isMobile ? "min-h-[100svh]" : "min-h-[92vh]"
         )}>
           <HeroBackgroundSlideshow />
           

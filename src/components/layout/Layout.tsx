@@ -17,6 +17,7 @@ const Layout = memo(({ children }: LayoutProps) => {
   // Check if the current route is the dashboard
   const isDashboard = location.pathname.includes("/dashboard");
   const isDocumentsPage = location.pathname === "/documents";
+  const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     setMounted(true);
@@ -45,10 +46,14 @@ const Layout = memo(({ children }: LayoutProps) => {
       // Use the custom viewport height unit for mobile
       "h-[calc(var(--vh,1vh)*100)]",
       mounted ? 'animate-fade-in' : 'opacity-0',
-      isDocumentsPage ? 'bg-gray-50' : 'bg-clean-white'
+      isDocumentsPage ? 'bg-gray-50' : 'bg-clean-white',
+      isHomePage ? 'overflow-x-hidden' : ''
     )}>
       {!isDashboard && <Header />}
-      <main className="flex-grow w-full transition-all duration-300 text-deep-blue">
+      <main className={cn(
+        "flex-grow w-full transition-all duration-300 text-deep-blue",
+        isHomePage ? "relative" : ""
+      )}>
         {children}
       </main>
       <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
