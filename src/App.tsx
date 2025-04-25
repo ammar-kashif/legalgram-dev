@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,8 +7,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { useEffect } from "react";
-import LandingPage from "./pages/LandingPage"; // Change to static import
-import StartABusiness from "./pages/StartABusiness"; // Import the StartABusiness component
+import LandingPage from "./pages/LandingPage"; // Static import
+import StartABusiness from "./pages/StartABusiness"; 
+import Index from "./pages/Index"; // Import Index component
 
 // Lazy load other pages for better performance
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
@@ -66,7 +68,8 @@ const App = () => {
             <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path="/" element={<LandingPage />} />
+                <Route path="/" element={<Index />} /> {/* Use Index component for root path */}
+                <Route path="/home" element={<LandingPage />} /> {/* Add explicit landing page route */}
                 <Route path="/documents" element={<DocumentTemplates />} />
                 <Route path="/documents/:id" element={<DocumentDetail />} /> 
                 <Route path="/contact-lawyer" element={<ContactLawyer />} />
