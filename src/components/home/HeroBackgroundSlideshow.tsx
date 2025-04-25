@@ -7,8 +7,6 @@ import { cn } from "@/lib/utils";
 
 const HeroBackgroundSlideshow = () => {
   const [api, setApi] = useState<CarouselApi | null>(null);
-  const [currentImage, setCurrentImage] = useState(0);
-  const [imagesLoaded, setImagesLoaded] = useState<boolean[]>([]);
   const isMobile = useIsMobile();
   
   const images = [
@@ -18,15 +16,8 @@ const HeroBackgroundSlideshow = () => {
     "/lovable-uploads/8eb9991b-1c75-4153-bbc1-83cbb5662538.png",
     "/lovable-uploads/cbdc3394-18f6-4530-a367-764e9851d995.png",
     "/lovable-uploads/f5b383f8-da64-467e-904b-2578ce595c8a.png",
-    "/lovable-uploads/da854a04-d4c5-4d08-90c5-64874c1fd0e9.png",
-    // Adding the new image as a fallback
-    "/lovable-uploads/906bd290-cf31-4d76-ae34-dcb8d7935cc7.png"
+    "/lovable-uploads/da854a04-d4c5-4d08-90c5-64874c1fd0e9.png"
   ];
-
-  // Initialize the imagesLoaded array
-  useEffect(() => {
-    setImagesLoaded(new Array(images.length).fill(false));
-  }, []);
 
   useEffect(() => {
     if (!api) return;
@@ -35,58 +26,24 @@ const HeroBackgroundSlideshow = () => {
       api.scrollNext();
     }, 3000);
     
-    // Track current image for debugging
-    const onSelect = () => {
-      setCurrentImage(api.selectedScrollSnap());
-    };
-    
-    api.on("select", onSelect);
-    
-    return () => {
-      clearInterval(interval);
-      if (api) api.off("select", onSelect);
-    };
+    return () => clearInterval(interval);
   }, [api]);
 
-  // Debug logs
-  useEffect(() => {
-    console.log("Images array:", images);
-    console.log("Mobile status:", isMobile);
-    console.log("Current image index:", currentImage);
-    console.log("Images loaded status:", imagesLoaded);
-  }, [images, isMobile, currentImage, imagesLoaded]);
-
-  const handleImageLoad = (index: number) => {
-    console.log(`Image ${index} loaded successfully`);
-    const newLoadedState = [...imagesLoaded];
-    newLoadedState[index] = true;
-    setImagesLoaded(newLoadedState);
-  };
-
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, index: number, image: string) => {
-    console.error(`Error loading image at index ${index}: ${image}`);
-    e.currentTarget.onerror = null; 
-    e.currentTarget.src = "/placeholder.svg";
-  };
-
   return (
-    <div className="absolute inset-0 z-0 w-full h-full overflow-hidden">
-      <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
+    <div className="absolute inset-0 z-0">
+      <Carousel setApi={setApi} className="h-full w-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {images.map((image, index) => (
-            <CarouselItem key={index} className="h-full w-full">
-              <div className="h-full w-full relative">
+            <CarouselItem key={index} className="h-full">
+              <div className="relative h-full w-full">
                 <img 
                   src={image}
                   alt={`Legal background ${index + 1}`}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onLoad={() => handleImageLoad(index)}
-                  onError={(e) => handleImageError(e, index, image)}
-                  style={{ display: "block" }} // Force display
+                  className="w-full h-full object-cover transition-all duration-700 ease-in-out"
                 />
                 <div className={cn(
-                  "absolute inset-0 bg-gradient-to-br transition-opacity duration-700 ease-in-out",
-                  isMobile ? "from-black/80 to-black/60 backdrop-blur-[2px]" : "from-rocket-blue-600/40 to-rocket-blue-900/40 backdrop-blur-sm"
+                  "absolute inset-0 bg-gradient-to-br transition-opacity duration-700 ease-in-out backdrop-blur-sm",
+                  isMobile ? "from-black/80 to-black/60" : "from-rocket-blue-600/40 to-rocket-blue-900/40"
                 )}></div>
               </div>
             </CarouselItem>
