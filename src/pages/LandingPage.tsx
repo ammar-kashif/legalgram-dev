@@ -18,6 +18,7 @@ const ServicesGallery = lazy(() => import("@/components/home/ServicesGallery"));
 const LegalTeamSection = lazy(() => import("@/components/home/LegalTeamSection"));
 const WhyChooseUsSection = lazy(() => import("@/components/home/WhyChooseUsSection"));
 const GettingStartedSection = lazy(() => import("@/components/home/GettingStartedSection"));
+const QASection = lazy(() => import("@/components/home/QASection"));
 
 // Loading placeholder for suspense
 const SectionPlaceholder = () => (
@@ -149,6 +150,10 @@ const LandingPage = () => {
             </div>
           </div>
         </section>
+        
+        <Suspense fallback={<SectionPlaceholder />}>
+          <QASection />
+        </Suspense>
         
         <Suspense fallback={<SectionPlaceholder />}>
           <GettingStartedSection />
