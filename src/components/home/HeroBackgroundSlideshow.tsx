@@ -1,7 +1,9 @@
+
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { useState, useEffect } from "react";
 import type { CarouselApi } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const HeroBackgroundSlideshow = () => {
   const [api, setApi] = useState<CarouselApi | null>(null);

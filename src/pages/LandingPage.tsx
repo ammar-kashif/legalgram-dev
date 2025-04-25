@@ -1,7 +1,11 @@
+
 import { useEffect, useState, lazy, Suspense } from "react";
 import Layout from "@/components/layout/Layout";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import HeroBackgroundSlideshow from "@/components/home/HeroBackgroundSlideshow";
 
 const loadingConfig = {
   fallback: (
@@ -85,6 +89,7 @@ const LandingPage = () => {
         <Suspense {...loadingConfig}><ServicesGallery /></Suspense>
         <Suspense {...loadingConfig}><WhyChooseUsSection /></Suspense>
         <Suspense {...loadingConfig}><LegalSolutionsSection /></Suspense>
+        <Suspense {...loadingConfig}><DocumentsSection /></Suspense>
         <Suspense {...loadingConfig}><QASection /></Suspense>
         <Suspense {...loadingConfig}><GettingStartedSection /></Suspense>
         <Suspense {...loadingConfig}><Features /></Suspense>
@@ -92,7 +97,6 @@ const LandingPage = () => {
         <Suspense {...loadingConfig}><StatsSection /></Suspense>
         <Suspense {...loadingConfig}><PracticeAreas /></Suspense>
         <Suspense {...loadingConfig}><LegalConcernsSection /></Suspense>
-        <Suspense {...loadingConfig}><DocumentsSection /></Suspense>
         <Suspense {...loadingConfig}><Testimonials /></Suspense>
         <Suspense {...loadingConfig}><CTASection /></Suspense>
       </div>
