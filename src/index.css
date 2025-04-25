@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,6 +25,7 @@
     --input: 36 50% 80%;
     --ring: 36 99% 47%;
     --radius: 0.75rem;
+    --vh: 1vh; /* Default value, will be set by JS */
   }
 
   /* Base text styling */
@@ -32,11 +34,18 @@
   html {
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif, 
       "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    height: 100%;
+    min-height: -webkit-fill-available;
   }
   
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    height: 100%;
+    min-height: 100vh;
+    /* Mobile viewport height fix */
+    min-height: -webkit-fill-available;
+    min-height: calc(var(--vh, 1vh) * 100);
   }
 
   /* Add this new rule to change tag backgrounds to orange */

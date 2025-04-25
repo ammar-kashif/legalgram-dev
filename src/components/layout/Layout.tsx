@@ -24,14 +24,26 @@ const Layout = memo(({ children }: LayoutProps) => {
     // Add smooth scroll behavior
     document.documentElement.style.scrollBehavior = 'smooth';
     
+    // Fix for mobile height issues - set a min-height based on viewport
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    
+    setVh();
+    window.addEventListener('resize', setVh);
+    
     return () => {
       document.documentElement.style.scrollBehavior = '';
+      window.removeEventListener('resize', setVh);
     };
   }, []);
 
   return (
     <div className={cn(
       `flex flex-col min-h-screen w-full transition-colors duration-500`,
+      // Use the custom viewport height unit for mobile
+      "h-[calc(var(--vh,1vh)*100)]",
       mounted ? 'animate-fade-in' : 'opacity-0',
       isDocumentsPage ? 'bg-gray-50' : 'bg-clean-white'
     )}>

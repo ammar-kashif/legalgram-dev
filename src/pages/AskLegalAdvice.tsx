@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -34,8 +33,8 @@ const AskLegalAdvice = () => {
   return (
     <Layout>
       <div className={cn(
-        "container mx-auto px-4 max-w-3xl",
-        isMobile ? "pt-16 pb-8" : "pt-24 pb-12"
+        "container mx-auto px-4 max-w-3xl h-full",
+        isMobile ? "pt-16 pb-8 min-h-[calc(var(--vh,1vh)*100)]" : "pt-24 pb-12"
       )}>
         <h1 className={cn(
           "font-bold mb-8 text-center",
@@ -44,7 +43,7 @@ const AskLegalAdvice = () => {
           Ask Legal Advice
         </h1>
         
-        <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8">
+        <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 h-full">
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             <div className="space-y-3 sm:space-y-4">
               <Label htmlFor="question" className="text-base sm:text-lg font-medium">
@@ -177,4 +176,3 @@ const AskLegalAdvice = () => {
 };
 
 export default AskLegalAdvice;
-
