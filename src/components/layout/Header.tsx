@@ -285,6 +285,22 @@ const Header = () => {
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </motion.div>
+            
+            <motion.div variants={navItemVariants}>
+              <NavigationMenuItem>
+                <NavigationMenuLink 
+                  className={cn(
+                    "font-medium transition-all duration-300 relative group px-4 py-2 rounded-full",
+                    isActive("/ask-legal-advice") 
+                      ? "text-bright-orange-500" 
+                      : "text-bright-orange-500/90 hover:text-bright-orange-500"
+                  )}
+                  asChild
+                >
+                  <Link to="/ask-legal-advice">Ask Legal Advice</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </motion.div>
           </NavigationMenuList>
         </NavigationMenu>
 
@@ -400,6 +416,13 @@ const Header = () => {
             </MobileNavLink>
             <MobileNavLink to="/pricing" isActive={isActive("/pricing")} onClick={toggleMenu}>
               Pricing
+            </MobileNavLink>
+            <MobileNavLink 
+              to="/ask-legal-advice" 
+              isActive={isActive("/ask-legal-advice")} 
+              onClick={toggleMenu}
+            >
+              Ask Legal Advice
             </MobileNavLink>
             <div className="flex flex-col space-y-2 pt-4 border-t border-black/20">
               {isAuthenticated ? (

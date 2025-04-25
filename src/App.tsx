@@ -1,4 +1,3 @@
-
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -26,6 +25,7 @@ const SSOCallback = lazy(() => import("./pages/SSOCallback"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Contact = lazy(() => import("./pages/Contact"));
+const AskLegalAdvice = lazy(() => import("./pages/AskLegalAdvice"));
 
 // Loading component for suspense fallback
 const PageLoader = () => (
@@ -84,6 +84,7 @@ const App = () => {
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/start-a-business" element={<StartABusiness />} />
+                <Route path="/ask-legal-advice" element={<AskLegalAdvice />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
