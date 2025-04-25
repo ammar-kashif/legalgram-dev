@@ -1,7 +1,7 @@
-
 import { useEffect, useState, lazy, Suspense } from "react";
 import Layout from "@/components/layout/Layout";
-import ConfidenceSlider from "@/components/home/ConfidenceSlider";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const loadingConfig = {
   fallback: (
@@ -29,6 +29,7 @@ const CTASection = lazy(() => import("@/components/home/CTASection"));
 
 const LandingPage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,8 +41,46 @@ const LandingPage = () => {
 
   return (
     <Layout>
-      <div className={`w-full transition-all duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
-        <ConfidenceSlider />
+      <div className={cn(
+        "w-full transition-all duration-700",
+        isLoaded ? 'opacity-100' : 'opacity-0',
+        isMobile ? 'min-h-[calc(var(--vh,1vh)*100)]' : 'min-h-screen'
+      )}>
+        {/* Hero Section */}
+        <section className={cn(
+          "relative flex items-center justify-center overflow-hidden",
+          isMobile ? "min-h-[calc(var(--vh,1vh)*100-4rem)]" : "min-h-[92vh]"
+        )}>
+          <HeroBackgroundSlideshow />
+          
+          <div className={cn(
+            "container-custom relative z-10 text-center px-4",
+            isMobile ? "py-12" : "py-20"
+          )}>
+            <div className="max-w-3xl mx-auto">
+              <h1 className={cn(
+                "font-bold mb-4 text-white leading-tight",
+                isMobile ? "text-3xl" : "text-4xl md:text-5xl"
+              )}>
+                Professional Legal Support When You Need It Most
+              </h1>
+              <p className={cn(
+                "text-white mb-8",
+                isMobile ? "text-base" : "text-lg md:text-xl"
+              )}>
+                Get expert legal advice and document services from our network of qualified attorneys.
+              </p>
+              <Button 
+                size={isMobile ? "default" : "lg"}
+                className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white shadow-lg"
+                asChild
+              >
+                <Link to="/signup">Get Started Now</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
         <Suspense {...loadingConfig}><TrustBadges /></Suspense>
         <Suspense {...loadingConfig}><ServicesGallery /></Suspense>
         <Suspense {...loadingConfig}><WhyChooseUsSection /></Suspense>
@@ -62,4 +101,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-

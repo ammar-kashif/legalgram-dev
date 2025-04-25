@@ -1,10 +1,11 @@
-
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { useState, useEffect } from "react";
 import type { CarouselApi } from "@/components/ui/carousel";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const HeroBackgroundSlideshow = () => {
   const [api, setApi] = useState<CarouselApi | null>(null);
+  const isMobile = useIsMobile();
   
   const images = [
     "/lovable-uploads/697f8a63-6e9a-41a0-9995-812ce5ce9381.png",
@@ -19,8 +20,6 @@ const HeroBackgroundSlideshow = () => {
   useEffect(() => {
     if (!api) return;
     
-    console.log("Carousel API loaded:", api);
-    
     const interval = setInterval(() => {
       api.scrollNext();
     }, 3000);
@@ -34,13 +33,16 @@ const HeroBackgroundSlideshow = () => {
         <CarouselContent className="h-full">
           {images.map((image, index) => (
             <CarouselItem key={index} className="h-full">
-              <div className="relative h-full w-full transition-all duration-700 transform">
+              <div className="relative h-full w-full">
                 <img 
                   src={image}
                   alt={`Legal background ${index + 1}`}
-                  className="w-full h-full object-cover transition-all duration-700 ease-in-out transform scale-105 hover:scale-100 blur-md hover:blur-[3px]"
+                  className="w-full h-full object-cover transition-all duration-700 ease-in-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-rocket-blue-600/40 to-rocket-blue-900/40 transition-opacity duration-700 ease-in-out backdrop-blur-md"></div>
+                <div className={cn(
+                  "absolute inset-0 bg-gradient-to-br transition-opacity duration-700 ease-in-out backdrop-blur-sm",
+                  isMobile ? "from-black/80 to-black/60" : "from-rocket-blue-600/40 to-rocket-blue-900/40"
+                )}></div>
               </div>
             </CarouselItem>
           ))}
