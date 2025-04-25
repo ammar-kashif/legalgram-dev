@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { MessageSquare, Send, User } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const legalSpecialties = [
   "Family Law", "Criminal Law", "Real Estate Law", "Business Law", 

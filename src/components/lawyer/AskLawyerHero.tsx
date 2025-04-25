@@ -19,13 +19,13 @@ export default function AskLawyerHero() {
             </p>
             
             <div className="flex flex-wrap gap-4 pt-4">
-              <Link to="/signup">
+              <Link to="/ask-legal-advice">
                 <Button className="group" size="lg">
                   Start Chat Now
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link to="/signup">
+              <Link to="/ask-legal-advice">
                 <Button variant="outline" size="lg">
                   Schedule Video Call
                 </Button>
