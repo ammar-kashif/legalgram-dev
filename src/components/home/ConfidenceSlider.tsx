@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import type { CarouselApi } from "@/components/ui/carousel";
@@ -45,7 +44,7 @@ const ConfidenceSlider = () => {
   }, [api]);
 
   return (
-    <section className="relative w-full h-[50vh] overflow-hidden pb-16">
+    <section className="relative w-full h-[75vh] overflow-hidden pb-16">
       <Carousel setApi={setApi} className="h-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {slides.map((slide, index) => (
@@ -109,4 +108,3 @@ const ConfidenceSlider = () => {
 };
 
 export default ConfidenceSlider;
-
