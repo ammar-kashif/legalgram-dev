@@ -43,6 +43,11 @@ const LandingPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Added console log for debugging
+  useEffect(() => {
+    console.log("Landing page loaded, mobile:", isMobile);
+  }, [isMobile]);
+
   return (
     <Layout>
       <div className={cn(
@@ -53,30 +58,33 @@ const LandingPage = () => {
         {/* Hero Section */}
         <section className={cn(
           "relative flex items-center justify-center overflow-hidden",
-          isMobile ? "min-h-[calc(var(--vh,1vh)*100-4rem)]" : "min-h-[92vh]"
+          isMobile ? "min-h-[calc(var(--vh,1vh)*100-4rem)] py-16" : "min-h-[92vh]"
         )}>
           <HeroBackgroundSlideshow />
           
           <div className={cn(
             "container-custom relative z-10 text-center px-4",
-            isMobile ? "py-12" : "py-20"
+            isMobile ? "py-8" : "py-20"
           )}>
             <div className="max-w-3xl mx-auto">
               <h1 className={cn(
                 "font-bold mb-4 text-white leading-tight",
-                isMobile ? "text-3xl" : "text-4xl md:text-5xl"
+                isMobile ? "text-2xl md:text-3xl" : "text-4xl md:text-5xl"
               )}>
                 Professional Legal Support When You Need It Most
               </h1>
               <p className={cn(
                 "text-white mb-8",
-                isMobile ? "text-base" : "text-lg md:text-xl"
+                isMobile ? "text-sm md:text-base" : "text-lg md:text-xl"
               )}>
                 Get expert legal advice and document services from our network of qualified attorneys.
               </p>
               <Button 
                 size={isMobile ? "default" : "lg"}
-                className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white shadow-lg"
+                className={cn(
+                  "bg-bright-orange-500 hover:bg-bright-orange-600 text-white shadow-lg",
+                  isMobile ? "text-sm px-4 py-2" : "px-6 py-3"
+                )}
                 asChild
               >
                 <Link to="/signup">Get Started Now</Link>

@@ -29,21 +29,32 @@ const HeroBackgroundSlideshow = () => {
     return () => clearInterval(interval);
   }, [api]);
 
+  // Added console log for debugging
+  useEffect(() => {
+    console.log("Images array:", images);
+    console.log("Mobile status:", isMobile);
+  }, [images, isMobile]);
+
   return (
-    <div className="absolute inset-0 z-0 w-full h-full">
+    <div className="absolute inset-0 z-0 w-full h-full overflow-hidden">
       <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {images.map((image, index) => (
-            <CarouselItem key={index} className="h-full">
-              <div className="relative w-full h-full">
+            <CarouselItem key={index} className="h-full w-full">
+              <div className="h-full w-full relative">
                 <img 
                   src={image}
                   alt={`Legal background ${index + 1}`}
                   className="absolute inset-0 w-full h-full object-cover"
+                  onError={(e) => {
+                    console.error(`Error loading image: ${image}`);
+                    e.currentTarget.onerror = null; 
+                    e.currentTarget.src = "/placeholder.svg"; // Fallback to placeholder
+                  }}
                 />
                 <div className={cn(
-                  "absolute inset-0 bg-gradient-to-br transition-opacity duration-700 ease-in-out backdrop-blur-sm",
-                  isMobile ? "from-black/80 to-black/60" : "from-rocket-blue-600/40 to-rocket-blue-900/40"
+                  "absolute inset-0 bg-gradient-to-br transition-opacity duration-700 ease-in-out",
+                  isMobile ? "from-black/80 to-black/60 backdrop-blur-[2px]" : "from-rocket-blue-600/40 to-rocket-blue-900/40 backdrop-blur-sm"
                 )}></div>
               </div>
             </CarouselItem>
