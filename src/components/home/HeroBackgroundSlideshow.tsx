@@ -34,32 +34,32 @@ const HeroBackgroundSlideshow = () => {
   }, [api]);
 
   return (
-    <div className="absolute inset-0 z-0 min-h-[90vh]">
+    <div className="absolute inset-0 z-0 min-h-[100vh]">
       <Carousel setApi={setApi} className="h-full w-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {images.map((image, index) => (
             <CarouselItem key={index} className="h-full">
-              <div className="relative h-[90vh] w-full transition-all duration-700 transform">
+              <div className="relative h-[100vh] w-full transition-all duration-700 transform">
                 <img 
                   src={image}
                   alt={`Legal background ${index + 1}`}
-                  className="w-full h-full object-cover transition-all duration-700 ease-in-out transform scale-105 hover:scale-100 blur-[2px] hover:blur-[1px]"
+                  className="w-full h-full object-cover transition-all duration-700 ease-in-out transform scale-105 hover:scale-100 blur-md hover:blur-[3px]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-rocket-blue-600/30 to-rocket-blue-900/30 transition-opacity duration-700 ease-in-out backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-rocket-blue-600/40 to-rocket-blue-900/40 transition-opacity duration-700 ease-in-out backdrop-blur-md"></div>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
       </Carousel>
       
-      <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-1.5 z-10">
+      <div className="absolute bottom-8 left-0 right-0 flex items-center justify-center gap-2 z-10">
         {images.map((_, index) => (
           <button
             key={index}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
+            className={`h-2 rounded-full transition-all duration-300 ${
               index === current 
-                ? "w-6 bg-bright-orange-500" 
-                : "w-1.5 bg-white/40 hover:bg-white/60"
+                ? "w-8 bg-bright-orange-500" 
+                : "w-2 bg-white/50 hover:bg-white/80"
             }`}
             onClick={() => api?.scrollTo(index)}
             aria-label={`Go to slide ${index + 1}`}
