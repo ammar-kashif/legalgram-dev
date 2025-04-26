@@ -231,7 +231,7 @@ const Signup = () => {
                     id="agree-terms"
                     checked={agreeToTerms}
                     onCheckedChange={(checked) => setAgreeToTerms(!!checked)}
-                    className="border-black/50 data-[state=checked]:bg-black"
+                    className="border-white/50 data-[state=checked]:bg-white"
                   />
                   <label htmlFor="agree-terms" className="text-sm cursor-pointer text-white hover:text-white/70 transition-colors">
                     I agree to the{" "}
