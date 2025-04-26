@@ -45,7 +45,7 @@ const ConfidenceSlider = () => {
   }, [api]);
 
   return (
-    <section className="relative w-full h-[75vh] overflow-hidden pb-16">
+    <section className="relative w-full h-full overflow-hidden pb-16">
       <Carousel setApi={setApi} className="h-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {slides.map((slide, index) => (
