@@ -49,7 +49,7 @@ const ConfidenceSlider = () => {
       <Carousel setApi={setApi} className="h-full" opts={{ loop: true }}>
         <CarouselContent className="h-full">
           {slides.map((slide, index) => (
-            <CarouselItem key={index} className="h-full">
+            <CarouselItem key={index} className="h-[75vh]">
               <div className="relative h-full w-full">
                 <img 
                   src={slide.image}
