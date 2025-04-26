@@ -281,14 +281,14 @@ const StartABusiness = () => {
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
+            <div className="md:order-2">
               <img 
                 src="/lovable-uploads/d2c6f56f-0d2b-483e-bd39-89789cf2dccc.png"
                 alt="Form a Partnership" 
                 className="rounded-lg w-full h-auto"
               />
             </div>
-            <div className="space-y-6">
+            <div className="md:order-1 space-y-6">
               <h2 className="text-4xl font-bold text-gray-900">
                 Form a Partnership
               </h2>
