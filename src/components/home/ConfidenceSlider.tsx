@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import type { CarouselApi } from "@/components/ui/carousel";
@@ -34,7 +35,7 @@ const ConfidenceSlider = () => {
     
     const interval = setInterval(() => {
       api.scrollNext();
-    }, 3000); // Reduced from 5000ms to 3000ms for faster transitions
+    }, 3000);
     
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap());
@@ -55,9 +56,9 @@ const ConfidenceSlider = () => {
                   alt={slide.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent">
-                  <div className="container mx-auto h-full flex items-center">
-                    <div className="max-w-2xl space-y-6 px-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent flex items-center">
+                  <div className="container mx-auto px-4 transform -translate-y-[5%]">
+                    <div className="max-w-2xl space-y-6">
                       <Badge 
                         variant="outline" 
                         className="bg-white/10 text-white border-white/20 backdrop-blur-sm"
