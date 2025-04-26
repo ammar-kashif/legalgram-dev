@@ -58,7 +58,7 @@ const ConfidenceSlider = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent flex items-center">
                   <div className="container mx-auto px-4 transform -translate-y-[5%]">
-                    <div className="max-w-2xl space-y-6">
+                    <div className="max-w-2xl space-y-6 pb-16 md:pb-8">
                       <Badge 
                         variant="outline" 
                         className="bg-white/10 text-white border-white/20 backdrop-blur-sm"
