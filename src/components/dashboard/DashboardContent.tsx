@@ -1,16 +1,9 @@
-
 import React from 'react';
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import MakeDocuments from '@/components/dashboard/MakeDocuments';
-import UserProfile from '@/components/dashboard/UserProfile';
-import PaymentInfo from '@/components/dashboard/PaymentInfo';
-import StatsVisuals from '@/components/dashboard/StatsVisuals';
-import MakeDocument from '@/components/dashboard/MakeDocument';
-import StartBusiness from '@/components/dashboard/StartBusiness';
-import LegalAdvice from '@/components/dashboard/LegalAdvice';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Building, MessageSquare } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface DashboardContentProps {
   activeTab: string;
@@ -32,7 +25,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       {activeTab === "dashboard" && (
         <div>
           <h2 className="text-2xl font-semibold mb-6">Your Dashboard</h2>
-          <StatsVisuals />
           
           <h3 className="text-xl font-medium mt-8 mb-4">Quick Access</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -50,7 +42,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                 Choose from our library of templates and customize for your needs.
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">Create Document</Button>
+                <Link to="/make-documents" className="w-full">
+                  <Button variant="outline" className="w-full">Create Document</Button>
+                </Link>
               </CardFooter>
             </Card>
             
@@ -68,7 +62,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                 Get help with LLCs, corporations, and other business formations.
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">Start Now</Button>
+                <Link to="/start-a-business" className="w-full">
+                  <Button variant="outline" className="w-full">Start Now</Button>
+                </Link>
               </CardFooter>
             </Card>
             
@@ -86,13 +82,11 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                 Submit legal questions and receive guidance from qualified attorneys.
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">Ask Question</Button>
+                <Link to="/ask-legal-advice" className="w-full">
+                  <Button variant="outline" className="w-full">Ask Question</Button>
+                </Link>
               </CardFooter>
             </Card>
-          </div>
-          
-          <div className="mt-8">
-            <MakeDocuments />
           </div>
         </div>
       )}
