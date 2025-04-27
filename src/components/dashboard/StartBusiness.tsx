@@ -104,6 +104,7 @@ const StartBusiness = () => {
                   onChange={handleInputChange}
                   required
                   placeholder="Your Business Name"
+                  className="!text-black"
                 />
               </div>
               
@@ -112,6 +113,7 @@ const StartBusiness = () => {
                 <Select 
                   value={formData.businessType} 
                   onValueChange={(value) => handleSelectChange("businessType", value)}
+                  className="!text-black"
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select business type" />
@@ -131,6 +133,7 @@ const StartBusiness = () => {
                 <Select 
                   value={formData.state} 
                   onValueChange={(value) => handleSelectChange("state", value)}
+                  className="!text-black"
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select state" />
@@ -152,6 +155,7 @@ const StartBusiness = () => {
                   onChange={handleInputChange}
                   required
                   placeholder="Street address, city, zip"
+                  className="!text-black"
                 />
               </div>
             </div>
@@ -165,6 +169,7 @@ const StartBusiness = () => {
                 onChange={handleInputChange}
                 rows={3}
                 placeholder="Briefly describe your business activities"
+                className="!text-black"
               />
             </div>
             
@@ -180,6 +185,7 @@ const StartBusiness = () => {
                     value={formData.ownerName}
                     onChange={handleInputChange}
                     required
+                    className="!text-black"
                   />
                 </div>
                 
@@ -192,6 +198,7 @@ const StartBusiness = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
+                    className="!text-black"
                   />
                 </div>
               </div>
@@ -205,6 +212,7 @@ const StartBusiness = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   required
+                  className="!text-black"
                 />
               </div>
             </div>
