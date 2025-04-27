@@ -214,6 +214,7 @@ const MakeDocument = () => {
                     value={formData.partyName1}
                     onChange={handleInputChange}
                     required
+                    className="text-black"
                   />
                 </div>
                 
@@ -225,6 +226,7 @@ const MakeDocument = () => {
                     value={formData.partyName2}
                     onChange={handleInputChange}
                     required
+                    className="text-black"
                   />
                 </div>
                 
@@ -237,6 +239,7 @@ const MakeDocument = () => {
                     value={formData.date}
                     onChange={handleInputChange}
                     required
+                    className="text-black"
                   />
                 </div>
                 
@@ -248,6 +251,7 @@ const MakeDocument = () => {
                     value={formData.details}
                     onChange={handleInputChange}
                     rows={5}
+                    className="text-black"
                   />
                 </div>
                 
