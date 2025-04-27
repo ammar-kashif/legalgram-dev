@@ -87,7 +87,7 @@ const Login = () => {
 
           <div className="glass-card rounded-xl shadow-xl border border-white/10 p-8 animate-scale-in backdrop-blur-lg bg-white/10">
             <Alert className="mb-6 bg-black/20 border-amber-300/30 animate-slide-in" style={{ animationDelay: "0.025s" }}>
-              <InfoIcon className="h-4 w-4 text-white" />
+              <InfoIcon className="h-4 w-4 !text-white" />
               <AlertDescription className="text-xs text-white font-medium">
                 Sign in to access your account. Your information is securely stored in Supabase.
               </AlertDescription>
