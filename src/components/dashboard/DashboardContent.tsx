@@ -1,9 +1,14 @@
+
 import React from 'react';
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Building, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
+import MakeDocument from '@/components/dashboard/MakeDocument';
+import StartBusiness from '@/components/dashboard/StartBusiness';
+import UserProfile from '@/components/dashboard/UserProfile';
+import PaymentInfo from '@/components/dashboard/PaymentInfo';
 
 interface DashboardContentProps {
   activeTab: string;
@@ -100,7 +105,19 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       )}
       
       {activeTab === "legal-advice" && (
-        <LegalAdvice />
+        <div>
+          <h2 className="text-2xl font-semibold mb-6">Ask Legal Advice</h2>
+          <p className="text-muted-foreground mb-6">
+            Submit your legal questions and get expert advice from qualified attorneys.
+          </p>
+          <Card>
+            <CardContent className="p-6">
+              <Link to="/ask-legal-advice">
+                <Button className="w-full">Access Legal Advice Form</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
       )}
       
       {activeTab === "profile" && (
