@@ -28,6 +28,7 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const Contact = lazy(() => import("./pages/Contact"));
 const AskLegalAdvice = lazy(() => import("./pages/AskLegalAdvice"));
 const AskALawyer = lazy(() => import("./pages/AskALawyer"));
+const Documents = lazy(() => import("./pages/Documents"));
 
 // Loading component for suspense fallback
 const PageLoader = () => (
@@ -88,6 +89,7 @@ const App = () => {
                 <Route path="/start-a-business" element={<StartABusiness />} />
                 <Route path="/ask-legal-advice" element={<AskLegalAdvice />} />
                 <Route path="/ask-lawyer" element={<AskALawyer />} />
+                <Route path="/make-documents" element={<Documents />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

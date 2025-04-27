@@ -1,10 +1,13 @@
+
 import React from 'react';
 import { 
   FileText, 
   User, 
   CreditCard, 
   Home,
-  LogOut 
+  LogOut,
+  Building,
+  MessageSquare
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,10 +33,12 @@ const UserDashboardSidebar: React.FC<UserDashboardSidebarProps> = ({
   setActiveTab 
 }) => {
   const sidebarItems = [
-    { icon: Home, label: "Dashboard", onClick: () => setActiveTab("documents") },
+    { icon: Home, label: "Dashboard", onClick: () => setActiveTab("dashboard") },
+    { icon: FileText, label: "Make Documents", onClick: () => setActiveTab("documents") },
+    { icon: Building, label: "Start Business", onClick: () => setActiveTab("business") },
+    { icon: MessageSquare, label: "Ask Legal Advice", onClick: () => setActiveTab("legal-advice") },
     { icon: User, label: "Profile", onClick: () => setActiveTab("profile") },
     { icon: CreditCard, label: "Payment", onClick: () => setActiveTab("payment") },
-    { icon: FileText, label: "Documents", onClick: () => setActiveTab("documents") },
   ];
 
   return (
