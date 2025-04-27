@@ -113,9 +113,8 @@ const StartBusiness = () => {
                 <Select 
                   value={formData.businessType} 
                   onValueChange={(value) => handleSelectChange("businessType", value)}
-                  className="!text-black"
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="!text-black">
                     <SelectValue placeholder="Select business type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -133,9 +132,8 @@ const StartBusiness = () => {
                 <Select 
                   value={formData.state} 
                   onValueChange={(value) => handleSelectChange("state", value)}
-                  className="!text-black"
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="!text-black">
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
                   <SelectContent>
