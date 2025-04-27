@@ -15,7 +15,8 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  SidebarFooter
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
@@ -43,39 +44,42 @@ const UserDashboardSidebar: React.FC<UserDashboardSidebarProps> = ({
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b p-4 flex justify-between items-center">
+      <SidebarHeader className="border-b p-4">
         <div className="flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white">
+          <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-white">
             {userName.charAt(0).toUpperCase()}
           </div>
-          <div className="text-sm font-medium">{userName}</div>
+          <div className="text-base font-medium">{userName}</div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={handleLogout}
-          className="hover:bg-destructive/10"
-          title="Logout"
-        >
-          <LogOut className="h-5 w-5 text-destructive" />
-        </Button>
       </SidebarHeader>
-      <SidebarContent>
+      
+      <SidebarContent className="px-2 py-4">
         <SidebarMenu>
           {sidebarItems.map((item) => (
             <SidebarMenuItem key={item.label}>
               <SidebarMenuButton 
                 onClick={item.onClick} 
                 isActive={activeTab === item.label.toLowerCase()}
-                tooltip={item.label}
+                className="h-11 w-full justify-start gap-3 px-4 hover:bg-muted"
               >
                 <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
+                <span className="text-base">{item.label}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
       </SidebarContent>
+
+      <SidebarFooter className="border-t p-4">
+        <Button 
+          variant="ghost" 
+          onClick={handleLogout}
+          className="w-full justify-start gap-3 hover:bg-destructive/10 text-destructive hover:text-destructive"
+        >
+          <LogOut className="h-5 w-5" />
+          <span>Logout</span>
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 };
