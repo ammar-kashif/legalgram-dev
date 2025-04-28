@@ -1,5 +1,5 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import type { Consultation, Notification } from "@/types/supabase";
 
 interface Consultation {
   id: string;
@@ -48,7 +49,7 @@ interface Consultation {
   user_id: string | null;
 }
 
-const ConsultationsTable = () => {
+const ConsultationsTable: React.FC = () => {
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -68,13 +69,13 @@ const ConsultationsTable = () => {
     try {
       let query = supabase
         .from('consultations')
-        .select('*')
+        .select<'*', Consultation>('*');
         
       if (filterStatus !== "all") {
         query = query.eq('status', filterStatus);
       }
       
-      const { data, error } = await query.order('created_at', { ascending: false });
+      const { data, error } = await query;
         
       if (error) {
         console.error('Error fetching consultations:', error);
@@ -126,7 +127,7 @@ const ConsultationsTable = () => {
       console.log(`Creating notification for user ${userId} with title: ${title}`);
       const { data, error } = await supabase
         .from('notifications')
-        .insert({
+        .insert<Notification>({
           user_id: userId,
           title,
           message,

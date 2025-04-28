@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -10,9 +9,18 @@ import {
 import { UsersRound, FileText, Inbox, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { SystemStat } from "@/types/supabase";
+
+interface Stat {
+  title: string;
+  value: number;
+  change: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  description: string;
+}
 
 const DashboardStats = () => {
-  const [stats, setStats] = useState([
+  const [stats, setStats] = useState<Stat[]>([
     {
       title: "Total Users",
       value: 0,
@@ -51,7 +59,7 @@ const DashboardStats = () => {
         console.log("Fetching dashboard statistics...");
         const { data, error } = await supabase
           .from('system_stats')
-          .select('*');
+          .select<'*', SystemStat>('*');
         
         if (error) {
           console.error("Database error:", error);

@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Search, FileText, CheckCircle, XCircle, Calendar } from "lucide-react";
+import type { DocumentSubmission } from "@/types/supabase";
 import {
   Table,
   TableBody,
@@ -48,27 +48,26 @@ interface Consultation {
 type SubmissionType = Submission | Consultation;
 
 const SubmissionsTable = () => {
-  const [submissions, setSubmissions] = useState<SubmissionType[]>([]);
+  const [submissions, setSubmissions] = useState<DocumentSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItem, setSelectedItem] = useState<SubmissionType | null>(null);
   const [filter, setFilter] = useState<'all' | 'documents' | 'consultations'>('all');
   
   useEffect(() => {
-    console.log("Component mounted, fetching data...");
+    console.log("SubmissionsTable component mounted, fetching data...");
     fetchData();
   }, []);
   
   const fetchData = async () => {
     setLoading(true);
-    console.log("Fetching data from Supabase...");
+    console.log("Fetching submissions from Supabase...");
     
     try {
-      // Fetch document submissions
       const { data: documentData, error: documentError } = await supabase
         .from('document_submissions')
-        .select('*');
-
+        .select<'*', DocumentSubmission>('*');
+        
       // Fetch consultations
       const { data: consultationData, error: consultationError } = await supabase
         .from('consultations')
@@ -108,7 +107,7 @@ const SubmissionsTable = () => {
       console.log("Combined and sorted data:", allData);
       
       // Cast the data to match our interfaces and update state
-      setSubmissions(allData as SubmissionType[]);
+      setSubmissions(allData as any);
     } catch (error) {
       console.error('Unexpected error:', error);
       toast.error('An unexpected error occurred');
