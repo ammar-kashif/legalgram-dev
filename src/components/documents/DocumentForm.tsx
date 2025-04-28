@@ -186,7 +186,7 @@ const generatePDF = (documentType: string, formData: any) => {
 
 interface DocumentFormProps {
   documentTitle: string;
-  onComplete: (success: boolean) => void;
+  onComplete: (success: boolean, pdfDoc?: any) => void;
 }
 
 const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
@@ -250,6 +250,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
       
       const pdf = generatePDF(documentTitle, data);
       
+      // Save a copy of the PDF
       pdf.save(`${documentTitle.replace(/\s+/g, "_").toLowerCase()}.pdf`);
       
       toast({
@@ -257,7 +258,8 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
         description: "Your document has been generated and downloaded.",
       });
       
-      onComplete(true);
+      // Pass both success state and PDF object to parent component
+      onComplete(true, pdf);
     } catch (error) {
       console.error("Error generating document:", error);
       toast({
@@ -595,6 +597,11 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
     }
   };
   
+  const canAdvance = () => {
+    if (currentQuestion?.type === 'confirmation') return true;
+    return !!answers[currentQuestion?.id];
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

@@ -85,6 +85,7 @@ const DocumentDetail = () => {
   const [documentGenerated, setDocumentGenerated] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [generatedPdf, setGeneratedPdf] = useState<any>(null);
   
   useEffect(() => {
     const checkAuth = async () => {
@@ -150,9 +151,16 @@ const DocumentDetail = () => {
     );
   }
 
-  const handleDocumentComplete = (success: boolean) => {
+  const handleDocumentComplete = (success: boolean, pdfDoc?: any) => {
     if (success) {
+      setGeneratedPdf(pdfDoc);
       setDocumentGenerated(true);
+    }
+  };
+
+  const handleDownloadAgain = () => {
+    if (generatedPdf) {
+      generatedPdf.save(`${document.title.replace(/\s+/g, "_").toLowerCase()}.pdf`);
     }
   };
 
@@ -188,13 +196,20 @@ const DocumentDetail = () => {
               <CardFooter className="flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
                   <Button 
+                    onClick={handleDownloadAgain}
+                    className="bg-[#F97316] hover:bg-[#D15316] text-white"
+                  >
+                    <Download className="mr-2 h-4 w-4 group-hover:text-white" /> Download Again
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
                     onClick={() => {
                       setShowForm(false);
                       setDocumentGenerated(false);
                     }}
-                    className="bg-[#F97316] hover:bg-[#D15316] text-white"
                   >
-                    <Download className="mr-2 h-4 w-4 group-hover:text-white" /> Create Another Copy
+                    Create Another Copy
                   </Button>
                   
                   <Button 
