@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { jsPDF } from "jspdf";
 
 const getFormSchema = (documentType: string) => {
@@ -73,14 +73,15 @@ const getFormSchema = (documentType: string) => {
   }
 };
 
-const generatePDF = (documentType: string, formData: any) => {
+const generatePDF = (documentTitle: string, formData: any) => {
   const doc = new jsPDF();
   
-  doc.setFontSize(18);
-  doc.setTextColor(0, 51, 102);
-  doc.text(documentType, 105, 20, { align: "center" });
+  doc.setFontSize(20);
+  doc.setTextColor(44, 62, 80);
+  doc.text(documentTitle, 105, 20, { align: "center" });
   
-  doc.setDrawColor(0, 51, 102);
+  doc.setDrawColor(44, 62, 80);
+  doc.setLineWidth(0.5);
   doc.line(20, 25, 190, 25);
   
   doc.setFontSize(12);
@@ -89,97 +90,45 @@ const generatePDF = (documentType: string, formData: any) => {
   let yPosition = 40;
   const lineHeight = 10;
   
-  doc.setFontSize(12);
-  doc.text(`Full Name: ${formData.fullName}`, 20, yPosition);
-  yPosition += lineHeight;
-  
-  if (formData.fatherName) {
-    doc.text(`Father's Name: ${formData.fatherName}`, 20, yPosition);
-    yPosition += lineHeight;
-  }
+  Object.entries(formData).forEach(([key, value]) => {
+    if (value && typeof value !== 'object') {
+      const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      doc.text(`${label}: ${value}`, 20, yPosition);
+      yPosition += lineHeight;
+    }
+  });
   
   if (formData.dateOfBirth) {
     doc.text(`Date of Birth: ${format(formData.dateOfBirth, "PPP")}`, 20, yPosition);
     yPosition += lineHeight;
   }
   
-  if (formData.address) {
-    doc.text(`Address: ${formData.address}`, 20, yPosition);
+  if (formData.dateOfAgreement) {
+    doc.text(`Date of Agreement: ${format(formData.dateOfAgreement, "PPP")}`, 20, yPosition);
     yPosition += lineHeight;
   }
   
-  doc.text(`Email: ${formData.email}`, 20, yPosition);
-  yPosition += lineHeight * 1.5;
-  
-  doc.setFontSize(14);
-  doc.text("Document Details", 20, yPosition);
-  yPosition += lineHeight;
-  
-  doc.setFontSize(12);
-  switch (documentType) {
-    case "Last Will and Testament":
-      doc.text("ASSETS:", 20, yPosition);
-      yPosition += lineHeight;
-      
-      const assetLines = doc.splitTextToSize(formData.assets, 170);
-      doc.text(assetLines, 20, yPosition);
-      yPosition += lineHeight * (assetLines.length + 1);
-      
-      doc.text("BENEFICIARIES:", 20, yPosition);
-      yPosition += lineHeight;
-      
-      const beneficiaryLines = doc.splitTextToSize(formData.beneficiaries, 170);
-      doc.text(beneficiaryLines, 20, yPosition);
-      break;
-      
-    case "Non-Disclosure Agreement":
-      doc.text(`Company Name: ${formData.companyName}`, 20, yPosition);
-      yPosition += lineHeight;
-      
-      doc.text(`Date of Agreement: ${format(formData.dateOfAgreement, "PPP")}`, 20, yPosition);
-      yPosition += lineHeight;
-      
-      doc.text(`Duration: ${formData.duration}`, 20, yPosition);
-      yPosition += lineHeight * 1.5;
-      
-      doc.text("CONFIDENTIAL INFORMATION:", 20, yPosition);
-      yPosition += lineHeight;
-      
-      const confidentialLines = doc.splitTextToSize(formData.confidentialInfo, 170);
-      doc.text(confidentialLines, 20, yPosition);
-      break;
-      
-    case "Power of Attorney":
-      doc.text(`Attorney Name: ${formData.attorneyName}`, 20, yPosition);
-      yPosition += lineHeight * 1.5;
-      
-      doc.text("POWERS GRANTED:", 20, yPosition);
-      yPosition += lineHeight;
-      
-      const powerLines = doc.splitTextToSize(formData.powers, 170);
-      doc.text(powerLines, 20, yPosition);
-      break;
-      
-    default:
-      if (formData.details) {
-        doc.text("ADDITIONAL DETAILS:", 20, yPosition);
-        yPosition += lineHeight;
-        
-        const detailLines = doc.splitTextToSize(formData.details, 170);
-        doc.text(detailLines, 20, yPosition);
-      }
+  if (documentTitle === "Last Will and Testament" && formData.assets) {
+    yPosition += lineHeight;
+    doc.setFontSize(14);
+    doc.text("Assets", 20, yPosition);
+    yPosition += lineHeight;
+    doc.setFontSize(12);
+    const assetLines = doc.splitTextToSize(formData.assets, 170);
+    doc.text(assetLines, 20, yPosition);
+    yPosition += (assetLines.length * lineHeight);
   }
   
   yPosition = 240;
-  doc.line(20, yPosition, 100, yPosition);
-  doc.text("Signature", 50, yPosition + 5);
+  doc.line(20, yPosition, 90, yPosition);
+  doc.text("Signature", 45, yPosition + 10);
   
-  doc.line(120, yPosition, 190, yPosition);
-  doc.text("Date", 150, yPosition + 5);
+  doc.line(110, yPosition, 180, yPosition);
+  doc.text("Date", 135, yPosition + 10);
   
   doc.setFontSize(10);
   doc.setTextColor(128, 128, 128);
-  doc.text("Generated with LawConnect - This document is for reference only", 105, 285, { align: "center" });
+  doc.text("This document is for reference purposes only.", 105, 280, { align: "center" });
   
   return doc;
 };
@@ -250,22 +199,18 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
       
       const pdf = generatePDF(documentTitle, data);
       
-      // Save a copy of the PDF
-      pdf.save(`${documentTitle.replace(/\s+/g, "_").toLowerCase()}.pdf`);
+      const filename = `${documentTitle.toLowerCase().replace(/\s+/g, '_')}_${format(new Date(), 'yyyyMMdd')}.pdf`;
+      pdf.save(filename);
       
-      toast({
-        title: "Document created successfully",
-        description: "Your document has been generated and downloaded.",
+      toast.success("Document generated successfully", {
+        description: `Your ${documentTitle} has been created and downloaded.`
       });
       
-      // Pass both success state and PDF object to parent component
       onComplete(true, pdf);
     } catch (error) {
       console.error("Error generating document:", error);
-      toast({
-        title: "Error creating document",
-        description: "There was an error generating your document. Please try again.",
-        variant: "destructive",
+      toast.error("Error creating document", {
+        description: "There was a problem generating your document. Please try again."
       });
       onComplete(false);
     } finally {
