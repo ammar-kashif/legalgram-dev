@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -74,63 +75,102 @@ const getFormSchema = (documentType: string) => {
 };
 
 const generatePDF = (documentTitle: string, formData: any) => {
-  const doc = new jsPDF();
+  console.log("Generating PDF for:", documentTitle, formData);
   
-  doc.setFontSize(20);
-  doc.setTextColor(44, 62, 80);
-  doc.text(documentTitle, 105, 20, { align: "center" });
-  
-  doc.setDrawColor(44, 62, 80);
-  doc.setLineWidth(0.5);
-  doc.line(20, 25, 190, 25);
-  
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  
-  let yPosition = 40;
-  const lineHeight = 10;
-  
-  Object.entries(formData).forEach(([key, value]) => {
-    if (value && typeof value !== 'object') {
-      const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-      doc.text(`${label}: ${value}`, 20, yPosition);
+  try {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(20);
+    doc.setTextColor(44, 62, 80);
+    doc.text(documentTitle, 105, 20, { align: "center" });
+    
+    doc.setDrawColor(44, 62, 80);
+    doc.setLineWidth(0.5);
+    doc.line(20, 25, 190, 25);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    
+    let yPosition = 40;
+    const lineHeight = 10;
+    
+    // Add current date to the document
+    const currentDate = format(new Date(), "PPP");
+    doc.text(`Date: ${currentDate}`, 20, yPosition);
+    yPosition += lineHeight * 2;
+    
+    // Process form data fields
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value && typeof value !== 'object') {
+        const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+        doc.text(`${label}: ${value}`, 20, yPosition);
+        yPosition += lineHeight;
+      }
+    });
+    
+    // Handle date fields specifically
+    if (formData.dateOfBirth) {
+      doc.text(`Date of Birth: ${format(formData.dateOfBirth, "PPP")}`, 20, yPosition);
       yPosition += lineHeight;
     }
-  });
-  
-  if (formData.dateOfBirth) {
-    doc.text(`Date of Birth: ${format(formData.dateOfBirth, "PPP")}`, 20, yPosition);
-    yPosition += lineHeight;
+    
+    if (formData.dateOfAgreement) {
+      doc.text(`Date of Agreement: ${format(formData.dateOfAgreement, "PPP")}`, 20, yPosition);
+      yPosition += lineHeight;
+    }
+    
+    // Special handling for document-specific sections
+    if (documentTitle === "Last Will and Testament" && formData.assets) {
+      yPosition += lineHeight;
+      doc.setFontSize(14);
+      doc.text("Assets", 20, yPosition);
+      yPosition += lineHeight;
+      doc.setFontSize(12);
+      const assetLines = doc.splitTextToSize(formData.assets, 170);
+      doc.text(assetLines, 20, yPosition);
+      yPosition += (assetLines.length * lineHeight);
+    }
+    
+    if (documentTitle === "Last Will and Testament" && formData.beneficiaries) {
+      yPosition += lineHeight;
+      doc.setFontSize(14);
+      doc.text("Beneficiaries", 20, yPosition);
+      yPosition += lineHeight;
+      doc.setFontSize(12);
+      const beneficiaryLines = doc.splitTextToSize(formData.beneficiaries, 170);
+      doc.text(beneficiaryLines, 20, yPosition);
+      yPosition += (beneficiaryLines.length * lineHeight);
+    }
+    
+    if (documentTitle === "Non-Disclosure Agreement" && formData.confidentialInfo) {
+      yPosition += lineHeight;
+      doc.setFontSize(14);
+      doc.text("Confidential Information", 20, yPosition);
+      yPosition += lineHeight;
+      doc.setFontSize(12);
+      const confidentialLines = doc.splitTextToSize(formData.confidentialInfo, 170);
+      doc.text(confidentialLines, 20, yPosition);
+      yPosition += (confidentialLines.length * lineHeight);
+    }
+    
+    // Add signature lines
+    yPosition = 240;
+    doc.line(20, yPosition, 90, yPosition);
+    doc.text("Signature", 45, yPosition + 10);
+    
+    doc.line(110, yPosition, 180, yPosition);
+    doc.text("Date", 135, yPosition + 10);
+    
+    // Add footer
+    doc.setFontSize(10);
+    doc.setTextColor(128, 128, 128);
+    doc.text("This document is for reference purposes only.", 105, 280, { align: "center" });
+    
+    return doc;
+  } catch (error) {
+    console.error("PDF generation error:", error);
+    throw new Error("Failed to generate PDF");
   }
-  
-  if (formData.dateOfAgreement) {
-    doc.text(`Date of Agreement: ${format(formData.dateOfAgreement, "PPP")}`, 20, yPosition);
-    yPosition += lineHeight;
-  }
-  
-  if (documentTitle === "Last Will and Testament" && formData.assets) {
-    yPosition += lineHeight;
-    doc.setFontSize(14);
-    doc.text("Assets", 20, yPosition);
-    yPosition += lineHeight;
-    doc.setFontSize(12);
-    const assetLines = doc.splitTextToSize(formData.assets, 170);
-    doc.text(assetLines, 20, yPosition);
-    yPosition += (assetLines.length * lineHeight);
-  }
-  
-  yPosition = 240;
-  doc.line(20, yPosition, 90, yPosition);
-  doc.text("Signature", 45, yPosition + 10);
-  
-  doc.line(110, yPosition, 180, yPosition);
-  doc.text("Date", 135, yPosition + 10);
-  
-  doc.setFontSize(10);
-  doc.setTextColor(128, 128, 128);
-  doc.text("This document is for reference purposes only.", 105, 280, { align: "center" });
-  
-  return doc;
 };
 
 interface DocumentFormProps {
@@ -194,12 +234,19 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
   });
   
   const onSubmit = async (data: FormValues) => {
+    console.log("Form submitted with data:", data);
+    setIsSubmitting(true);
+    
     try {
-      setIsSubmitting(true);
-      
       const pdf = generatePDF(documentTitle, data);
       
-      const filename = `${documentTitle.toLowerCase().replace(/\s+/g, '_')}_${format(new Date(), 'yyyyMMdd')}.pdf`;
+      // Generate a unique filename with date stamp
+      const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
+      const filename = `${documentTitle.toLowerCase().replace(/\s+/g, '_')}_${timestamp}.pdf`;
+      
+      console.log("Saving PDF with filename:", filename);
+      
+      // Save the PDF and trigger download
       pdf.save(filename);
       
       toast.success("Document generated successfully", {

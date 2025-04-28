@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { FileText, Download } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { jsPDF } from "jspdf";
+import { format } from "date-fns";
 
 const documentTemplates = [
   { id: "nda", name: "Non-Disclosure Agreement", category: "Business" },
@@ -46,12 +48,83 @@ const MakeDocument = () => {
   const handleGeneratePDF = () => {
     setIsGenerating(true);
     
-    // Simulate PDF generation
-    setTimeout(() => {
-      setIsGenerating(false);
+    try {
+      console.log("Generating PDF document...");
+      const doc = new jsPDF();
+      
+      // Get the template name
+      const templateName = documentTemplates.find(t => t.id === selectedTemplate)?.name || "Document";
+      
+      // Setup document header
+      doc.setFontSize(20);
+      doc.setTextColor(44, 62, 80);
+      doc.text(templateName, 105, 20, { align: "center" });
+      
+      // Add horizontal line
+      doc.setDrawColor(44, 62, 80);
+      doc.setLineWidth(0.5);
+      doc.line(20, 25, 190, 25);
+      
+      // Reset text settings for body
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      
+      // Start position for content
+      let yPosition = 40;
+      const lineHeight = 10;
+      
+      // Add current date
+      const currentDate = formData.date || format(new Date(), "yyyy-MM-dd");
+      doc.text(`THIS AGREEMENT is made on ${currentDate} between:`, 20, yPosition);
+      
+      // Add parties
+      yPosition += lineHeight * 2;
+      doc.text(`${formData.partyName1} ("First Party")`, 20, yPosition);
+      yPosition += lineHeight;
+      doc.text(`${formData.partyName2} ("Second Party")`, 20, yPosition);
+      
+      // Add agreement intro
+      yPosition += lineHeight * 2;
+      doc.text("WHEREAS the parties wish to enter into this agreement under the following terms:", 20, yPosition);
+      
+      // Add details if available
+      if (formData.details) {
+        yPosition += lineHeight * 2;
+        doc.text("Additional Details:", 20, yPosition);
+        yPosition += lineHeight;
+        
+        const detailsLines = doc.splitTextToSize(formData.details, 170);
+        doc.text(detailsLines, 20, yPosition);
+        yPosition += (detailsLines.length * lineHeight);
+      }
+      
+      // Add signature lines
+      yPosition = 240;
+      doc.line(20, yPosition, 90, yPosition);
+      doc.text(formData.partyName1, 30, yPosition + 15);
+      
+      doc.line(110, yPosition, 180, yPosition);
+      doc.text(formData.partyName2, 120, yPosition + 15);
+      
+      // Add footer
+      doc.setFontSize(10);
+      doc.setTextColor(128, 128, 128);
+      doc.text("This document is for reference purposes only.", 105, 280, { align: "center" });
+      
+      // Generate filename and download
+      const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
+      const filename = `${templateName.toLowerCase().replace(/\s+/g, '_')}_${timestamp}.pdf`;
+      
+      console.log("Saving PDF with filename:", filename);
+      doc.save(filename);
+      
       toast.success("Document generated successfully!");
-      // In a real app, we would generate and download a PDF here
-    }, 2000);
+      setIsGenerating(false);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate document");
+      setIsGenerating(false);
+    }
   };
 
   return (

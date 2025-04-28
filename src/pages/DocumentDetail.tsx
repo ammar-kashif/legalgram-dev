@@ -1,4 +1,3 @@
-
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
@@ -8,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Download, ArrowLeft, CheckCircle } from "lucide-react";
 import DocumentForm from "@/components/documents/DocumentForm";
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 
-// This matches the document structure from DocumentTemplates.tsx
 interface Document {
   id: number;
   title: string;
@@ -18,7 +17,6 @@ interface Document {
   popular: boolean;
 }
 
-// Mock document data - same as in DocumentTemplates.tsx
 const documents = [
   {
     id: 1,
@@ -86,7 +84,8 @@ const DocumentDetail = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [generatedPdf, setGeneratedPdf] = useState<any>(null);
-  
+  const [documentFilename, setDocumentFilename] = useState<string>("");
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -118,7 +117,6 @@ const DocumentDetail = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
   
-  // Find the document with the given id
   const document = documents.find(doc => doc.id === Number(id));
   
   if (isLoading) {
@@ -152,15 +150,26 @@ const DocumentDetail = () => {
   }
 
   const handleDocumentComplete = (success: boolean, pdfDoc?: any) => {
-    if (success) {
+    console.log("Document generation complete:", success, pdfDoc);
+    if (success && pdfDoc) {
+      const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
+      const filename = `${document.title.replace(/\s+/g, "_").toLowerCase()}_${timestamp}.pdf`;
+      
       setGeneratedPdf(pdfDoc);
+      setDocumentFilename(filename);
       setDocumentGenerated(true);
+      
+      console.log("Downloading PDF automatically");
+      pdfDoc.save(filename);
     }
   };
 
   const handleDownloadAgain = () => {
+    console.log("Download again requested");
     if (generatedPdf) {
-      generatedPdf.save(`${document.title.replace(/\s+/g, "_").toLowerCase()}.pdf`);
+      const filename = documentFilename || `${document.title.replace(/\s+/g, "_").toLowerCase()}_${format(new Date(), 'yyyyMMdd_HHmmss')}.pdf`;
+      console.log("Re-downloading with filename:", filename);
+      generatedPdf.save(filename);
     }
   };
 
