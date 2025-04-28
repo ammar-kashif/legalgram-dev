@@ -38,17 +38,6 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Consultation, Notification } from "@/types/supabase";
 
-interface Consultation {
-  id: string;
-  created_at: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  message: string;
-  status: string;
-  user_id: string | null;
-}
-
 const ConsultationsTable: React.FC = () => {
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,9 +114,9 @@ const ConsultationsTable: React.FC = () => {
     
     try {
       console.log(`Creating notification for user ${userId} with title: ${title}`);
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('notifications')
-        .insert<Notification>({
+        .insert({
           user_id: userId,
           title,
           message,
@@ -173,19 +162,14 @@ const ConsultationsTable: React.FC = () => {
       if (consultationData && consultationData.email) {
         let userId = consultationData.user_id;
         
-        // If we don't have a user_id yet, try to find it from the auth system
         if (!userId) {
           try {
-            // Use supabase.auth.admin is not available in client-side code
-            // Instead, we'll search for users who have the same email
             const { data: { users }, error: userError } = await supabase.functions.invoke('get-user-by-email', {
               body: { email: consultationData.email }
             });
             
             if (!userError && users && users.length > 0) {
               userId = users[0].id;
-              
-              // Update the consultation with the user_id for future reference
               await supabase
                 .from('consultations')
                 .update({ user_id: userId })
