@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import MakeDocument from '@/components/dashboard/MakeDocument';
 import StartBusiness from '@/components/dashboard/StartBusiness';
 import UserProfile from '@/components/dashboard/UserProfile';
 import PaymentInfo from '@/components/dashboard/PaymentInfo';
+import MemberBenefits from '@/components/dashboard/MemberBenefits';
 
 interface DashboardContentProps {
   activeTab: string;
@@ -102,6 +102,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       
       {activeTab === "business" && (
         <StartBusiness />
+      )}
+      
+      {activeTab === "member-benefits" && (
+        <MemberBenefits />
       )}
       
       {activeTab === "legal-advice" && (

@@ -35,6 +35,7 @@ const UserDashboardSidebar: React.FC<UserDashboardSidebarProps> = ({
 }) => {
   const sidebarItems = [
     { icon: Home, label: "Dashboard", onClick: () => setActiveTab("dashboard") },
+    { icon: FileText, label: "Member Benefits", onClick: () => setActiveTab("member-benefits") },
     { icon: FileText, label: "Make Documents", onClick: () => setActiveTab("documents") },
     { icon: Building, label: "Start Business", onClick: () => setActiveTab("business") },
     { icon: MessageSquare, label: "Ask Legal Advice", onClick: () => setActiveTab("legal-advice") },
