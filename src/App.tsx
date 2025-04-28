@@ -1,4 +1,3 @@
-
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -71,10 +70,10 @@ const App = () => {
             <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path="/" element={<Index />} /> {/* Use Index component for root path */}
-                <Route path="/home" element={<LandingPage />} /> {/* Add explicit landing page route */}
+                <Route path="/" element={<Index />} />
+                <Route path="/home" element={<LandingPage />} />
                 <Route path="/documents" element={<DocumentTemplates />} />
-                <Route path="/documents/:id" element={<DocumentDetail />} /> 
+                <Route path="/documents/:id" element={<DocumentDetail />} />
                 <Route path="/contact-lawyer" element={<ContactLawyer />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
@@ -83,7 +82,6 @@ const App = () => {
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/admin-login" element={<AdminLogin />} />
                 <Route path="/sso-callback" element={<SSOCallback />} />
-                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/start-a-business" element={<StartABusiness />} />

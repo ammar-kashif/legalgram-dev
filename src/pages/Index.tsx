@@ -19,8 +19,8 @@ const Index = () => {
       try {
         const { data } = await supabase.auth.getSession();
         if (data.session) {
-          // User is logged in, redirect to dashboard
-          navigate("/dashboard");
+          // User is logged in, redirect to user dashboard
+          navigate("/user-dashboard");
         }
       } catch (error) {
         console.error("Error checking authentication:", error);
