@@ -9,19 +9,19 @@ const benefitCards = [
     icon: FileText,
     title: "Make legal documents",
     description: "Personalize, print, download, and defend unlimited legal docs.",
-    plans: ["Rocket Legal", "Rocket Legal+"],
+    plans: ["Legalgram", "Legalgram+"],
   },
   {
     icon: FileText,
     title: "Sign legal documents",
-    description: "RocketSign® your documents quickly and securely",
-    plans: ["Rocket Legal", "Rocket Legal+"],
+    description: "Sign your documents quickly and securely",
+    plans: ["Legalgram", "Legalgram+"],
   },
   {
     icon: MessageSquare,
     title: "Ask legal questions",
     description: "Ask any legal question and get a quick answer online or consult live.",
-    plans: ["Rocket Legal", "Rocket Legal+"],
+    plans: ["Legalgram", "Legalgram+"],
   },
   {
     icon: User,
@@ -55,14 +55,14 @@ const MemberBenefits = () => {
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold">Get more from your membership</h2>
           <p className="text-muted-foreground text-lg">
-            With a Rocket Legal+ membership, you could get up to{" "}
+            With a Legalgram+ membership, you could get up to{" "}
             <span className="text-emerald-500 font-semibold">HALF OFF</span>{" "}
             Pro Services and get exclusive access to partner offers. Upgrade your membership to unlock.
           </p>
           <Button 
             className="w-full md:w-auto px-8 py-6 text-lg bg-orange-500 hover:bg-orange-600"
           >
-            Get Rocket Legal+
+            Get Legalgram+
           </Button>
         </div>
       </div>
