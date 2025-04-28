@@ -597,11 +597,6 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
     }
   };
   
-  const canAdvance = () => {
-    if (currentQuestion?.type === 'confirmation') return true;
-    return !!answers[currentQuestion?.id];
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
