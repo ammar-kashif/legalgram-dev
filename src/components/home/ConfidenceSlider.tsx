@@ -17,15 +17,15 @@ const ConfidenceSlider = () => {
       image: "/lovable-uploads/697f8a63-6e9a-41a0-9995-812ce5ce9381.png"
     },
     {
-      title: "LEGAL CONFIDENCE",
-      subtitle: "Expert legal solutions tailored to your unique needs",
-      cta: "Get Started Today",
+      title: "GET A LEGAL ADVICE TO DEAL WITH ISSUES",
+      subtitle: "Our Team is ready to fight on your behalf",
+      cta: "ADVICE FREE",
       image: "/lovable-uploads/74a69ce1-a6bf-4425-b520-90e996d23567.png"
     },
     {
-      title: "TRUSTED LEGAL PARTNER",
-      subtitle: "Professional legal support when you need it most",
-      cta: "Learn More",
+      title: "BETTER TO KNOW YOUR RIGHTS TO DEAL WITH COPS",
+      subtitle: "Subscribe to our weekly articles to know your rights",
+      cta: "Sign up",
       image: "/lovable-uploads/895c7048-27af-4849-a014-fb3c7e9d698c.png"
     }
   ];
