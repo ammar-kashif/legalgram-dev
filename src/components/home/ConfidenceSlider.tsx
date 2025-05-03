@@ -11,9 +11,9 @@ const ConfidenceSlider = () => {
   
   const slides = [
     {
-      title: "CONFIDENTLY LEGAL™",
-      subtitle: "Affordable and simple legal services personalized for you and your business",
-      cta: "Save with Rocket Legal+",
+      title: "CONTRACT AT A SINGLE™",
+      subtitle: "Contract a pro to have a tailored contract",
+      cta: "DRAFT YOUR LEGAL",
       image: "/lovable-uploads/697f8a63-6e9a-41a0-9995-812ce5ce9381.png"
     },
     {
