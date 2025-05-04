@@ -182,10 +182,10 @@ const StartABusiness = () => {
             </div>
             <div className="space-y-6">
               <h2 className="text-4xl font-bold text-gray-900">
-                Start your LLC today
+               Launch Your LLC Now
               </h2>
               <p className="text-lg text-gray-600">
-                A Limited Liability Company (LLC), protects your personal assets from some business debts and lawsuits, and offers flexible tax management. They're a popular choice for solos and entrepreneurs.
+               Setting up a Limited Liability Company (LLC) helps shield your personal assets from business-related debts or legal issues. It also gives you more options when it comes to managing taxes. That’s why it’s a go-to structure for solo business owners and entrepreneurs.
               </p>
               <div className="flex gap-4">
                 <Button 
@@ -193,14 +193,14 @@ const StartABusiness = () => {
                   className="bg-bright-orange-500 hover:bg-bright-orange-600"
                   asChild
                 >
-                  <Link to="/documents/llc">Start my LLC</Link>
+                  <Link to="/documents/llc">Get Started</Link>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg"
                   asChild
                 >
-                  <Link to="/documents/llc-guide">Learn about LLCs</Link>
+                  <Link to="/documents/llc-guide">What’s an LLC?</Link>
                 </Button>
               </div>
             </div>
@@ -214,10 +214,10 @@ const StartABusiness = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-4xl font-bold text-gray-900">
-                Launch your Corporation
+                Start Your Corporation Today
               </h2>
               <p className="text-lg text-gray-600">
-                Are you looking for investors, wanting to raise funds through stock sales, or planning to go public? A Corporation may be the right choice for you. A Corporation also shields you from personal liability.
+                Thinking about attracting investors, selling stock, or eventually going public? Forming a Corporation could be the smart move. It not only helps you raise capital but also protects your personal assets from business liabilities.
               </p>
               <div className="flex gap-4">
                 <Button 
@@ -225,14 +225,14 @@ const StartABusiness = () => {
                   className="bg-bright-orange-500 hover:bg-bright-orange-600"
                   asChild
                 >
-                  <Link to="/documents/corporation">Start my Corporation</Link>
+                  <Link to="/documents/corporation">Get Started</Link>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg"
                   asChild
                 >
-                  <Link to="/documents/corporation-guide">Learn about Corporations</Link>
+                  <Link to="/documents/corporation-guide">What’s a Corporation?</Link>
                 </Button>
               </div>
             </div>
@@ -253,10 +253,10 @@ const StartABusiness = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="md:order-2 space-y-6">
               <h2 className="text-4xl font-bold text-gray-900">
-                Start your S-Corp election
+                Make Your S-Corp Election
               </h2>
               <p className="text-lg text-gray-600">
-                S-corps are a way to unlock tax savings for your business. Add on an S-corp election when you register your Corporation with Legal Gram.
+                Looking to save on taxes? Choosing S-Corp status can help your business cut down on tax costs. You can easily add this option when setting up your Corporation with Legal Gram.
               </p>
               <div className="flex gap-4">
                 <Button 
@@ -264,14 +264,14 @@ const StartABusiness = () => {
                   className="bg-bright-orange-500 hover:bg-bright-orange-600"
                   asChild
                 >
-                  <Link to="/documents/s-corp">Start your S-Corp election</Link>
+                  <Link to="/documents/s-corp">Begin S-Corp Setup</Link>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg"
                   asChild
                 >
-                  <Link to="/documents/s-corp-guide">Learn about S-Corps</Link>
+                  <Link to="/documents/s-corp-guide">What’s an S-Corp?</Link>
                 </Button>
               </div>
             </div>
@@ -299,10 +299,10 @@ const StartABusiness = () => {
             </div>
             <div className="md:order-1 space-y-6">
               <h2 className="text-4xl font-bold text-gray-900">
-                Form a Partnership
+                Start Your Business Partnership
               </h2>
               <p className="text-lg text-gray-600">
-                Starting a business with partners? A Partnership structure allows you to share responsibilities, combine resources, and split profits. Choose from General, Limited, or Limited Liability Partnerships.
+               Teaming up to launch a business? A partnership setup lets you divide tasks, pool your resources, and share the earnings. You can go with a General, Limited, or Limited Liability Partnership—whatever fits your vision best.
               </p>
               <div className="flex gap-4">
                 <Button 
@@ -310,14 +310,14 @@ const StartABusiness = () => {
                   className="bg-bright-orange-500 hover:bg-bright-orange-600"
                   asChild
                 >
-                  <Link to="/documents/partnership">Start my Partnership</Link>
+                  <Link to="/documents/partnership">Get Started with a Partnership</Link>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg"
                   asChild
                 >
-                  <Link to="/documents/partnership-guide">Learn about Partnerships</Link>
+                  <Link to="/documents/partnership-guide">Explore Partnership Types</Link>
                 </Button>
               </div>
             </div>
