@@ -9,20 +9,24 @@ import {
 const FAQSection = () => {
   const faqs = [
     {
-      question: "What's the difference between an LLC and a Corporation?",
-      answer: "An LLC offers flexibility in management and taxation with less paperwork, while a Corporation provides a more structured environment better suited for raising capital and going public."
+      question: "What's the main difference between an LLC and a Corporation?",
+      answer: "An LLC offers flexible management and pass-through taxation, meaning profits go directly to owners without corporate tax. A Corporation is more structured, better for raising investment, and may be taxed at both corporate and personal levels (double taxation)."
     },
     {
-      question: "How long does it take to form a business?",
-      answer: "Most businesses can be formed within 24-48 hours after submitting required information. Processing times may vary by state and business type."
+      question: "How long does it take to officially start a business?",
+      answer: "It usually takes anywhere from a few days to a few weeks, depending on your state's processing times and whether you file online or by mail. Using a filing service can speed up the process."
     },
     {
-      question: "What are the tax benefits of different business structures?",
-      answer: "LLCs offer pass-through taxation, Corporations can optimize tax through salaries and dividends, and S-Corps may reduce self-employment tax. Each structure has unique advantages."
+      question: "Are there any tax advantages to different business types?",
+      answer: "Yes. LLCs and S-Corps can offer pass-through taxation, which avoids double tax. S-Corps may also reduce self-employment tax on some income. C-Corps, while subject to corporate tax, can deduct a wide range of business expenses."
     },
     {
-      question: "Do I need a registered agent?",
-      answer: "Yes, all formal business entities are required to have a registered agent in their state of formation to receive legal documents and official correspondence."
+      question: "Do I need to appoint a registered agent for my business?",
+      answer: "Yes. Almost all states require a registered agent—a person or service that can receive legal and official documents on behalf of your business during business hours."
+    },
+    {
+      question: "What's the best structure if I want investors or plan to go public?",
+      answer: "A C-Corporation is typically the best choice. It allows you to issue multiple classes of stock, attract venture capital, and is the only structure suitable for going public."
     }
   ];
 
