@@ -16,7 +16,7 @@ const QASection = () => {
               <CardContent className="p-6">
                 <div className="bg-white rounded-lg p-4 shadow-md mb-4">
                   <span className="text-sm text-gray-500">Legal Question</span>
-                  <p className="text-lg font-medium mt-1">How can I get a divorce if I live in a different state from my spouse?</p>
+                  <p className="text-lg font-medium mt-1">I was walking on Broadway in New York when a cop suddenly stopped me and asked for my ID. Am I legally required to show it?</p>
                 </div>
 
                 {/* First lawyer response */}
@@ -32,11 +32,11 @@ const QASection = () => {
                   </div>
                   <div className="flex-grow">
                     <div className="flex items-center gap-2">
-                      <h4 className="font-medium">David Marks</h4>
-                      <span className="text-sm text-gray-500">Divorce Lawyer</span>
+                      <h4 className="font-medium">Alex Rivera</h4>
+                      <span className="text-sm text-gray-500">Criminal Defense Attorney</span>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
-                      Each state has different residency requirements, so it is important to...
+                      In New York, you're not required to show ID just because a police officer asks, unless you're being formally detained or arrested.
                     </p>
                   </div>
                 </div>
@@ -54,11 +54,11 @@ const QASection = () => {
                   </div>
                   <div className="flex-grow">
                     <div className="flex items-center gap-2">
-                      <h4 className="font-medium">Lucy Owens</h4>
-                      <span className="text-sm text-gray-500">Divorce Lawyer</span>
+                      <h4 className="font-medium">Monica Chen</h4>
+                      <span className="text-sm text-gray-500">Civil Rights Lawyer</span>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
-                      If you have children together, you will need...
+                      If the officer has a valid reason to suspect you're involved in a crime (reasonable suspicion), they can detain you briefly. But you still don't have to carry or show ID unless you're driving or under arrest.
                     </p>
                   </div>
                 </div>
