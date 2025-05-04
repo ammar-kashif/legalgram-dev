@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const QASection = () => {
@@ -96,18 +96,24 @@ const QASection = () => {
 
                 <div>
                   <h3 className="text-xl font-semibold flex items-center gap-2">
-                    <span className="text-bright-orange-500">2.</span> Browse Our Library of Existing Q&As
+                    <span className="text-bright-orange-500">2.</span> Sign up for Weekly Scoop
                   </h3>
                   <p className="text-gray-600 mt-2">
-                    Find answers to previously asked questions from people experiencing similar legal issues.
+                    Sign up for free to receive weekly emails that help you understand your legal rights.
                   </p>
                 </div>
 
-                <div className="mt-12">
+                <div className="mt-12 flex flex-col sm:flex-row gap-4">
                   <Link to="/ask-legal-advice">
                     <Button variant="orange" size="lg" className="px-8">
                       <MessageSquare className="mr-2 h-5 w-5" />
                       Ask a Question
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button variant="outline" size="lg" className="px-8">
+                      <Mail className="mr-2 h-5 w-5" />
+                      Get Weekly Scoop
                     </Button>
                   </Link>
                 </div>
