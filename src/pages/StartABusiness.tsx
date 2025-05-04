@@ -1,10 +1,11 @@
+
 import { 
   Building2, BriefcaseBusiness, FileLock, Star,
   Award, UserCheck, CheckCircle, ShieldCheck,
   DollarSign, Clock, Rocket, Users, Search,
   ChartBar, Handshake, ClipboardCheck,
   BadgeCheck, Calendar, FileSearch, MessageCircle,
-  BookOpen, HelpCircle, FileText
+  BookOpen, HelpCircle, FileText, XCircle, Table
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
@@ -12,6 +13,14 @@ import { Link } from "react-router-dom";
 import BusinessBackgroundSlideshow from "@/components/business/BusinessBackgroundSlideshow";
 import FAQSection from "@/components/business/FAQSection";
 import ComparisonCard from "@/components/business/ComparisonCard";
+import {
+  Table as UITable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 
 const StartABusiness = () => {
   return (
@@ -326,7 +335,9 @@ const StartABusiness = () => {
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
             Choose the right business structure for your needs. Compare features and benefits to make an informed decision.
           </p>
-          <div className="grid md:grid-cols-3 gap-8">
+          
+          {/* Simple Comparison Cards */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
             <ComparisonCard
               title="LLC"
               price="Starting at $99"
@@ -337,6 +348,7 @@ const StartABusiness = () => {
                 { name: "Easy to Form & Maintain", included: true },
                 { name: "Raise Capital through Stock", included: false }
               ]}
+              showButton={true}
             />
             <ComparisonCard
               title="Corporation"
@@ -349,6 +361,7 @@ const StartABusiness = () => {
                 { name: "Raise Capital through Stock", included: true }
               ]}
               popular={true}
+              showButton={true}
             />
             <ComparisonCard
               title="Partnership"
@@ -360,7 +373,200 @@ const StartABusiness = () => {
                 { name: "Easy to Form & Maintain", included: true },
                 { name: "Raise Capital through Stock", included: false }
               ]}
+              showButton={true}
             />
+          </div>
+          
+          {/* Detailed Comparison Table */}
+          <h3 className="text-2xl font-bold text-center mb-6">Business Structure Comparison Guide</h3>
+          <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm mb-12">
+            <UITable>
+              <TableHeader>
+                <TableRow className="bg-gray-100">
+                  <TableHead className="w-1/4 font-bold">Key Feature</TableHead>
+                  <TableHead className="w-1/4 font-bold">LLC</TableHead>
+                  <TableHead className="w-1/4 font-bold">Corporation</TableHead>
+                  <TableHead className="w-1/4 font-bold">S Corporation</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">Limited Liability Protection</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <span>Protects owners' assets</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <span>Protects shareholders</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <span>Protects shareholders</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="font-medium">Tax Treatment</TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>Pass through or corporate</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                      <span>Double taxation</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>Pass through only</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="font-medium">Management Structure</TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>Member managed or manager managed</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>Board of directors & officers</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>Board of directors & officers</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="font-medium">Investor Flexibility (Stock Options)</TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                      <span>Limited options</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>Can issue multiple stock classes</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                      <span>Limited stock options</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="font-medium">Ownership Restrictions</TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>No limit on owners</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>No restriction</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                      <span>Limited (100 max, no foreign/entity/non-resident)</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="font-medium">Raising Capital</TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                      <span>Moderate (harder to attract funds)</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>Easy (attracts investors)</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                      <span>Limited (due to ownership restrictions)</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="font-medium">Ongoing Formalities</TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>Fewer formal requirements</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                      <span>Strict formalities</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                      <span>Strict formalities</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="font-medium">Self-Employment Taxes</TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <HelpCircle className="h-5 w-5 text-amber-500 mt-0.5" />
+                      <span>May apply in full</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>W-2 salary + dividends</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                      <span>W-2 salary + dividends</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </UITable>
           </div>
         </div>
       </section>

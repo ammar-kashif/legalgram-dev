@@ -1,10 +1,12 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, HelpCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Feature {
   name: string;
   included: boolean;
+  description?: string;
 }
 
 interface ComparisonCardProps {
@@ -12,9 +14,10 @@ interface ComparisonCardProps {
   price: string;
   features: Feature[];
   popular?: boolean;
+  showButton?: boolean;
 }
 
-const ComparisonCard = ({ title, price, features, popular }: ComparisonCardProps) => {
+const ComparisonCard = ({ title, price, features, popular, showButton = false }: ComparisonCardProps) => {
   return (
     <Card className={`relative ${popular ? 'border-bright-orange-500 shadow-lg' : 'border-gray-200'}`}>
       {popular && (
@@ -31,18 +34,31 @@ const ComparisonCard = ({ title, price, features, popular }: ComparisonCardProps
       <CardContent>
         <ul className="space-y-4">
           {features.map((feature, index) => (
-            <li key={index} className="flex items-center gap-3">
+            <li key={index} className="flex items-start gap-3">
               {feature.included ? (
-                <CheckCircle className="h-5 w-5 text-green-500" />
+                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
               ) : (
-                <XCircle className="h-5 w-5 text-gray-300" />
+                <XCircle className="h-5 w-5 text-gray-300 flex-shrink-0 mt-0.5" />
               )}
-              <span className={feature.included ? "text-gray-700" : "text-gray-400"}>
-                {feature.name}
-              </span>
+              <div>
+                <span className={feature.included ? "text-gray-700" : "text-gray-400"}>
+                  {feature.name}
+                </span>
+                {feature.description && (
+                  <p className="text-xs text-gray-500 mt-1">{feature.description}</p>
+                )}
+              </div>
             </li>
           ))}
         </ul>
+        
+        {showButton && (
+          <div className="mt-6">
+            <Button className="w-full bg-bright-orange-500 hover:bg-bright-orange-600">
+              Select {title}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
