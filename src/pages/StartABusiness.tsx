@@ -336,47 +336,6 @@ const StartABusiness = () => {
             Choose the right business structure for your needs. Compare features and benefits to make an informed decision.
           </p>
           
-          {/* Simple Comparison Cards */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <ComparisonCard
-              title="LLC"
-              price="Starting at $99"
-              features={[
-                { name: "Limited Liability Protection", included: true },
-                { name: "Pass-through Taxation", included: true },
-                { name: "Flexible Management", included: true },
-                { name: "Easy to Form & Maintain", included: true },
-                { name: "Raise Capital through Stock", included: false }
-              ]}
-              showButton={true}
-            />
-            <ComparisonCard
-              title="Corporation"
-              price="Starting at $149"
-              features={[
-                { name: "Limited Liability Protection", included: true },
-                { name: "Corporate Tax Structure", included: true },
-                { name: "Stock Options", included: true },
-                { name: "Board of Directors", included: true },
-                { name: "Raise Capital through Stock", included: true }
-              ]}
-              popular={true}
-              showButton={true}
-            />
-            <ComparisonCard
-              title="Partnership"
-              price="Starting at $79"
-              features={[
-                { name: "Limited Liability Protection", included: false },
-                { name: "Pass-through Taxation", included: true },
-                { name: "Flexible Management", included: true },
-                { name: "Easy to Form & Maintain", included: true },
-                { name: "Raise Capital through Stock", included: false }
-              ]}
-              showButton={true}
-            />
-          </div>
-          
           {/* Detailed Comparison Table */}
           <h3 className="text-2xl font-bold text-center mb-6">Business Structure Comparison Guide</h3>
           <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm mb-12">
