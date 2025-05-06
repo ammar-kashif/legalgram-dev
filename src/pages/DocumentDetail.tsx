@@ -1,3 +1,4 @@
+
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
@@ -73,6 +74,13 @@ const documents = [
     category: "Family",
     description: "Create a legal agreement to divide assets and resolve other matters during divorce.",
     popular: false,
+  },
+  {
+    id: 9,
+    title: "Lease Agreement",
+    category: "Real Estate",
+    description: "Comprehensive lease agreement with detailed terms for landlords and tenants.",
+    popular: true,
   },
 ];
 
