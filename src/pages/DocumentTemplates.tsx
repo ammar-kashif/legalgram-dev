@@ -10,6 +10,8 @@ import SearchFilter from "@/components/documents/SearchFilter";
 import DocumentGrid from "@/components/documents/DocumentGrid";
 import LoadingSpinner from "@/components/documents/LoadingSpinner";
 import { DocumentItem } from "@/components/documents/DocumentCard";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const documents: DocumentItem[] = [
   {
@@ -145,9 +147,19 @@ const DocumentTemplates = () => {
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                 Available Templates
               </h2>
-              <p className="text-gray-600 max-w-2xl">
+              <p className="text-gray-600 max-w-2xl mb-6">
                 Choose from our wide range of professionally crafted legal document templates.
               </p>
+              
+              {isAuthenticated && (
+                <div className="flex justify-start mb-6">
+                  <Link to="/user-dashboard">
+                    <Button variant="outline" className="flex items-center gap-2">
+                      Access Document Creator in Dashboard
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
             
             <SearchFilter 
