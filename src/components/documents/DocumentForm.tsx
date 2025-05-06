@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -835,3 +836,896 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
                     <FormField
                       control={form.control}
                       name="tenantPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tenant's Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter tenant's phone number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="tenantEmail"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tenant's Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter tenant's email address" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="landlordPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Landlord's Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter landlord's phone number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="landlordEmail"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Landlord's Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter landlord's email address" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Section 2: Property Details */}
+              <div className="border p-6 rounded-lg bg-white/50">
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2">2. Property Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <FormField
+                      control={form.control}
+                      name="street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter street address" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="unit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Unit (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter unit number if applicable" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter city" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State</FormLabel>
+                        <Select 
+                          defaultValue={field.value} 
+                          onValueChange={field.onChange}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select state" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Arkansas">Arkansas</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="zipCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ZIP Code</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter ZIP code" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              
+              {/* Section 3: Lease Terms */}
+              <div className="border p-6 rounded-lg bg-white/50">
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2">3. Lease Terms</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="leaseStart"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Lease Start Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              initialFocus
+                              className="p-3 pointer-events-auto"
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="leaseEnd"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Lease End Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              initialFocus
+                              className="p-3 pointer-events-auto"
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="rentAmount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Monthly Rent ($)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter monthly rent amount" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="paymentMethod"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Payment Method</FormLabel>
+                        <FormControl>
+                          <Input placeholder="E.g., check, bank transfer" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="md:col-span-2">
+                    <FormField
+                      control={form.control}
+                      name="paymentAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Payment Address</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Enter address where rent payment should be sent" 
+                              className="min-h-[60px]" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Section 4: Financials */}
+              <div className="border p-6 rounded-lg bg-white/50">
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2">4. Financials</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="securityDeposit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Security Deposit ($)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter security deposit amount" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="lateFee"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Late Fee ($, Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter late fee amount" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="nsfFee"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>NSF/Returned Payment Fee ($, Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter NSF fee amount" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              
+              {/* Section 5: Utilities */}
+              <div className="border p-6 rounded-lg bg-white/50">
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2">5. Utilities</h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="utilitiesAgreement"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            Tenant agrees to pay for utilities (electricity, gas, water, sewer, internet, etc.)
+                          </FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              
+              {/* Section 6: Access & Penalties */}
+              <div className="border p-6 rounded-lg bg-white/50">
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2">6. Access & Penalties</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="houseKeys"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Number of House Keys</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="mailboxKeys"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Number of Mailbox Keys</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="lockoutFee"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lockout Fee ($, Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter fee amount" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="keyReplacementFee"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Key Replacement Fee ($, Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter fee amount" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              
+              {/* Section 7: Occupancy and Guests */}
+              <div className="border p-6 rounded-lg bg-white/50">
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2">7. Occupancy and Guests</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="authorizedTenants"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Number of Authorized Tenants</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="maxGuests"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Maximum Guests Allowed</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="maxGuestStay"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Maximum Guest Stay Duration</FormLabel>
+                        <FormControl>
+                          <Input placeholder="E.g., 7 days" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              
+              {/* Section 8: Early Termination */}
+              <div className="border p-6 rounded-lg bg-white/50">
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2">8. Early Termination / Military Clause</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="terminationNoticeDays"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Notice Period for Early Termination (days)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter number of days" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="terminationFee"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Termination Fee ($, Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter fee amount" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              
+              {/* Section 10: Inspection Checklist */}
+              <div className="border p-6 rounded-lg bg-white/50">
+                <h3 className="text-lg font-semibold mb-4 border-b pb-2">10. Inspection Checklist (Optional)</h3>
+                <p className="text-gray-600 mb-4">
+                  Document the condition of the property at move-in. This can help avoid disputes at move-out.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="inspectionBathrooms"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Bathrooms</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Describe condition" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="inspectionCarpeting"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Carpeting</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Describe condition" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="inspectionCeilings"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ceilings</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Describe condition" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="inspectionClosets"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Closets</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Describe condition" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="inspectionCountertops"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Countertops</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Describe condition" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="inspectionAppliances"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Appliances</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Describe condition" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="inspectionDoors"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Doors</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Describe condition" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="inspectionWalls"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Walls/Windows</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Describe condition" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="md:col-span-2">
+                    <FormField
+                      control={form.control}
+                      name="inspectionAdditional"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Additional Items</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Describe any additional items or comments" 
+                              className="min-h-[80px]" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        );
+      
+      case "Last Will and Testament":
+        return (
+          <>
+            <div className="space-y-6">
+              {commonFields}
+              
+              <FormField
+                control={form.control}
+                name="assets"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your Assets</FormLabel>
+                    <FormDescription>
+                      List your assets, properties, investments, or valuables you wish to include in your will.
+                    </FormDescription>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe your assets" 
+                        className="min-h-[120px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="beneficiaries"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Beneficiaries</FormLabel>
+                    <FormDescription>
+                      List the people to whom you wish to leave your assets, and what each person should receive.
+                    </FormDescription>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Enter beneficiary details and what they will receive" 
+                        className="min-h-[120px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </>
+        );
+      
+      case "Non-Disclosure Agreement":
+        return (
+          <>
+            <div className="space-y-6">
+              {commonFields}
+              
+              <FormField
+                control={form.control}
+                name="companyName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter company name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="dateOfAgreement"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date of Agreement</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date < new Date("1900-01-01")}
+                          initialFocus
+                          className="p-3 pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="confidentialInfo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confidential Information</FormLabel>
+                    <FormDescription>
+                      Describe the confidential information that will be protected under this agreement.
+                    </FormDescription>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe the confidential information" 
+                        className="min-h-[120px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="duration"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Duration of Agreement</FormLabel>
+                    <FormControl>
+                      <Input placeholder="E.g., 2 years, 5 years, etc." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </>
+        );
+      
+      case "Power of Attorney":
+        return (
+          <>
+            <div className="space-y-6">
+              {commonFields}
+              
+              <FormField
+                control={form.control}
+                name="attorneyName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Attorney-in-Fact Name</FormLabel>
+                    <FormDescription>
+                      The person you're appointing to act on your behalf.
+                    </FormDescription>
+                    <FormControl>
+                      <Input placeholder="Enter full name of your attorney-in-fact" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="powers"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Powers Granted</FormLabel>
+                    <FormDescription>
+                      Describe the powers you're granting to your attorney-in-fact (financial, medical, etc.)
+                    </FormDescription>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe the powers granted" 
+                        className="min-h-[120px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </>
+        );
+      
+      default:
+        return (
+          <>
+            <div className="space-y-6">
+              {commonFields}
+              
+              <FormField
+                control={form.control}
+                name="details"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Additional Details</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Enter any additional information" 
+                        className="min-h-[120px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </>
+        );
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {renderFormFields()}
+        
+        <div className="pt-4 border-t">
+          <Button 
+            type="submit" 
+            className="w-full md:w-auto"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                Generating Document...
+              </>
+            ) : (
+              <>Generate Document</>
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+};
+
+export default DocumentForm;
