@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { FileText, Download } from "lucide-react";
+import { FileText, Download, ArrowRight, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { jsPDF } from "jspdf";
@@ -22,9 +22,24 @@ const documentTemplates = [
   { id: "lease_agreement", name: "Lease Agreement", category: "Real Estate" }
 ];
 
+// Define form sections for the lease agreement
+const leaseAgreementSections = [
+  { id: 1, title: "Personal Information" },
+  { id: 2, title: "Property Details" },
+  { id: 3, title: "Lease Terms" },
+  { id: 4, title: "Financials" },
+  { id: 5, title: "Utilities" },
+  { id: 6, title: "Access & Penalties" },
+  { id: 7, title: "Occupancy and Guests" },
+  { id: 8, title: "Early Termination" },
+  { id: 9, title: "Inspection Checklist" },
+  { id: 10, title: "Review & Submit" }
+];
+
 const MakeDocument = () => {
   const [step, setStep] = useState(1);
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [currentSection, setCurrentSection] = useState(1);
   const [formData, setFormData] = useState({
     // General form data for basic templates
     partyName1: "",
@@ -78,6 +93,7 @@ const MakeDocument = () => {
   const handleTemplateSelect = (templateId: string) => {
     setSelectedTemplate(templateId);
     setStep(2);
+    setCurrentSection(1); // Reset section to first when selecting a template
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -95,9 +111,19 @@ const MakeDocument = () => {
     setStep(3);
   };
 
+  const nextSection = () => {
+    if (selectedTemplate === 'lease_agreement' && currentSection < leaseAgreementSections.length) {
+      setCurrentSection(currentSection + 1);
+    }
+  };
+
+  const prevSection = () => {
+    if (currentSection > 1) {
+      setCurrentSection(currentSection - 1);
+    }
+  };
+
   const handleGeneratePDF = () => {
-    const isGenerating = true;
-    
     try {
       console.log("Generating PDF document...");
       const doc = new jsPDF();
@@ -383,8 +409,8 @@ const MakeDocument = () => {
     }
   };
 
-  // Render form fields for Lease Agreement
-  const renderLeaseAgreementForm = () => {
+  // Render Personal Information section
+  const renderPersonalInfoSection = () => {
     return (
       <div className="space-y-6">
         <div className="border-b pb-4">
@@ -472,7 +498,19 @@ const MakeDocument = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-end">
+          <Button type="button" onClick={nextSection}>
+            Next <ArrowRight className="ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
+  // Render Property Details section
+  const renderPropertyDetailsSection = () => {
+    return (
+      <div className="space-y-6">
         <div className="border-b pb-4">
           <h3 className="text-lg font-medium">2. Property Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -532,7 +570,22 @@ const MakeDocument = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-between">
+          <Button type="button" variant="outline" onClick={prevSection}>
+            <ArrowLeft className="mr-2" /> Back
+          </Button>
+          <Button type="button" onClick={nextSection}>
+            Next <ArrowRight className="ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
+  // Render Lease Terms section
+  const renderLeaseTermsSection = () => {
+    return (
+      <div className="space-y-6">
         <div className="border-b pb-4">
           <h3 className="text-lg font-medium">3. Lease Terms</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -597,7 +650,22 @@ const MakeDocument = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-between">
+          <Button type="button" variant="outline" onClick={prevSection}>
+            <ArrowLeft className="mr-2" /> Back
+          </Button>
+          <Button type="button" onClick={nextSection}>
+            Next <ArrowRight className="ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
+  // Render Financials section
+  const renderFinancialsSection = () => {
+    return (
+      <div className="space-y-6">
         <div className="border-b pb-4">
           <h3 className="text-lg font-medium">4. Financials</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
@@ -637,7 +705,22 @@ const MakeDocument = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-between">
+          <Button type="button" variant="outline" onClick={prevSection}>
+            <ArrowLeft className="mr-2" /> Back
+          </Button>
+          <Button type="button" onClick={nextSection}>
+            Next <ArrowRight className="ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
+  // Render Utilities section
+  const renderUtilitiesSection = () => {
+    return (
+      <div className="space-y-6">
         <div className="border-b pb-4">
           <h3 className="text-lg font-medium">5. Utilities</h3>
           <div className="flex items-center mt-4">
@@ -652,7 +735,22 @@ const MakeDocument = () => {
             <label htmlFor="payUtilities" className="ml-2 block text-sm">Tenant agrees to pay utilities</label>
           </div>
         </div>
+        <div className="flex justify-between">
+          <Button type="button" variant="outline" onClick={prevSection}>
+            <ArrowLeft className="mr-2" /> Back
+          </Button>
+          <Button type="button" onClick={nextSection}>
+            Next <ArrowRight className="ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
+  // Render Access & Penalties section
+  const renderAccessSection = () => {
+    return (
+      <div className="space-y-6">
         <div className="border-b pb-4">
           <h3 className="text-lg font-medium">6. Access & Penalties</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -706,7 +804,22 @@ const MakeDocument = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-between">
+          <Button type="button" variant="outline" onClick={prevSection}>
+            <ArrowLeft className="mr-2" /> Back
+          </Button>
+          <Button type="button" onClick={nextSection}>
+            Next <ArrowRight className="ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
+  // Render Occupancy and Guests section
+  const renderOccupancySection = () => {
+    return (
+      <div className="space-y-6">
         <div className="border-b pb-4">
           <h3 className="text-lg font-medium">7. Occupancy and Guests</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
@@ -747,7 +860,22 @@ const MakeDocument = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-between">
+          <Button type="button" variant="outline" onClick={prevSection}>
+            <ArrowLeft className="mr-2" /> Back
+          </Button>
+          <Button type="button" onClick={nextSection}>
+            Next <ArrowRight className="ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
+  // Render Early Termination section
+  const renderTerminationSection = () => {
+    return (
+      <div className="space-y-6">
         <div className="border-b pb-4">
           <h3 className="text-lg font-medium">8. Early Termination / Military Clause</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -777,9 +905,24 @@ const MakeDocument = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-between">
+          <Button type="button" variant="outline" onClick={prevSection}>
+            <ArrowLeft className="mr-2" /> Back
+          </Button>
+          <Button type="button" onClick={nextSection}>
+            Next <ArrowRight className="ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
+  // Render Inspection Checklist section
+  const renderInspectionSection = () => {
+    return (
+      <div className="space-y-6">
         <div className="border-b pb-4">
-          <h3 className="text-lg font-medium">10. Inspection Checklist (Optional)</h3>
+          <h3 className="text-lg font-medium">9. Inspection Checklist (Optional)</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <label htmlFor="bathroomsCondition" className="block text-sm font-medium mb-1">Bathrooms Condition</label>
@@ -893,7 +1036,141 @@ const MakeDocument = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-between">
+          <Button type="button" variant="outline" onClick={prevSection}>
+            <ArrowLeft className="mr-2" /> Back
+          </Button>
+          <Button type="button" onClick={nextSection}>
+            Next <ArrowRight className="ml-2" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
+  // Render Review & Submit section
+  const renderReviewSection = () => {
+    return (
+      <div className="space-y-6">
+        <div className="border-b pb-4">
+          <h3 className="text-lg font-medium">10. Review & Submit</h3>
+          <p className="text-sm text-muted-foreground mt-2">Please review your information before submitting</p>
+          
+          <div className="mt-4 space-y-4">
+            <div className="border rounded-md p-4">
+              <h4 className="text-sm font-medium">Personal Information</h4>
+              <p className="text-sm mt-2">Tenant: {formData.tenantName}</p>
+              <p className="text-sm">Landlord: {formData.landlordName}</p>
+            </div>
+            
+            <div className="border rounded-md p-4">
+              <h4 className="text-sm font-medium">Property</h4>
+              <p className="text-sm mt-2">
+                {formData.propertyStreet}{formData.propertyUnit ? `, Unit ${formData.propertyUnit}` : ''}, 
+                {formData.propertyCity}, {formData.propertyState} {formData.propertyZip}
+              </p>
+            </div>
+            
+            <div className="border rounded-md p-4">
+              <h4 className="text-sm font-medium">Lease Terms</h4>
+              <p className="text-sm mt-2">From {formData.leaseStartDate} to {formData.leaseEndDate}</p>
+              <p className="text-sm">Monthly Rent: ${formData.monthlyRent}</p>
+              <p className="text-sm">Security Deposit: ${formData.securityDeposit}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex justify-between">
+          <Button type="button" variant="outline" onClick={prevSection}>
+            <ArrowLeft className="mr-2" /> Back
+          </Button>
+          <Button type="submit">Submit</Button>
+        </div>
+      </div>
+    );
+  };
+
+  // Render current section based on currentSection state
+  const renderCurrentSection = () => {
+    switch (currentSection) {
+      case 1:
+        return renderPersonalInfoSection();
+      case 2:
+        return renderPropertyDetailsSection();
+      case 3:
+        return renderLeaseTermsSection();
+      case 4:
+        return renderFinancialsSection();
+      case 5:
+        return renderUtilitiesSection();
+      case 6:
+        return renderAccessSection();
+      case 7:
+        return renderOccupancySection();
+      case 8:
+        return renderTerminationSection();
+      case 9:
+        return renderInspectionSection();
+      case 10:
+        return renderReviewSection();
+      default:
+        return renderPersonalInfoSection();
+    }
+  };
+
+  // Render the standard template form
+  const renderStandardTemplateForm = () => {
+    return (
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="partyName1" className="block text-sm font-medium mb-1">First Party Name</label>
+          <Input
+            id="partyName1"
+            name="partyName1"
+            value={formData.partyName1}
+            onChange={handleInputChange}
+            required
+            className="!text-black"
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="partyName2" className="block text-sm font-medium mb-1">Second Party Name</label>
+          <Input
+            id="partyName2"
+            name="partyName2"
+            value={formData.partyName2}
+            onChange={handleInputChange}
+            required
+            className="!text-black"
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="date" className="block text-sm font-medium mb-1">Effective Date</label>
+          <Input
+            id="date"
+            name="date"
+            type="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            required
+            className="!text-black"
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="details" className="block text-sm font-medium mb-1">Additional Details</label>
+          <Textarea
+            id="details"
+            name="details"
+            value={formData.details}
+            onChange={handleInputChange}
+            rows={5}
+            className="!text-black"
+          />
+        </div>
+        
         <Button type="submit" className="w-full">Continue to Preview</Button>
       </div>
     );
@@ -1100,64 +1377,28 @@ const MakeDocument = () => {
             <CardHeader>
               <CardTitle>Enter Document Details</CardTitle>
               <CardDescription>Fill in the required information to generate your document</CardDescription>
+              {selectedTemplate === "lease_agreement" && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {leaseAgreementSections.map((section) => (
+                    <Button 
+                      key={section.id}
+                      variant={currentSection === section.id ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentSection(section.id)}
+                      className="text-xs"
+                    >
+                      {section.title}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 {selectedTemplate === "lease_agreement" ? (
-                  renderLeaseAgreementForm()
+                  renderCurrentSection()
                 ) : (
-                  <>
-                    <div>
-                      <label htmlFor="partyName1" className="block text-sm font-medium mb-1">First Party Name</label>
-                      <Input
-                        id="partyName1"
-                        name="partyName1"
-                        value={formData.partyName1}
-                        onChange={handleInputChange}
-                        required
-                        className="!text-black"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="partyName2" className="block text-sm font-medium mb-1">Second Party Name</label>
-                      <Input
-                        id="partyName2"
-                        name="partyName2"
-                        value={formData.partyName2}
-                        onChange={handleInputChange}
-                        required
-                        className="!text-black"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="date" className="block text-sm font-medium mb-1">Effective Date</label>
-                      <Input
-                        id="date"
-                        name="date"
-                        type="date"
-                        value={formData.date}
-                        onChange={handleInputChange}
-                        required
-                        className="!text-black"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="details" className="block text-sm font-medium mb-1">Additional Details</label>
-                      <Textarea
-                        id="details"
-                        name="details"
-                        value={formData.details}
-                        onChange={handleInputChange}
-                        rows={5}
-                        className="!text-black"
-                      />
-                    </div>
-                    
-                    <Button type="submit" className="w-full">Continue to Preview</Button>
-                  </>
+                  renderStandardTemplateForm()
                 )}
               </form>
             </CardContent>
@@ -1238,3 +1479,4 @@ const MakeDocument = () => {
 };
 
 export default MakeDocument;
+
