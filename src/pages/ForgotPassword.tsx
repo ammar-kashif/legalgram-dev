@@ -21,16 +21,19 @@ const ForgotPassword = () => {
     try {
       // Get the current domain to use for the redirect
       const siteUrl = window.location.origin;
+      console.log("Using site URL for password reset:", siteUrl);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${siteUrl}/reset-password`,
       });
 
       if (error) {
+        console.error("Password reset error:", error);
         toast.error(error.message);
       } else {
         setIsSuccess(true);
         toast.success("Password reset instructions sent to your email");
+        console.log("Password reset email sent successfully to:", email);
       }
     } catch (error) {
       console.error("Password reset error:", error);

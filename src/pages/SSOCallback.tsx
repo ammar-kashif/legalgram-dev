@@ -23,7 +23,7 @@ const SSOCallback = () => {
         // Check if this is a password recovery callback
         if (url.includes('type=recovery')) {
           console.log("Processing password recovery callback");
-          navigate('/reset-password');
+          navigate('/reset-password', { replace: true });
           return;
         }
         
@@ -37,7 +37,7 @@ const SSOCallback = () => {
             console.error("Code exchange error:", exchangeError);
             setError(`Authentication failed: ${exchangeError.message}`);
             toast.error("Authentication failed. Please try logging in again.");
-            setTimeout(() => navigate("/login"), 2000);
+            setTimeout(() => navigate("/login", { replace: true }), 2000);
             return;
           }
           
@@ -45,12 +45,12 @@ const SSOCallback = () => {
             // Successfully authenticated
             console.log("Authentication successful, session obtained");
             toast.success("Authentication successful!");
-            navigate("/user-dashboard");  // Redirect to user dashboard
+            navigate("/user-dashboard", { replace: true });  // Redirect to user dashboard
             return;
           } else {
             console.error("No session returned after code exchange");
             setError("Authentication completed but no session was created. Please try logging in.");
-            setTimeout(() => navigate("/login"), 2000);
+            setTimeout(() => navigate("/login", { replace: true }), 2000);
             return;
           }
         }
@@ -60,7 +60,7 @@ const SSOCallback = () => {
         if (sessionData.session) {
           console.log("Session already exists");
           toast.success("Authentication successful!");
-          navigate("/user-dashboard");  // Redirect to user dashboard
+          navigate("/user-dashboard", { replace: true });  // Redirect to user dashboard
           return;
         }
         
@@ -68,12 +68,12 @@ const SSOCallback = () => {
         console.error("No authentication method worked");
         setError("Authentication failed. Please try logging in again.");
         toast.error("Authentication failed");
-        setTimeout(() => navigate("/login"), 2000);
+        setTimeout(() => navigate("/login", { replace: true }), 2000);
       } catch (err) {
         console.error("Authentication callback error:", err);
         setError("An unexpected error occurred. Please try logging in again.");
         toast.error("Authentication error");
-        setTimeout(() => navigate("/login"), 2000);
+        setTimeout(() => navigate("/login", { replace: true }), 2000);
       } finally {
         setIsProcessing(false);
       }

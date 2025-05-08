@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -19,36 +19,50 @@ const ResetPassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [hashPresent, setHashPresent] = useState(false);
+  const [isTokenProcessed, setIsTokenProcessed] = useState(false);
 
   useEffect(() => {
-    // Check if the URL contains a hash which includes the access_token (needed for password recovery)
-    const hasRecoveryHash = window.location.hash.includes('access_token');
-    console.log("URL hash check:", { hash: window.location.hash, hasToken: hasRecoveryHash });
-    setHashPresent(hasRecoveryHash);
-    
-    // Handle recovery token if present
-    if (hasRecoveryHash) {
-      // The supabase client will automatically process the hash containing the tokens
-      const handleRecoveryToken = async () => {
+    const processRecoveryToken = async () => {
+      // Check if the URL contains a hash which includes the access_token
+      const hasRecoveryHash = window.location.hash && window.location.hash.includes('access_token');
+      console.log("URL hash check:", { hash: window.location.hash, hasToken: hasRecoveryHash });
+      
+      setHashPresent(hasRecoveryHash);
+      
+      if (hasRecoveryHash) {
         try {
+          // The supabase client will automatically process the hash
           const { data, error } = await supabase.auth.getSession();
-          console.log("Session check:", { hasSession: !!data.session, error });
+          console.log("Session check result:", { hasSession: !!data.session, error });
           
           if (error) {
-            console.error("Recovery token error:", error);
+            console.error("Recovery token processing error:", error);
             setError("Invalid or expired password reset link");
             toast.error("Invalid or expired password reset link");
+            setIsTokenProcessed(false);
+          } else if (data.session) {
+            console.log("Recovery token processed successfully");
+            setIsTokenProcessed(true);
+          } else {
+            console.error("No session found after processing recovery token");
+            setError("Invalid or expired password reset link");
+            toast.error("Invalid or expired password reset link");
+            setIsTokenProcessed(false);
           }
         } catch (err) {
           console.error("Error processing recovery token:", err);
           setError("Failed to process recovery token");
+          setIsTokenProcessed(false);
         }
-      };
-      
-      handleRecoveryToken();
-    } else {
-      toast.error("Invalid or expired password reset link");
-    }
+      } else {
+        console.log("No recovery hash found in URL");
+        setError("Invalid or expired password reset link");
+        toast.error("Invalid or expired password reset link");
+        setIsTokenProcessed(false);
+      }
+    };
+
+    processRecoveryToken();
   }, []);
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -71,8 +85,9 @@ const ResetPassword = () => {
       const { error } = await supabase.auth.updateUser({ password });
       
       if (error) {
+        console.error("Password update error:", error);
         setError(error.message);
-        toast.error(error.message);
+        toast.error(error.message || "Failed to reset password");
       } else {
         toast.success("Password updated successfully");
         // Short delay before redirecting to allow the toast to be seen
@@ -110,20 +125,23 @@ const ResetPassword = () => {
           </div>
 
           <div className="glass-card rounded-xl shadow-xl border border-white/10 p-8 animate-scale-in backdrop-blur-lg bg-white/10">
-            {!hashPresent ? (
-              <Alert className="bg-red-500/20 border-red-300/30">
-                <AlertDescription className="text-white">
-                  Invalid or expired password reset link. Please request a new password reset.
-                </AlertDescription>
-              </Alert>
+            {!hashPresent || error ? (
+              <div className="space-y-4">
+                <Alert className="bg-red-500/20 border-red-300/30">
+                  <AlertDescription className="text-white">
+                    {error || "Invalid or expired password reset link. Please request a new password reset."}
+                  </AlertDescription>
+                </Alert>
+                <div className="flex justify-center mt-4">
+                  <Link to="/forgot-password">
+                    <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+                      Request New Reset Link
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             ) : (
               <form onSubmit={handleResetPassword} className="space-y-6">
-                {error && (
-                  <Alert className="bg-red-500/20 border-red-300/30">
-                    <AlertDescription className="text-white">{error}</AlertDescription>
-                  </Alert>
-                )}
-
                 <div className="space-y-2">
                   <label htmlFor="password" className="block text-sm font-medium text-white mb-1">New Password</label>
                   <div className="relative">
@@ -173,7 +191,7 @@ const ResetPassword = () => {
                 <Button
                   type="submit"
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white transition-all duration-300 hover:shadow-lg hover:shadow-orange-300/50 animate-fade-in"
-                  disabled={isSubmitting || !hashPresent}
+                  disabled={isSubmitting}
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
