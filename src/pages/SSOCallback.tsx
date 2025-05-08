@@ -20,6 +20,13 @@ const SSOCallback = () => {
         const url = window.location.href;
         console.log("Processing auth callback, URL:", url);
         
+        // Check if this is a password recovery callback
+        if (url.includes('type=recovery')) {
+          console.log("Processing password recovery callback");
+          navigate('/reset-password');
+          return;
+        }
+        
         // For OAuth logins, exchange the code for a session
         if (url.includes('code=')) {
           console.log("Processing OAuth callback");

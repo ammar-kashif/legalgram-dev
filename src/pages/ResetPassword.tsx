@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,11 +21,32 @@ const ResetPassword = () => {
   const [hashPresent, setHashPresent] = useState(false);
 
   useEffect(() => {
-    // Check if the URL contains a hash (which is needed for password recovery)
-    const hasRecoveryHash = window.location.hash.length > 0;
+    // Check if the URL contains a hash which includes the access_token (needed for password recovery)
+    const hasRecoveryHash = window.location.hash.includes('access_token');
+    console.log("URL hash check:", { hash: window.location.hash, hasToken: hasRecoveryHash });
     setHashPresent(hasRecoveryHash);
     
-    if (!hasRecoveryHash) {
+    // Handle recovery token if present
+    if (hasRecoveryHash) {
+      // The supabase client will automatically process the hash containing the tokens
+      const handleRecoveryToken = async () => {
+        try {
+          const { data, error } = await supabase.auth.getSession();
+          console.log("Session check:", { hasSession: !!data.session, error });
+          
+          if (error) {
+            console.error("Recovery token error:", error);
+            setError("Invalid or expired password reset link");
+            toast.error("Invalid or expired password reset link");
+          }
+        } catch (err) {
+          console.error("Error processing recovery token:", err);
+          setError("Failed to process recovery token");
+        }
+      };
+      
+      handleRecoveryToken();
+    } else {
       toast.error("Invalid or expired password reset link");
     }
   }, []);
@@ -53,7 +75,10 @@ const ResetPassword = () => {
         toast.error(error.message);
       } else {
         toast.success("Password updated successfully");
-        navigate("/login");
+        // Short delay before redirecting to allow the toast to be seen
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       }
     } catch (error) {
       console.error("Password reset error:", error);

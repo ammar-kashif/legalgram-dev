@@ -19,8 +19,11 @@ const ForgotPassword = () => {
     setIsSubmitting(true);
 
     try {
+      // Get the current domain to use for the redirect
+      const siteUrl = window.location.origin;
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + "/reset-password",
+        redirectTo: `${siteUrl}/reset-password`,
       });
 
       if (error) {
