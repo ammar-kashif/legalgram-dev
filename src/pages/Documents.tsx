@@ -1,13 +1,19 @@
 
 import React from "react";
 import Layout from "@/components/layout/Layout";
-import MakeDocument from "@/components/dashboard/MakeDocument";
+import ConditionalForm from "@/components/ConditionalForm";
 
 const Documents = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12">
-        <MakeDocument />
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Arkansas Lease Agreement</h1>
+          <p className="text-muted-foreground">
+            Complete the form step by step to generate a customized lease agreement.
+          </p>
+        </div>
+        <ConditionalForm />
       </div>
     </Layout>
   );
