@@ -602,7 +602,6 @@ Email: ${answers.tenant_email || '________'}`;
         <Button 
           onClick={() => handleNext()}
           disabled={!canAdvance()}
-          className="bg-rocket-blue-500"
         >
           {currentQuestion.type === 'confirmation' ? (
             <>
@@ -610,7 +609,7 @@ Email: ${answers.tenant_email || '________'}`;
             </>
           ) : (
             <>
-              Next <ArrowRight className="w-4 h-4 ml-2 !text-black" />
+              Next <ArrowRight className="w-4 h-4 ml-2 text-black" />
             </>
           )}
         </Button>
