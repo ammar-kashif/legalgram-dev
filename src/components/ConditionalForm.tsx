@@ -743,7 +743,6 @@ Email: ${answers.tenant_email || '________'}`;
           </Button>
           <Button 
             onClick={generateLeaseAgreementPDF}
-            className="bg-rocket-blue-500"
           >
             Generate Lease Agreement
           </Button>
