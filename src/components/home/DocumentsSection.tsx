@@ -6,12 +6,7 @@ import { useMemo } from "react";
 
 const DocumentsSection = () => {
   const popularDocuments = useMemo(() => [
-    { link: "/documents", text: "Last Will and Testament" },
-    { link: "/documents", text: "Power of Attorney" },
-    { link: "/documents", text: "Non-Disclosure Agreement" },
-    { link: "/documents", text: "LLC Operating Agreement" },
-    { link: "/documents", text: "Residential Lease" },
-    { link: "/documents", text: "Employment Contract" }
+    { link: "/documents", text: "Residential Lease Agreement" }
   ], []);
 
   return (
@@ -23,11 +18,11 @@ const DocumentsSection = () => {
             Most Frequently Used Legal Documents
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Create any of these documents in minutes with our easy-to-use platform.
+            Create a Residential Lease Agreement in minutes with our easy-to-use platform.
           </p>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
+        <div className="grid grid-cols-1 gap-6 mb-12">
           {popularDocuments.map(({ link, text }) => (
             <Link 
               to={link} 
@@ -45,7 +40,7 @@ const DocumentsSection = () => {
         <div className="text-center">
           <Link to="/documents">
             <Button variant="orange" className="hover:bg-[#D17701] shadow-md px-8 py-6 h-auto text-lg">
-              View all documents <ArrowRight className="ml-2 h-5 w-5" />
+              Create Lease Agreement <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
         </div>

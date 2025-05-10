@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -9,10 +10,10 @@ import { useEffect } from "react";
 import LandingPage from "./pages/LandingPage"; // Static import
 import StartABusiness from "./pages/StartABusiness"; 
 import Index from "./pages/Index"; // Import Index component
+import Documents from "./pages/Documents"; // Import Documents directly
 
 // Lazy load other pages for better performance
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
-const DocumentDetail = lazy(() => import("./pages/DocumentDetail")); 
 const ContactLawyer = lazy(() => import("./pages/ContactLawyer"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -27,7 +28,6 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const Contact = lazy(() => import("./pages/Contact"));
 const AskLegalAdvice = lazy(() => import("./pages/AskLegalAdvice"));
 const AskALawyer = lazy(() => import("./pages/AskALawyer"));
-const Documents = lazy(() => import("./pages/Documents"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
@@ -74,8 +74,8 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/home" element={<LandingPage />} />
-                <Route path="/documents" element={<DocumentTemplates />} />
-                <Route path="/documents/:id" element={<DocumentDetail />} />
+                <Route path="/documents" element={<Documents />} />
+                <Route path="/documents/:id" element={<Documents />} />
                 <Route path="/contact-lawyer" element={<ContactLawyer />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
