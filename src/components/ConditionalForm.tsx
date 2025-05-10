@@ -316,7 +316,11 @@ The Landlord can be reached by phone at ${answers.landlord_phone} or by email at
 If any payment is returned for non-sufficient funds or because the Tenant stops payments, then, after that, the Landlord may, in writing, require the Tenant to pay future Rent payments by cash, cashier's check, or money order.
 
 Security Deposit.
-At the time of the signing of this Lease, the Tenant shall pay to the Landlord, in trust, a security deposit of $${answers.security_deposit} to be held and disbursed for the Tenant damages to the Leased Property or other defaults under this Lease (if any) as provided by law.`;
+At the time of the signing of this Lease, the Tenant shall pay to the Landlord, in trust, a security deposit of $${answers.security_deposit} to be held and disbursed for the Tenant damages to the Leased Property or other defaults under this Lease (if any) as provided by law.
+
+(2) However, the money may be applied to the payment of accrued unpaid Rent and any damages which the Landlord has suffered by reason of the Tenant's non-compliance with the Lease, all as itemized by the Landlord in a written notice delivered to the Tenant, together with the remainder of the amount due sixty (60) days after termination of the tenancy and delivery of possession by the Tenant.
+(b)(1) The Landlord shall be deemed to have complied with subsection (a) of this section by mailing via first class mail the written notice and any payment required to the last known address of the Tenant.
+(2) If the letter containing the payment is returned to the Landlord and if the Landlord is unable to locate the Tenant after reasonable effort, then the payment shall become the property of the Landlord one hundred eighty (180) days from the date the payment was mailed.`;
 
       // Split the text to fit the page width
       const splitText = doc.splitTextToSize(leaseContent, 180);
@@ -325,6 +329,12 @@ At the time of the signing of this Lease, the Tenant shall pay to the Landlord, 
       // Update the Y position after the main content
       y += splitText.length * lineHeight + 10;
       
+      // Check if we need a new page
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+      
       // Add the keys section
       let keysSection = `
 Keys.
@@ -332,42 +342,36 @@ The Tenant will be given ${answers.house_keys} key(s) to the Leased Property and
 If the Tenant becomes locked out of the Leased Property, the Tenant will be charged $${answers.lockout_fee} to regain entry.
 
 Occupancy of Leased Property.
-The Tenant may have up to ${answers.max_guests} guests on the Leased Property at any one time. The Tenant may not have guests on the Leased Property for more than ${answers.max_guest_days} days.`;
-
-      // Check if we need a new page
-      if (y + (keysSection.split('\n').length * lineHeight) > 280) {
-        doc.addPage();
-        y = 20;
-      }
+Except as stated otherwise in this Paragraph, only those individuals identified in this Lease as the "Tenant" (including their minor children) may reside in the Leased Property. The individuals identified as the "Tenant" shall sign this Lease. It is explicitly understood that this Lease is between the Landlord and each Tenant signatory individually and jointly. If any one signatory defaults, the remaining signatories are collectively responsible for timely Rent payment and all other terms of this Lease. The Tenant may have up to ${answers.max_guests} guests on the Leased Property at any one time. A "guest" shall be considered anyone who is invited by the Tenant to be present at the Leased Property, and who is also not included in the Lease. The Tenant may not have guests on the Leased Property for more than ${answers.max_guest_days} days. No other person shall be permitted to occupy the Leased Property except with the prior written approval of the Landlord.`;
       
       const splitKeysText = doc.splitTextToSize(keysSection, 180);
       doc.text(splitKeysText, 15, y);
       
       y += splitKeysText.length * lineHeight + 10;
       
+      // Check if we need another new page
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+      
       // Add early termination section
       let earlyTerminationSection = `
 Early Termination Clause.
 The Tenant may, upon ${answers.early_termination_days} days' written notice to the Landlord, terminate this Lease provided that the Tenant pays a termination charge equal to $0.00 or the maximum allowable by law, whichever is less.`;
-
-      // Check if we need a new page
-      if (y + (earlyTerminationSection.split('\n').length * lineHeight) > 280) {
-        doc.addPage();
-        y = 20;
-      }
       
       const splitTerminationText = doc.splitTextToSize(earlyTerminationSection, 180);
       doc.text(splitTerminationText, 15, y);
       
       y += splitTerminationText.length * lineHeight + 15;
       
-      // Add the signatures section
       // Check if we need a new page for signatures
-      if (y + 40 > 280) {
+      if (y > 250) {
         doc.addPage();
         y = 20;
       }
       
+      // Add the signatures section
       doc.text("The Landlord:", 15, y);
       y += lineHeight * 2;
       doc.text("____________________________", 15, y);
@@ -386,8 +390,11 @@ The Tenant may, upon ${answers.early_termination_days} days' written notice to t
       
       doc.text("Date: _________________", 15, y);
       
-      y += lineHeight * 3;
+      // Add another page for additional information
+      doc.addPage();
+      y = 20;
       
+      // Add contact information
       let contactSection = `
 Notices.
 The Landlord:
@@ -399,15 +406,44 @@ The Tenant:
 ${answers.tenant_address}
 Phone: ${answers.tenant_phone}
 Email: ${answers.tenant_email}`;
-
-      // Check if we need a new page
-      if (y + (contactSection.split('\n').length * lineHeight) > 280) {
+      
+      const splitContactText = doc.splitTextToSize(contactSection, 180);
+      doc.text(splitContactText, 15, y);
+      
+      y += splitContactText.length * lineHeight + 15;
+      
+      // Add inspection checklist if there's room, otherwise add a new page
+      if (y > 200) {
         doc.addPage();
         y = 20;
       }
       
-      const splitContactText = doc.splitTextToSize(contactSection, 180);
-      doc.text(splitContactText, 15, y);
+      doc.setFont("helvetica", "bold");
+      doc.text("Residential Lease Inspection Checklist", 105, y, { align: "center" });
+      y += lineHeight * 2;
+      
+      doc.setFont("helvetica", "normal");
+      doc.text("The Tenant has inspected the Leased Property and states that it is in satisfactory condition, free of defects, except as noted below:", 15, y);
+      y += lineHeight * 2;
+      
+      // Table headers
+      doc.text("ITEM", 15, y);
+      doc.text("SATISFACTORY", 100, y);
+      doc.text("COMMENTS", 150, y);
+      y += lineHeight;
+      
+      // Sample inspection items
+      const inspectionItems = [
+        "Bathrooms", "Carpeting", "Ceilings", "Closets", "Countertops",
+        "Dishwasher", "Disposal", "Doors", "Walls", "Windows"
+      ];
+      
+      inspectionItems.forEach(item => {
+        doc.text(item, 15, y);
+        doc.text("________", 100, y);
+        doc.text("________________________", 150, y);
+        y += lineHeight;
+      });
       
       // Save the PDF
       const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
