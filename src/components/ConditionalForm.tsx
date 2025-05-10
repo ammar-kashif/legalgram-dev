@@ -610,7 +610,7 @@ Email: ${answers.tenant_email || '________'}`;
             </>
           ) : (
             <>
-              Next <ArrowRight className="w-4 h-4 ml-2" />
+              Next <ArrowRight className="w-4 h-4 ml-2 !text-black" />
             </>
           )}
         </Button>
