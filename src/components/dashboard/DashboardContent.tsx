@@ -9,7 +9,7 @@ import UserProfile from '@/components/dashboard/UserProfile';
 import PaymentInfo from '@/components/dashboard/PaymentInfo';
 import MemberBenefits from '@/components/dashboard/MemberBenefits';
 import StartBusiness from '@/components/dashboard/StartBusiness';
-import ConditionalForm from '@/components/ConditionalForm';
+import MakeDocument from '@/components/dashboard/MakeDocument';
 
 interface DashboardContentProps {
   activeTab: string;
@@ -98,20 +98,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       )}
       
       {activeTab === "documents" && (
-        <div>
-          <h2 className="text-2xl font-semibold mb-6">Make Documents</h2>
-          <Card>
-            <CardHeader>
-              <CardTitle>Residential Lease Agreement</CardTitle>
-              <CardDescription>Create a customized lease agreement document</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-white rounded-lg p-6">
-                <ConditionalForm />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <MakeDocument />
       )}
       
       {activeTab === "business" && (

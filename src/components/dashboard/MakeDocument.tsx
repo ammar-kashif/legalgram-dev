@@ -3,12 +3,10 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import ConditionalForm from "@/components/ConditionalForm";
 
 const MakeDocument = () => {
   const [showForm, setShowForm] = useState(false);
-  const navigate = useNavigate();
   
   const handleSelectTemplate = () => {
     setShowForm(true);
@@ -62,15 +60,7 @@ const MakeDocument = () => {
             <h2 className="text-xl font-semibold">Residential Lease Agreement</h2>
           </div>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Enter Document Details</CardTitle>
-              <CardDescription>Fill in the required information to generate your document</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ConditionalForm />
-            </CardContent>
-          </Card>
+          <ConditionalForm />
         </div>
       )}
     </div>

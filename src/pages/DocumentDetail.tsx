@@ -6,8 +6,8 @@ const DocumentDetail = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Redirect to the documents page which uses ConditionalForm.tsx
-    navigate("/documents");
+    // Redirect to the user dashboard with documents tab active
+    navigate("/user-dashboard");
   }, [navigate]);
 
   return null;
