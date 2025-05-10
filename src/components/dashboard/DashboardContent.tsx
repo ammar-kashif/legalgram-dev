@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import UserProfile from '@/components/dashboard/UserProfile';
 import PaymentInfo from '@/components/dashboard/PaymentInfo';
 import MemberBenefits from '@/components/dashboard/MemberBenefits';
+import StartBusiness from '@/components/dashboard/StartBusiness';
 import ConditionalForm from '@/components/ConditionalForm';
 
 interface DashboardContentProps {
