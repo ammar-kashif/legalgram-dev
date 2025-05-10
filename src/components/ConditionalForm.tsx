@@ -217,7 +217,7 @@ const ConditionalForm = () => {
             value={answers[currentQuestion.id] || ''}
             onChange={(e) => handleAnswer(e.target.value)}
             placeholder="Type your answer"
-            className="mt-2"
+            className="mt-2 text-black"
           />
         );
       case 'select':
