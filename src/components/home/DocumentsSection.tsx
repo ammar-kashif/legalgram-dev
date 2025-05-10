@@ -6,12 +6,12 @@ import { useMemo } from "react";
 
 const DocumentsSection = () => {
   const popularDocuments = useMemo(() => [
-    { link: "/documents/1", text: "Last Will and Testament" },
-    { link: "/documents/4", text: "Power of Attorney" },
-    { link: "/documents/2", text: "Non-Disclosure Agreement" },
-    { link: "/documents/3", text: "LLC Operating Agreement" },
-    { link: "/documents/5", text: "Residential Lease" },
-    { link: "/documents/6", text: "Employment Contract" }
+    { link: "/documents", text: "Last Will and Testament" },
+    { link: "/documents", text: "Power of Attorney" },
+    { link: "/documents", text: "Non-Disclosure Agreement" },
+    { link: "/documents", text: "LLC Operating Agreement" },
+    { link: "/documents", text: "Residential Lease" },
+    { link: "/documents", text: "Employment Contract" }
   ], []);
 
   return (
@@ -31,7 +31,7 @@ const DocumentsSection = () => {
           {popularDocuments.map(({ link, text }) => (
             <Link 
               to={link} 
-              key={link} 
+              key={text} 
               className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-bright-orange-300 hover:shadow-xl transition-all group"
             >
               <div className="bg-bright-orange-100 p-4 rounded-full mx-auto mb-4 w-16 h-16 flex items-center justify-center group-hover:bg-bright-orange-200 transition-colors">

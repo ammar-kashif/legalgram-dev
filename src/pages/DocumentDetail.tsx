@@ -157,6 +157,12 @@ const DocumentDetail = () => {
     );
   }
 
+  // For Lease Agreement, redirect to the /documents page which uses ConditionalForm.tsx
+  if (document.title === "Residential Lease Agreement" || document.title === "Lease Agreement") {
+    navigate("/documents");
+    return null;
+  }
+
   const handleDocumentComplete = (success: boolean, pdfDoc?: any) => {
     console.log("Document generation complete:", success, pdfDoc);
     if (success && pdfDoc) {

@@ -120,7 +120,7 @@ const DocumentTemplates = () => {
       return;
     }
     
-    navigate(`/documents/${id}`);
+    navigate("/documents");
   };
 
   const resetFilters = () => {
