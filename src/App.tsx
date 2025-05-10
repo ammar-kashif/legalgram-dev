@@ -11,6 +11,7 @@ import LandingPage from "./pages/LandingPage"; // Static import
 import StartABusiness from "./pages/StartABusiness"; 
 import Index from "./pages/Index"; // Import Index component
 import Documents from "./pages/Documents"; // Import Documents directly
+import UserDashboard from "./pages/UserDashboard"; // Import UserDashboard directly
 
 // Lazy load other pages for better performance
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
@@ -18,7 +19,6 @@ const ContactLawyer = lazy(() => import("./pages/ContactLawyer"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Signup = lazy(() => import("./pages/Signup"));
-const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const NotFound = lazy(() => import("./pages/NotFound"));

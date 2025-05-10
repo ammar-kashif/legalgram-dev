@@ -1,14 +1,14 @@
+
 import React from 'react';
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Building, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
-import MakeDocument from '@/components/dashboard/MakeDocument';
-import StartBusiness from '@/components/dashboard/StartBusiness';
 import UserProfile from '@/components/dashboard/UserProfile';
 import PaymentInfo from '@/components/dashboard/PaymentInfo';
 import MemberBenefits from '@/components/dashboard/MemberBenefits';
+import ConditionalForm from '@/components/ConditionalForm';
 
 interface DashboardContentProps {
   activeTab: string;
@@ -44,10 +44,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent className="text-sm">
-                Choose from our library of templates and customize for your needs.
+                Create a customized Residential Lease Agreement.
               </CardContent>
               <CardFooter>
-                <Link to="/make-documents" className="w-full">
+                <Link to="/documents" className="w-full">
                   <Button variant="outline" className="w-full">Create Document</Button>
                 </Link>
               </CardFooter>
@@ -97,7 +97,20 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       )}
       
       {activeTab === "documents" && (
-        <MakeDocument />
+        <div>
+          <h2 className="text-2xl font-semibold mb-6">Make Documents</h2>
+          <Card>
+            <CardHeader>
+              <CardTitle>Residential Lease Agreement</CardTitle>
+              <CardDescription>Create a customized lease agreement document</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-white rounded-lg p-6">
+                <ConditionalForm />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
       
       {activeTab === "business" && (
