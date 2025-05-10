@@ -226,7 +226,7 @@ const ConditionalForm = () => {
             value={answers[currentQuestion.id] || ''} 
             onValueChange={handleAnswer}
           >
-            <SelectTrigger className="mt-2">
+            <SelectTrigger className="mt-2 text-black">
               <SelectValue placeholder="Select an option" />
             </SelectTrigger>
             <SelectContent>
@@ -243,7 +243,7 @@ const ConditionalForm = () => {
           <RadioGroup
             value={answers[currentQuestion.id] || ''}
             onValueChange={handleAnswer}
-            className="mt-4 space-y-3"
+            className="mt-4 space-y-3 text-black"
           >
             {currentQuestion.options?.map((option) => (
               <div key={option} className="flex items-center space-x-2">
@@ -259,7 +259,7 @@ const ConditionalForm = () => {
             value={answers[currentQuestion.id] || ''}
             onChange={(e) => handleAnswer(e.target.value)}
             placeholder="Type your answer"
-            className="mt-2"
+            className="mt-2 text-black"
             rows={4}
           />
         );
