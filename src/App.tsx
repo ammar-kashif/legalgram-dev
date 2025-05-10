@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -74,7 +75,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/home" element={<LandingPage />} />
-                <Route path="/documents" element={<DocumentTemplates />} />
+                <Route path="/documents" element={<Documents />} />
                 <Route path="/documents/:id" element={<DocumentDetail />} />
                 <Route path="/contact-lawyer" element={<ContactLawyer />} />
                 <Route path="/login" element={<Login />} />
@@ -89,7 +90,7 @@ const App = () => {
                 <Route path="/start-a-business" element={<StartABusiness />} />
                 <Route path="/ask-legal-advice" element={<AskLegalAdvice />} />
                 <Route path="/ask-lawyer" element={<AskALawyer />} />
-                <Route path="/make-documents" element={<Documents />} />
+                <Route path="/make-documents" element={<Documents />} /> {/* Redirect to Documents */}
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="*" element={<NotFound />} />

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -93,7 +92,13 @@ const DocumentTemplates = () => {
     const checkAuth = async () => {
       try {
         const { data } = await supabase.auth.getSession();
-        setIsAuthenticated(!!data.session);
+        if (data.session) {
+          // If user is authenticated, redirect to dashboard document section
+          navigate("/user-dashboard", { state: { activeTab: "documents" } });
+          return;
+        }
+        
+        setIsAuthenticated(false);
         setIsLoading(false);
       } catch (error) {
         console.error("Error checking authentication:", error);
@@ -103,24 +108,11 @@ const DocumentTemplates = () => {
     };
     
     checkAuth();
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setIsAuthenticated(!!session);
-      }
-    );
-    
-    return () => subscription.unsubscribe();
   }, [navigate]);
   
   const handleUseTemplate = (id: number) => {
-    if (!isAuthenticated) {
-      toast.error("Please log in to use document templates");
-      navigate("/login");
-      return;
-    }
-    
-    navigate(`/documents/${id}`);
+    toast.error("Please log in to use document templates");
+    navigate("/login");
   };
 
   const resetFilters = () => {
@@ -149,17 +141,14 @@ const DocumentTemplates = () => {
               </h2>
               <p className="text-gray-600 max-w-2xl mb-6">
                 Choose from our wide range of professionally crafted legal document templates.
+                Please log in to access these templates.
               </p>
               
-              {isAuthenticated && (
-                <div className="flex justify-start mb-6">
-                  <Link to="/user-dashboard">
-                    <Button variant="outline" className="flex items-center gap-2">
-                      Access Document Creator in Dashboard
-                    </Button>
-                  </Link>
-                </div>
-              )}
+              <div className="flex justify-start mb-6">
+                <Button onClick={() => navigate("/login")} className="bg-primary hover:bg-primary/90">
+                  Log in to Create Documents
+                </Button>
+              </div>
             </div>
             
             <SearchFilter 
@@ -172,7 +161,7 @@ const DocumentTemplates = () => {
             
             <DocumentGrid
               documents={documents}
-              isAuthenticated={isAuthenticated}
+              isAuthenticated={false} // Always false since we redirect authenticated users
               onUseTemplate={handleUseTemplate}
               searchTerm={searchTerm}
               activeCategory={activeCategory}

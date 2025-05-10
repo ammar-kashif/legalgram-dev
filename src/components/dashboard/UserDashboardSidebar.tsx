@@ -34,13 +34,13 @@ const UserDashboardSidebar: React.FC<UserDashboardSidebarProps> = ({
   setActiveTab 
 }) => {
   const sidebarItems = [
-    { icon: Home, label: "Dashboard", onClick: () => setActiveTab("dashboard") },
-    { icon: FileText, label: "Member Benefits", onClick: () => setActiveTab("member-benefits") },
-    { icon: FileText, label: "Make Documents", onClick: () => setActiveTab("documents") },
-    { icon: Building, label: "Start Business", onClick: () => setActiveTab("business") },
-    { icon: MessageSquare, label: "Ask Legal Advice", onClick: () => setActiveTab("legal-advice") },
-    { icon: User, label: "Profile", onClick: () => setActiveTab("profile") },
-    { icon: CreditCard, label: "Payment", onClick: () => setActiveTab("payment") },
+    { id: "dashboard", icon: Home, label: "Dashboard", onClick: () => setActiveTab("dashboard") },
+    { id: "member-benefits", icon: FileText, label: "Member Benefits", onClick: () => setActiveTab("member-benefits") },
+    { id: "documents", icon: FileText, label: "Make Documents", onClick: () => setActiveTab("documents") },
+    { id: "business", icon: Building, label: "Start Business", onClick: () => setActiveTab("business") },
+    { id: "legal-advice", icon: MessageSquare, label: "Ask Legal Advice", onClick: () => setActiveTab("legal-advice") },
+    { id: "profile", icon: User, label: "Profile", onClick: () => setActiveTab("profile") },
+    { id: "payment", icon: CreditCard, label: "Payment", onClick: () => setActiveTab("payment") },
   ];
 
   return (
@@ -57,10 +57,10 @@ const UserDashboardSidebar: React.FC<UserDashboardSidebarProps> = ({
       <SidebarContent className="px-2 py-4">
         <SidebarMenu>
           {sidebarItems.map((item) => (
-            <SidebarMenuItem key={item.label}>
+            <SidebarMenuItem key={item.id}>
               <SidebarMenuButton 
                 onClick={item.onClick} 
-                isActive={activeTab === item.label.toLowerCase()}
+                isActive={activeTab === item.id}
                 className="h-11 w-full justify-start gap-3 px-4 hover:bg-muted"
               >
                 <item.icon className="h-5 w-5" />

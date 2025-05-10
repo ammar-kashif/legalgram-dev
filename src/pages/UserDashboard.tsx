@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -9,13 +9,17 @@ import DashboardContent from '@/components/dashboard/DashboardContent';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [userName, setUserName] = useState("User");
   const [isLoaded, setIsLoaded] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [activeTab, setActiveTab] = useState("documents");
   const [userEmail, setUserEmail] = useState("");
   const [userCreatedAt, setUserCreatedAt] = useState("");
   const [userMetadata, setUserMetadata] = useState<any>(null);
+  
+  // Check if activeTab is provided in location state
+  const initialTab = location.state?.activeTab || "dashboard";
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   const handleLogout = async () => {
     try {
@@ -31,6 +35,13 @@ const UserDashboard = () => {
       toast.error("An unexpected error occurred");
     }
   };
+
+  useEffect(() => {
+    // Update active tab when location state changes
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const checkAuth = async () => {
