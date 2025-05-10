@@ -14,7 +14,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           "placeholder:text-black/60 placeholder:font-medium", // Updated placeholder color to black
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rocket-blue-300 focus-visible:ring-offset-2",
           "disabled:cursor-not-allowed disabled:opacity-50 hover:border-rocket-blue-300",
-          "md:text-sm text-foreground dark:text-black",
+          "md:text-sm text-black dark:text-black", // Ensure text is always black
           className
         )}
         ref={ref}
@@ -26,4 +26,3 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
 Input.displayName = "Input"
 
 export { Input }
-

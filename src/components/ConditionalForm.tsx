@@ -12,6 +12,15 @@ import { jsPDF } from "jspdf";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
+// Define category interface
+interface Category {
+  id: string;
+  title: string;
+  description: string;
+  questions: string[];
+  nextCategoryId?: string;
+}
+
 // Define the question type interface
 interface Question {
   id: string;
@@ -22,19 +31,71 @@ interface Question {
   defaultNextId?: string;
 }
 
+// Organize questions into categories
+const categories: Record<string, Category> = {
+  'landlord_info': {
+    id: 'landlord_info',
+    title: 'Landlord Information',
+    description: 'Enter details about the property owner',
+    questions: ['start', 'landlord_address', 'landlord_phone', 'landlord_email'],
+    nextCategoryId: 'tenant_info'
+  },
+  'tenant_info': {
+    id: 'tenant_info',
+    title: 'Tenant Information',
+    description: 'Enter details about the tenant',
+    questions: ['tenant_name', 'tenant_address', 'tenant_phone', 'tenant_email'],
+    nextCategoryId: 'property_info'
+  },
+  'property_info': {
+    id: 'property_info',
+    title: 'Property Details',
+    description: 'Enter information about the rental property',
+    questions: ['property_address', 'property_city', 'property_zip'],
+    nextCategoryId: 'lease_terms'
+  },
+  'lease_terms': {
+    id: 'lease_terms',
+    title: 'Lease Terms',
+    description: 'Enter the terms of the lease agreement',
+    questions: ['lease_start', 'lease_end', 'rent_amount', 'payment_method', 'security_deposit'],
+    nextCategoryId: 'property_access'
+  },
+  'property_access': {
+    id: 'property_access',
+    title: 'Property Access',
+    description: 'Enter details about keys and access',
+    questions: ['house_keys', 'mailbox_keys', 'key_replacement_fee', 'lockout_fee'],
+    nextCategoryId: 'occupancy_terms'
+  },
+  'occupancy_terms': {
+    id: 'occupancy_terms',
+    title: 'Occupancy Terms',
+    description: 'Enter details about occupancy rules',
+    questions: ['max_guests', 'max_guest_days', 'early_termination_days'],
+    nextCategoryId: 'confirmation'
+  },
+  'confirmation': {
+    id: 'confirmation',
+    title: 'Confirmation',
+    description: 'Review and confirm your information',
+    questions: ['confirmation']
+  }
+};
+
 // Define the question flow
 const questions: Record<string, Question> = {
   'start': {
     id: 'start',
     type: 'text',
     text: 'Please enter the landlord\'s full legal name:',
-    defaultNextId: 'tenant_name'
+    defaultNextId: 'landlord_address'
   },
   'tenant_name': {
     id: 'tenant_name',
     type: 'text',
     text: 'Please enter the tenant\'s full legal name:',
-    defaultNextId: 'property_address'
+    defaultNextId: 'tenant_address'
   },
   'property_address': {
     id: 'property_address',
@@ -76,7 +137,7 @@ const questions: Record<string, Question> = {
     id: 'payment_method',
     type: 'text',
     text: 'What payment method(s) will be accepted?',
-    defaultNextId: 'landlord_address'
+    defaultNextId: 'security_deposit'
   },
   'landlord_address': {
     id: 'landlord_address',
@@ -94,7 +155,7 @@ const questions: Record<string, Question> = {
     id: 'landlord_email',
     type: 'text',
     text: 'What is the landlord\'s email address?',
-    defaultNextId: 'security_deposit'
+    defaultNextId: 'tenant_name'
   },
   'security_deposit': {
     id: 'security_deposit',
@@ -170,35 +231,67 @@ const questions: Record<string, Question> = {
 };
 
 const ConditionalForm = () => {
+  const [currentCategoryId, setCurrentCategoryId] = useState<string>('landlord_info');
   const [currentQuestionId, setCurrentQuestionId] = useState<string>('start');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [questionHistory, setQuestionHistory] = useState<string[]>(['start']);
+  const [categoryHistory, setCategoryHistory] = useState<string[]>(['landlord_info']);
   const [isComplete, setIsComplete] = useState(false);
   
+  const currentCategory = categories[currentCategoryId];
   const currentQuestion = questions[currentQuestionId];
-  
-  const handleNext = (nextId?: string) => {
-    if (!nextId && currentQuestion.type === 'confirmation') {
-      setIsComplete(true);
-      return;
-    }
+
+  const handleNextQuestion = () => {
+    const currentCategoryQuestions = currentCategory.questions;
+    const currentQuestionIndex = currentCategoryQuestions.indexOf(currentQuestionId);
     
-    const nextQuestionId = nextId || 
-      (answers[currentQuestion.id] && currentQuestion.nextQuestionId?.[answers[currentQuestion.id]]) || 
-      currentQuestion.defaultNextId || '';
-    
-    if (nextQuestionId) {
+    // If this is not the last question in the category
+    if (currentQuestionIndex < currentCategoryQuestions.length - 1) {
+      const nextQuestionId = currentCategoryQuestions[currentQuestionIndex + 1];
       setQuestionHistory([...questionHistory, nextQuestionId]);
       setCurrentQuestionId(nextQuestionId);
+    } 
+    // If this is the last question and we need to move to the next category
+    else if (currentCategory.nextCategoryId) {
+      const nextCategory = categories[currentCategory.nextCategoryId];
+      const nextQuestionId = nextCategory.questions[0];
+      
+      setCategoryHistory([...categoryHistory, nextCategory.id]);
+      setQuestionHistory([...questionHistory, nextQuestionId]);
+      setCurrentCategoryId(nextCategory.id);
+      setCurrentQuestionId(nextQuestionId);
+    }
+    // If this is the confirmation category/question
+    else if (currentCategoryId === 'confirmation') {
+      setIsComplete(true);
     }
   };
   
-  const handleBack = () => {
+  const handlePreviousQuestion = () => {
     if (questionHistory.length > 1) {
-      const newHistory = [...questionHistory];
-      newHistory.pop();
-      setQuestionHistory(newHistory);
-      setCurrentQuestionId(newHistory[newHistory.length - 1]);
+      // Remove the current question from history
+      const newQuestionHistory = [...questionHistory];
+      newQuestionHistory.pop();
+      setQuestionHistory(newQuestionHistory);
+      
+      const prevQuestionId = newQuestionHistory[newQuestionHistory.length - 1];
+      setCurrentQuestionId(prevQuestionId);
+      
+      // Check if we need to go back to the previous category
+      let foundInCurrentCategory = false;
+      for (const questionId of currentCategory.questions) {
+        if (questionId === prevQuestionId) {
+          foundInCurrentCategory = true;
+          break;
+        }
+      }
+      
+      if (!foundInCurrentCategory && categoryHistory.length > 1) {
+        const newCategoryHistory = [...categoryHistory];
+        newCategoryHistory.pop();
+        setCategoryHistory(newCategoryHistory);
+        setCurrentCategoryId(newCategoryHistory[newCategoryHistory.length - 1]);
+      }
     }
   };
   
@@ -267,7 +360,7 @@ const ConditionalForm = () => {
         return (
           <div className="mt-4 text-center">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
-            <p className="mt-4 text-rocket-gray-700 dark:text-rocket-gray-300">
+            <p className="mt-4 text-black">
               We will generate your document based on the information you provided.
             </p>
           </div>
@@ -483,9 +576,9 @@ Email: ${answers.tenant_email || '________'}`;
     return (
       <div className="space-y-4">
         <div className="border rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4">Lease Agreement Summary</h3>
+          <h3 className="text-lg font-semibold mb-4 text-black">Lease Agreement Summary</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
             <div>
               <h4 className="font-medium text-sm">Parties</h4>
               <p><strong>Landlord:</strong> {answers.start || 'Not provided'}</p>
@@ -536,7 +629,7 @@ Email: ${answers.tenant_email || '________'}`;
         </div>
         
         <div className="border rounded-lg p-4 bg-green-50 dark:bg-green-900/10">
-          <p className="text-center mb-2">
+          <p className="text-center mb-2 text-black">
             By generating this document, you confirm the accuracy of the information provided. 
             This document will serve as your official Arkansas Lease Agreement.
           </p>
@@ -550,7 +643,7 @@ Email: ${answers.tenant_email || '________'}`;
       <Card className="max-w-xl mx-auto">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Arkansas Lease Agreement</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-black">
             Review your lease agreement details below before generating the final document.
           </CardDescription>
         </CardHeader>
@@ -563,15 +656,18 @@ Email: ${answers.tenant_email || '________'}`;
             onClick={() => {
               setAnswers({});
               setQuestionHistory(['start']);
+              setCategoryHistory(['landlord_info']);
+              setCurrentCategoryId('landlord_info');
               setCurrentQuestionId('start');
               setIsComplete(false);
             }}
+            className="text-black"
           >
             Start Over
           </Button>
           <Button 
             onClick={generateLeaseAgreementPDF}
-            className="bg-rocket-blue-500"
+            className="bg-rocket-blue-500 text-black"
           >
             Generate Lease Agreement
           </Button>
@@ -583,10 +679,18 @@ Email: ${answers.tenant_email || '________'}`;
   return (
     <Card className="max-w-xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-xl">{currentQuestion.text}</CardTitle>
-        <CardDescription>
-          Step {questionHistory.length} of {Object.keys(questions).length - 1}
+        <CardTitle className="text-xl text-black">{currentCategory.title}: {currentQuestion.text}</CardTitle>
+        <CardDescription className="text-black">
+          Category: {currentCategory.title} - {currentCategory.description}
         </CardDescription>
+        <div className="w-full bg-gray-200 h-2 rounded-full mt-2">
+          <div 
+            className="bg-rocket-blue-500 h-2 rounded-full" 
+            style={{ 
+              width: `${(Object.keys(categories).indexOf(currentCategoryId) + 1) / Object.keys(categories).length * 100}%` 
+            }}
+          ></div>
+        </div>
       </CardHeader>
       <CardContent>
         {renderQuestionInput()}
@@ -594,14 +698,16 @@ Email: ${answers.tenant_email || '________'}`;
       <CardFooter className="flex justify-between">
         <Button 
           variant="outline" 
-          onClick={handleBack}
+          onClick={handlePreviousQuestion}
           disabled={questionHistory.length <= 1}
+          className="text-black"
         >
           <ArrowLeft className="w-4 h-4 mr-2" /> Back
         </Button>
         <Button 
-          onClick={() => handleNext()}
+          onClick={handleNextQuestion}
           disabled={!canAdvance()}
+          className="bg-rocket-blue-500 text-black"
         >
           {currentQuestion.type === 'confirmation' ? (
             <>
@@ -609,7 +715,7 @@ Email: ${answers.tenant_email || '________'}`;
             </>
           ) : (
             <>
-              Next <ArrowRight className="w-4 h-4 ml-2 text-black" />
+              Next <ArrowRight className="w-4 h-4 ml-2" />
             </>
           )}
         </Button>
