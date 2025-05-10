@@ -7,159 +7,223 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Send, CheckCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon } from "lucide-react";
 import { jsPDF } from "jspdf";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { toast } from "sonner";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+
+// Define section structure
+interface Section {
+  id: string;
+  title: string;
+  description?: string;
+  questions: string[];
+  nextSectionId?: string;
+}
 
 // Define the question type interface
 interface Question {
   id: string;
-  type: 'text' | 'select' | 'radio' | 'textarea' | 'confirmation';
+  type: 'text' | 'select' | 'radio' | 'textarea' | 'confirmation' | 'date' | 'number' | 'email' | 'phone';
   text: string;
   options?: string[];
   nextQuestionId?: Record<string, string>;
   defaultNextId?: string;
 }
 
+// Sections definition - grouping questions by category
+const sections: Record<string, Section> = {
+  'parties': {
+    id: 'parties',
+    title: 'Parties Information',
+    description: 'Enter information about the landlord and tenant',
+    questions: ['start', 'tenant_name', 'tenant_address', 'tenant_phone', 'tenant_email'],
+    nextSectionId: 'property'
+  },
+  'property': {
+    id: 'property',
+    title: 'Property Information',
+    description: 'Enter details about the property being leased',
+    questions: ['property_address', 'property_city', 'property_zip'],
+    nextSectionId: 'lease_terms'
+  },
+  'lease_terms': {
+    id: 'lease_terms',
+    title: 'Lease Terms',
+    description: 'Define the terms of the lease agreement',
+    questions: ['lease_start', 'lease_end', 'rent_amount', 'payment_method', 'security_deposit'],
+    nextSectionId: 'landlord_info'
+  },
+  'landlord_info': {
+    id: 'landlord_info',
+    title: 'Landlord Information',
+    description: 'Provide contact information for the landlord',
+    questions: ['landlord_address', 'landlord_phone', 'landlord_email'],
+    nextSectionId: 'keys_access'
+  },
+  'keys_access': {
+    id: 'keys_access',
+    title: 'Keys and Access',
+    description: 'Details about property access',
+    questions: ['house_keys', 'mailbox_keys', 'key_replacement_fee', 'lockout_fee'],
+    nextSectionId: 'occupancy'
+  },
+  'occupancy': {
+    id: 'occupancy',
+    title: 'Occupancy Details',
+    description: 'Rules regarding guests and occupancy',
+    questions: ['max_guests', 'max_guest_days', 'early_termination_days'],
+    nextSectionId: 'confirmation'
+  },
+  'confirmation': {
+    id: 'confirmation',
+    title: 'Confirmation',
+    description: 'Review and confirm your information',
+    questions: ['confirmation']
+  }
+};
+
 // Define the question flow
 const questions: Record<string, Question> = {
   'start': {
     id: 'start',
     type: 'text',
-    text: 'Please enter the landlord\'s full legal name:',
+    text: 'Landlord\'s full legal name:',
     defaultNextId: 'tenant_name'
   },
   'tenant_name': {
     id: 'tenant_name',
     type: 'text',
-    text: 'Please enter the tenant\'s full legal name:',
+    text: 'Tenant\'s full legal name:',
     defaultNextId: 'property_address'
   },
   'property_address': {
     id: 'property_address',
     type: 'text',
-    text: 'What is the street address of the leased property?',
+    text: 'Street address of the leased property:',
     defaultNextId: 'property_city'
   },
   'property_city': {
     id: 'property_city',
     type: 'text',
-    text: 'In which city is the property located?',
+    text: 'City where the property is located:',
     defaultNextId: 'property_zip'
   },
   'property_zip': {
     id: 'property_zip',
     type: 'text',
-    text: 'What is the ZIP code of the property?',
+    text: 'ZIP code of the property:',
     defaultNextId: 'lease_start'
   },
   'lease_start': {
     id: 'lease_start',
-    type: 'text',
-    text: 'When will the lease start? (YYYY-MM-DD)',
+    type: 'date',
+    text: 'Lease start date:',
     defaultNextId: 'lease_end'
   },
   'lease_end': {
     id: 'lease_end',
-    type: 'text',
-    text: 'When will the lease end? (YYYY-MM-DD)',
+    type: 'date',
+    text: 'Lease end date:',
     defaultNextId: 'rent_amount'
   },
   'rent_amount': {
     id: 'rent_amount',
-    type: 'text',
-    text: 'What is the monthly rent amount?',
+    type: 'number',
+    text: 'Monthly rent amount ($):',
     defaultNextId: 'payment_method'
   },
   'payment_method': {
     id: 'payment_method',
     type: 'text',
-    text: 'What payment method(s) will be accepted?',
+    text: 'Payment method(s) accepted:',
     defaultNextId: 'landlord_address'
   },
   'landlord_address': {
     id: 'landlord_address',
     type: 'textarea',
-    text: 'What is the landlord\'s full address for payments and notices?',
+    text: 'Landlord\'s full address for payments and notices:',
     defaultNextId: 'landlord_phone'
   },
   'landlord_phone': {
     id: 'landlord_phone',
-    type: 'text',
-    text: 'What is the landlord\'s phone number?',
+    type: 'phone',
+    text: 'Landlord\'s phone number:',
     defaultNextId: 'landlord_email'
   },
   'landlord_email': {
     id: 'landlord_email',
-    type: 'text',
-    text: 'What is the landlord\'s email address?',
+    type: 'email',
+    text: 'Landlord\'s email address:',
     defaultNextId: 'security_deposit'
   },
   'security_deposit': {
     id: 'security_deposit',
-    type: 'text',
-    text: 'What is the security deposit amount?',
+    type: 'number',
+    text: 'Security deposit amount ($):',
     defaultNextId: 'house_keys'
   },
   'house_keys': {
     id: 'house_keys',
-    type: 'text',
-    text: 'How many keys to the property will be provided?',
+    type: 'number',
+    text: 'Number of keys to the property:',
     defaultNextId: 'mailbox_keys'
   },
   'mailbox_keys': {
     id: 'mailbox_keys',
-    type: 'text',
-    text: 'How many mailbox keys will be provided?',
+    type: 'number',
+    text: 'Number of mailbox keys:',
     defaultNextId: 'key_replacement_fee'
   },
   'key_replacement_fee': {
     id: 'key_replacement_fee',
-    type: 'text',
-    text: 'What is the fee for replacing lost keys?',
+    type: 'number',
+    text: 'Fee for replacing lost keys ($):',
     defaultNextId: 'lockout_fee'
   },
   'lockout_fee': {
     id: 'lockout_fee',
-    type: 'text',
-    text: 'What is the lockout fee?',
+    type: 'number',
+    text: 'Lockout fee ($):',
     defaultNextId: 'max_guests'
   },
   'max_guests': {
     id: 'max_guests',
-    type: 'text',
-    text: 'What is the maximum number of guests allowed at one time?',
+    type: 'number',
+    text: 'Maximum number of guests allowed:',
     defaultNextId: 'max_guest_days'
   },
   'max_guest_days': {
     id: 'max_guest_days',
-    type: 'text',
-    text: 'What is the maximum number of days guests may stay?',
+    type: 'number',
+    text: 'Maximum days guests may stay:',
     defaultNextId: 'early_termination_days'
   },
   'early_termination_days': {
     id: 'early_termination_days',
-    type: 'text',
-    text: 'How many days\' notice is required for early termination?',
+    type: 'number',
+    text: 'Days\' notice required for early termination:',
     defaultNextId: 'tenant_address'
   },
   'tenant_address': {
     id: 'tenant_address',
     type: 'textarea',
-    text: 'What is the tenant\'s current address for notices?',
+    text: 'Tenant\'s current address for notices:',
     defaultNextId: 'tenant_phone'
   },
   'tenant_phone': {
     id: 'tenant_phone',
-    type: 'text',
-    text: 'What is the tenant\'s phone number?',
+    type: 'phone',
+    text: 'Tenant\'s phone number:',
     defaultNextId: 'tenant_email'
   },
   'tenant_email': {
     id: 'tenant_email',
-    type: 'text',
-    text: 'What is the tenant\'s email address?',
+    type: 'email',
+    text: 'Tenant\'s email address:',
     defaultNextId: 'confirmation'
   },
   'confirmation': {
@@ -170,105 +234,206 @@ const questions: Record<string, Question> = {
 };
 
 const ConditionalForm = () => {
-  const [currentQuestionId, setCurrentQuestionId] = useState<string>('start');
+  const [currentSectionId, setCurrentSectionId] = useState<string>('parties');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [questionHistory, setQuestionHistory] = useState<string[]>(['start']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['parties']);
   const [isComplete, setIsComplete] = useState(false);
   
-  const currentQuestion = questions[currentQuestionId];
+  const currentSection = sections[currentSectionId];
   
-  const handleNext = (nextId?: string) => {
-    if (!nextId && currentQuestion.type === 'confirmation') {
+  const handleNext = () => {
+    const nextSectionId = currentSection.nextSectionId;
+    
+    if (!nextSectionId) {
       setIsComplete(true);
       return;
     }
     
-    const nextQuestionId = nextId || 
-      (answers[currentQuestion.id] && currentQuestion.nextQuestionId?.[answers[currentQuestion.id]]) || 
-      currentQuestion.defaultNextId || '';
-    
-    if (nextQuestionId) {
-      setQuestionHistory([...questionHistory, nextQuestionId]);
-      setCurrentQuestionId(nextQuestionId);
+    if (nextSectionId) {
+      setSectionHistory([...sectionHistory, nextSectionId]);
+      setCurrentSectionId(nextSectionId);
     }
   };
   
   const handleBack = () => {
-    if (questionHistory.length > 1) {
-      const newHistory = [...questionHistory];
+    if (sectionHistory.length > 1) {
+      const newHistory = [...sectionHistory];
       newHistory.pop();
-      setQuestionHistory(newHistory);
-      setCurrentQuestionId(newHistory[newHistory.length - 1]);
+      setSectionHistory(newHistory);
+      setCurrentSectionId(newHistory[newHistory.length - 1]);
     }
   };
   
-  const handleAnswer = (answer: string) => {
+  const handleAnswer = (questionId: string, answer: string) => {
     setAnswers({
       ...answers,
-      [currentQuestion.id]: answer
+      [questionId]: answer
     });
   };
   
-  const renderQuestionInput = () => {
-    switch (currentQuestion.type) {
+  const renderQuestionInput = (questionId: string) => {
+    const question = questions[questionId];
+    
+    switch (question.type) {
       case 'text':
         return (
-          <Input
-            value={answers[currentQuestion.id] || ''}
-            onChange={(e) => handleAnswer(e.target.value)}
-            placeholder="Type your answer"
-            className="mt-2 text-black"
-          />
+          <div className="mb-4">
+            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+              {question.text}
+            </Label>
+            <Input
+              id={questionId}
+              value={answers[questionId] || ''}
+              onChange={(e) => handleAnswer(questionId, e.target.value)}
+              placeholder="Type your answer"
+              className="mt-1 text-black w-full"
+            />
+          </div>
+        );
+      case 'number':
+        return (
+          <div className="mb-4">
+            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+              {question.text}
+            </Label>
+            <Input
+              id={questionId}
+              type="number"
+              value={answers[questionId] || ''}
+              onChange={(e) => handleAnswer(questionId, e.target.value)}
+              placeholder="Enter a number"
+              className="mt-1 text-black w-full"
+            />
+          </div>
+        );
+      case 'email':
+        return (
+          <div className="mb-4">
+            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+              {question.text}
+            </Label>
+            <Input
+              id={questionId}
+              type="email"
+              value={answers[questionId] || ''}
+              onChange={(e) => handleAnswer(questionId, e.target.value)}
+              placeholder="Enter email address"
+              className="mt-1 text-black w-full"
+            />
+          </div>
+        );
+      case 'phone':
+        return (
+          <div className="mb-4">
+            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+              {question.text}
+            </Label>
+            <Input
+              id={questionId}
+              type="tel"
+              value={answers[questionId] || ''}
+              onChange={(e) => handleAnswer(questionId, e.target.value)}
+              placeholder="Enter phone number"
+              className="mt-1 text-black w-full"
+            />
+          </div>
+        );
+      case 'date':
+        return (
+          <div className="mb-4">
+            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+              {question.text}
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !answers[questionId] && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {answers[questionId] ? answers[questionId] : <span>Select a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={answers[questionId] ? new Date(answers[questionId]) : undefined}
+                  onSelect={(date) => handleAnswer(questionId, date ? format(date, 'yyyy-MM-dd') : '')}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         );
       case 'select':
         return (
-          <Select 
-            value={answers[currentQuestion.id] || ''} 
-            onValueChange={handleAnswer}
-          >
-            <SelectTrigger className="mt-2 text-black">
-              <SelectValue placeholder="Select an option" />
-            </SelectTrigger>
-            <SelectContent>
-              {currentQuestion.options?.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="mb-4">
+            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+              {question.text}
+            </Label>
+            <Select 
+              value={answers[questionId] || ''} 
+              onValueChange={(value) => handleAnswer(questionId, value)}
+            >
+              <SelectTrigger className="mt-1 text-black w-full">
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+              <SelectContent>
+                {question.options?.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         );
       case 'radio':
         return (
-          <RadioGroup
-            value={answers[currentQuestion.id] || ''}
-            onValueChange={handleAnswer}
-            className="mt-4 space-y-3 text-black"
-          >
-            {currentQuestion.options?.map((option) => (
-              <div key={option} className="flex items-center space-x-2">
-                <RadioGroupItem value={option} id={option} />
-                <Label htmlFor={option}>{option}</Label>
-              </div>
-            ))}
-          </RadioGroup>
+          <div className="mb-4">
+            <Label className="block text-sm font-medium text-black mb-2">
+              {question.text}
+            </Label>
+            <RadioGroup
+              value={answers[questionId] || ''}
+              onValueChange={(value) => handleAnswer(questionId, value)}
+              className="mt-2 space-y-2 text-black"
+            >
+              {question.options?.map((option) => (
+                <div key={option} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option} id={`${questionId}-${option}`} />
+                  <Label htmlFor={`${questionId}-${option}`}>{option}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
         );
       case 'textarea':
         return (
-          <Textarea
-            value={answers[currentQuestion.id] || ''}
-            onChange={(e) => handleAnswer(e.target.value)}
-            placeholder="Type your answer"
-            className="mt-2 text-black"
-            rows={4}
-          />
+          <div className="mb-4">
+            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+              {question.text}
+            </Label>
+            <Textarea
+              id={questionId}
+              value={answers[questionId] || ''}
+              onChange={(e) => handleAnswer(questionId, e.target.value)}
+              placeholder="Type your answer"
+              className="mt-1 text-black w-full"
+              rows={3}
+            />
+          </div>
         );
       case 'confirmation':
         return (
           <div className="mt-4 text-center">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
-            <p className="mt-4 text-rocket-gray-700 dark:text-rocket-gray-300">
-              We will generate your document based on the information you provided.
+            <p className="mt-4 text-black">
+              {question.text}
             </p>
           </div>
         );
@@ -277,9 +442,16 @@ const ConditionalForm = () => {
     }
   };
   
+  const renderSectionQuestions = () => {
+    return currentSection.questions.map(questionId => renderQuestionInput(questionId));
+  };
+  
   const canAdvance = () => {
-    if (currentQuestion.type === 'confirmation') return true;
-    return !!answers[currentQuestion.id];
+    if (currentSectionId === 'confirmation') return true;
+    
+    // Check if all required fields in the current section have answers
+    const requiredQuestions = currentSection.questions;
+    return requiredQuestions.every(questionId => !!answers[questionId]);
   };
 
   const generateLeaseAgreementPDF = () => {
@@ -481,7 +653,7 @@ Email: ${answers.tenant_email || '________'}`;
 
   const renderFormSummary = () => {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 text-black">
         <div className="border rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4">Lease Agreement Summary</h3>
           
@@ -547,7 +719,7 @@ Email: ${answers.tenant_email || '________'}`;
 
   if (isComplete) {
     return (
-      <Card className="max-w-xl mx-auto">
+      <Card className="max-w-4xl mx-auto">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Arkansas Lease Agreement</CardTitle>
           <CardDescription>
@@ -562,8 +734,8 @@ Email: ${answers.tenant_email || '________'}`;
             variant="outline"
             onClick={() => {
               setAnswers({});
-              setQuestionHistory(['start']);
-              setCurrentQuestionId('start');
+              setSectionHistory(['parties']);
+              setCurrentSectionId('parties');
               setIsComplete(false);
             }}
           >
@@ -581,21 +753,26 @@ Email: ${answers.tenant_email || '________'}`;
   }
 
   return (
-    <Card className="max-w-xl mx-auto">
+    <Card className="max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-xl">{currentQuestion.text}</CardTitle>
+        <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
-          Step {questionHistory.length} of {Object.keys(questions).length - 1}
+          {currentSection.description}
+          <div className="mt-2 text-sm">
+            Step {sectionHistory.length} of {Object.keys(sections).length}
+          </div>
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {renderQuestionInput()}
+      <CardContent className="text-black">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+          {renderSectionQuestions()}
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button 
           variant="outline" 
           onClick={handleBack}
-          disabled={questionHistory.length <= 1}
+          disabled={sectionHistory.length <= 1}
         >
           <ArrowLeft className="w-4 h-4 mr-2" /> Back
         </Button>
@@ -603,13 +780,13 @@ Email: ${answers.tenant_email || '________'}`;
           onClick={() => handleNext()}
           disabled={!canAdvance()}
         >
-          {currentQuestion.type === 'confirmation' ? (
+          {currentSectionId === 'confirmation' ? (
             <>
               Complete <Send className="w-4 h-4 ml-2" />
             </>
           ) : (
             <>
-              Next <ArrowRight className="w-4 h-4 ml-2 text-black" />
+              Next <ArrowRight className="w-4 h-4 ml-2" />
             </>
           )}
         </Button>
