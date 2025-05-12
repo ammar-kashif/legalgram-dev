@@ -498,7 +498,7 @@ At the time of the signing of this Lease, the Tenant shall pay to the Landlord, 
       doc.text(splitText, 15, y);
       
       // Update the Y position after the main content
-      y += splitText.length * lineHeight + 10;
+      y += splitText.length * lineHeight;
       
       // Check if we need a new page
       if (y > 250) {
