@@ -22,9 +22,15 @@ const Login = () => {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate("/user-dashboard");
+      try {
+        console.log("Checking existing session...");
+        const { data, error } = await supabase.auth.getSession();
+        console.log("Session check result:", { data, error });
+        if (data.session) {
+          navigate("/user-dashboard");
+        }
+      } catch (error) {
+        console.error("Session check error:", error);
       }
     };
     checkSession();
@@ -41,6 +47,8 @@ const Login = () => {
     setIsSubmitting(true);
     setErrorMessage("");
 
+    console.log("Attempting login with:", { email, supabaseUrl: "https://abxrphctohxctpmaozvc.supabase.co" });
+
     if (rememberMe) {
       localStorage.setItem("lastLoginEmail", email);
     } else {
@@ -48,19 +56,38 @@ const Login = () => {
     }
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      console.log("Calling supabase.auth.signInWithPassword...");
+      const { data, error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password 
+      });
+      
+      console.log("Login response:", { data, error });
+      
       if (error) {
+        console.error("Login error details:", {
+          message: error.message,
+          status: error.status,
+          statusText: error.statusText || 'No status text'
+        });
         setErrorMessage(error.message);
         toast.error("Login failed");
         setIsSubmitting(false);
         return;
       }
+      
+      console.log("Login successful, redirecting...");
       toast.success("Welcome back!");
       navigate("/user-dashboard");
     } catch (error) {
       console.error("Login exception:", error);
-      setErrorMessage("An unexpected error occurred. Please try again.");
-      toast.error("An unexpected error occurred");
+      console.error("Error details:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+      setErrorMessage("Network error - please check your connection and try again.");
+      toast.error("Network error occurred");
       setIsSubmitting(false);
     }
   };

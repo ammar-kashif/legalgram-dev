@@ -29,6 +29,8 @@ const Signup = () => {
     setIsSubmitting(true);
     setErrorMessage("");
 
+    console.log("Attempting signup with:", { email, supabaseUrl: "https://abxrphctohxctpmaozvc.supabase.co" });
+
     // Validation
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match");
@@ -45,8 +47,9 @@ const Signup = () => {
     }
 
     try {
+      console.log("Calling supabase.auth.signUp...");
       // Create a new account without email verification
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -54,12 +57,19 @@ const Signup = () => {
             first_name: firstName,
             last_name: lastName,
             phone: phoneNumber
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/`
         }
       });
 
+      console.log("Signup response:", { data, error });
+
       if (error) {
-        console.error("Signup error:", error.message);
+        console.error("Signup error details:", {
+          message: error.message,
+          status: error.status,
+          statusText: error.statusText || 'No status text'
+        });
         setErrorMessage(error.message);
         toast.error("Signup failed");
         setIsSubmitting(false);
@@ -69,14 +79,20 @@ const Signup = () => {
       // Store email for login page
       localStorage.setItem("lastLoginEmail", email);
 
+      console.log("Signup successful, redirecting to login...");
       // Redirect to login page
       toast.success("Account created successfully! Please log in.");
       navigate("/login");
       
     } catch (error) {
-      console.error("Exception during signup:", error);
-      setErrorMessage("An unexpected error occurred. Please try again.");
-      toast.error("An unexpected error occurred");
+      console.error("Signup exception:", error);
+      console.error("Error details:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+      setErrorMessage("Network error - please check your connection and try again.");
+      toast.error("Network error occurred");
       setIsSubmitting(false);
     }
   };
