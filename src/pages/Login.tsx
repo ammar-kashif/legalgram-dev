@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -47,7 +46,11 @@ const Login = () => {
     setIsSubmitting(true);
     setErrorMessage("");
 
-    console.log("Attempting login with:", { email, supabaseUrl: "https://abxrphctohxctpmaozvc.supabase.co" });
+    console.log("Attempting login with:", { 
+      email, 
+      supabaseUrl: "https://abxrphctohxctpmaozvc.supabase.co",
+      timestamp: new Date().toISOString()
+    });
 
     if (rememberMe) {
       localStorage.setItem("lastLoginEmail", email);
@@ -67,8 +70,8 @@ const Login = () => {
       if (error) {
         console.error("Login error details:", {
           message: error.message,
-          status: error.status,
-          statusText: error.statusText || 'No status text'
+          status: error.status || 'No status',
+          name: error.name || 'Unknown error type'
         });
         setErrorMessage(error.message);
         toast.error("Login failed");

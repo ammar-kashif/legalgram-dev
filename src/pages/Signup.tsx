@@ -29,7 +29,11 @@ const Signup = () => {
     setIsSubmitting(true);
     setErrorMessage("");
 
-    console.log("Attempting signup with:", { email, supabaseUrl: "https://abxrphctohxctpmaozvc.supabase.co" });
+    console.log("Attempting signup with:", { 
+      email, 
+      supabaseUrl: "https://abxrphctohxctpmaozvc.supabase.co",
+      timestamp: new Date().toISOString()
+    });
 
     // Validation
     if (password !== confirmPassword) {
@@ -67,8 +71,8 @@ const Signup = () => {
       if (error) {
         console.error("Signup error details:", {
           message: error.message,
-          status: error.status,
-          statusText: error.statusText || 'No status text'
+          status: error.status || 'No status',
+          name: error.name || 'Unknown error type'
         });
         setErrorMessage(error.message);
         toast.error("Signup failed");
