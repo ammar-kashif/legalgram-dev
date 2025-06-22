@@ -43,9 +43,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                 <CardDescription>
                   Create legal documents from professional templates
                 </CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm">
-                Create a customized Residential Lease Agreement.
+              </CardHeader>              <CardContent className="text-sm">
+                Create legal documents including Lease Agreements and Child Care Authorization forms.
               </CardContent>
               <CardFooter>
                 <Link to="/documents" className="w-full">
