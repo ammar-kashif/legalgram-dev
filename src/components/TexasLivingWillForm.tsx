@@ -71,12 +71,17 @@ const sections: Record<string, Section> = {
     description: 'Designate your first alternate health care agent',
     questions: ['first_alternate_info'],
     nextSectionId: 'second_alternate'
-  },
-  'second_alternate': {
+  },  'second_alternate': {
     id: 'second_alternate',
     title: 'Second Alternate Agent',
     description: 'Designate your second alternate health care agent',
     questions: ['second_alternate_info'],
+    nextSectionId: 'medical_treatment'
+  },'medical_treatment': {
+    id: 'medical_treatment',
+    title: 'Medical Treatment',
+    description: 'Specify your preferences for medical treatment in terminal conditions',
+    questions: ['medical_treatment_preference'],
     nextSectionId: 'nutrition'
   },
   'nutrition': {
@@ -139,11 +144,20 @@ const questions: Record<string, Question> = {
     type: 'agent',
     text: 'First Alternate Agent Information:',
     defaultNextId: 'second_alternate_info'
-  },
-  'second_alternate_info': {
+  },  'second_alternate_info': {
     id: 'second_alternate_info',
     type: 'agent',
     text: 'Second Alternate Agent Information:',
+    defaultNextId: 'medical_treatment_preference'
+  },
+  'medical_treatment_preference': {
+    id: 'medical_treatment_preference',
+    type: 'radio',
+    text: 'Medical Treatment Preference:',
+    options: [
+      'WITHDRAW or WITHHOLD life-prolonging procedures that merely prolong the dying process',
+      'CONTINUE all life-prolonging procedures'
+    ],
     defaultNextId: 'nutrition_preference'
   },
   'nutrition_preference': {
@@ -282,22 +296,71 @@ const TexasLivingWillForm = () => {
               rows={4}
             />
           </div>
-        );
-      case 'radio':
+        );      case 'radio':
         return (
           <div className="mb-4">
             <Label className="block text-sm font-medium text-black mb-2">
               {question.text}
             </Label>
+            
+            {/* Add explanatory text for medical treatment */}
+            {questionId === 'medical_treatment_preference' && (
+              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800 mb-2">
+                  <strong>Important:</strong> This section addresses your preferences for life-prolonging medical procedures when you have a terminal condition.
+                </p>
+                <p className="text-sm text-blue-700">
+                  Please carefully consider your choice. You may wish to discuss this decision with your family, physician, or spiritual advisor.
+                </p>
+              </div>
+            )}
+            
+            {/* Add explanatory text for nutrition and hydration */}
+            {questionId === 'nutrition_preference' && (
+              <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-800 mb-2">
+                  <strong>Important:</strong> This section addresses artificially administered nutrition and hydration (feeding tubes, IV nutrition).
+                </p>
+                <p className="text-sm text-amber-700">
+                  Under Texas law, artificial nutrition and hydration must be provided unless you specifically direct otherwise.
+                </p>
+              </div>
+            )}
+            
             <RadioGroup
               value={answers[questionId] || ''}
               onValueChange={(value) => handleAnswer(questionId, value)}
-              className="mt-2 space-y-2 text-black"
+              className="mt-2 space-y-3 text-black"
             >
               {question.options?.map((option) => (
-                <div key={option} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option} id={`${questionId}-${option}`} />
-                  <Label htmlFor={`${questionId}-${option}`}>{option}</Label>
+                <div key={option} className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-gray-50">
+                  <RadioGroupItem value={option} id={`${questionId}-${option}`} className="mt-1" />
+                  <div className="flex-1">
+                    <Label htmlFor={`${questionId}-${option}`} className="font-medium cursor-pointer">
+                      {option}
+                    </Label>
+                    
+                    {/* Add detailed explanations for each option */}
+                    {questionId === 'medical_treatment_preference' && (
+                      <div className="mt-2 text-sm text-gray-600">
+                        {option.includes('WITHDRAW or WITHHOLD') ? (
+                          <p>This directs that life-prolonging procedures be stopped when you are terminally ill and death is imminent, allowing natural death.</p>
+                        ) : (
+                          <p>This directs that all possible life-prolonging procedures be continued regardless of your condition.</p>
+                        )}
+                      </div>
+                    )}
+                    
+                    {questionId === 'nutrition_preference' && (
+                      <div className="mt-2 text-sm text-gray-600">
+                        {option.includes('TO RECEIVE') ? (
+                          <p>You will receive artificial nutrition and hydration (feeding tubes, IV nutrition) even in terminal conditions.</p>
+                        ) : (
+                          <p>Artificial nutrition and hydration may be withdrawn when it only prolongs the dying process without contributing to recovery.</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </RadioGroup>
@@ -434,9 +497,11 @@ const TexasLivingWillForm = () => {
     }
     if (currentSectionId === 'first_alternate') {
       return firstAlternate.name && firstAlternate.address && firstAlternate.phone;
-    }
-    if (currentSectionId === 'second_alternate') {
+    }    if (currentSectionId === 'second_alternate') {
       return secondAlternate.name && secondAlternate.address && secondAlternate.phone;
+    }
+    if (currentSectionId === 'medical_treatment') {
+      return answers.medical_treatment_preference;
     }
     if (currentSectionId === 'nutrition') {
       return answers.nutrition_preference;
@@ -472,13 +537,14 @@ const TexasLivingWillForm = () => {
       let y = 45;
       const lineHeight = 6;
       const pageHeight = 280;
-      
-      // Statement of Directive
+        // Statement of Directive
       doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
       doc.text("STATEMENT OF DIRECTIVE", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
       const declarantText = `I, ${answers.declarant_name || '________________'}, being of sound mind, willfully and voluntarily make known my desires that my dying shall not be artificially prolonged under the circumstances set forth below, and I hereby declare:`;
       
       const declarantLines = doc.splitTextToSize(declarantText, 170);
@@ -497,10 +563,12 @@ const TexasLivingWillForm = () => {
       
       // Appointment of Health Care Agent
       doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
       doc.text("APPOINTMENT OF HEALTH CARE AGENT", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
       const agentText = "I hereby appoint the following person as my agent to make health care decisions for me:";
       doc.text(agentText, 15, y);
       y += lineHeight + 3;
@@ -566,38 +634,168 @@ const TexasLivingWillForm = () => {
       if (y > pageHeight - 60) {
         doc.addPage();
         y = 20;
-      }
-      
-      // Medical Treatment
+      }      // Medical Treatment
       doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
       doc.text("MEDICAL TREATMENT", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const medicalText = "If I become incapable of giving informed consent, I direct my health care providers and others involved in my care to withdraw or withhold life-prolonging procedures under the circumstances I have indicated below by checking the appropriate lines. In making these decisions, I intend my agent to make decisions as I would make them under the circumstances if I had retained my capacity.";
+      doc.setFontSize(11);
+      const medicalIntroText = "If I become incapable of giving informed consent, I direct my health care providers and others involved in my care to follow my instructions below.";
       
-      const medicalLines = doc.splitTextToSize(medicalText, 170);
-      medicalLines.forEach((line: string) => {
+      const medicalIntroLines = doc.splitTextToSize(medicalIntroText, 170);
+      medicalIntroLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight + 3;
+      y += lineHeight;
+        // Medical treatment detailed text
+      const medicalOption1 = "If I am diagnosed as having a terminal condition where death is imminent and where the application of life-prolonging procedures would serve only to prolong the dying process, I direct that such procedures be withheld or withdrawn, and that I be permitted to die naturally.";
+      const medicalOption2 = "I direct that my life not be extended by extraordinary means or by artificial nutrition or hydration.";
+      
+      // Check user selection and format accordingly
+      if (answers.medical_treatment_preference) {
+        const selectedTreatment = answers.medical_treatment_preference;
+        if (selectedTreatment === 'WITHDRAW or WITHHOLD life-prolonging procedures that merely prolong the dying process') {
+          // First option selected
+          doc.text("• ", 15, y);
+          const option1Lines = doc.splitTextToSize(medicalOption1, 160);
+          option1Lines.forEach((line: string, index: number) => {
+            if (index === 0) {
+              doc.text(line, 25, y);
+            } else {
+              doc.text(line, 20, y);
+            }
+            y += lineHeight;
+          });
+          y += 3;
+          
+          // Second option not selected
+          doc.text("• ", 15, y);
+          const option2Lines = doc.splitTextToSize(medicalOption2, 160);
+          option2Lines.forEach((line: string, index: number) => {
+            if (index === 0) {
+              doc.text(line, 25, y);
+            } else {
+              doc.text(line, 20, y);
+            }
+            y += lineHeight;
+          });
+        } else {
+          // First option not selected
+          doc.text("• ", 15, y);
+          const option1Lines = doc.splitTextToSize(medicalOption1, 160);
+          option1Lines.forEach((line: string, index: number) => {
+            if (index === 0) {
+              doc.text(line, 25, y);
+            } else {
+              doc.text(line, 20, y);
+            }
+            y += lineHeight;
+          });
+          y += 3;
+          
+          // Second option selected
+          doc.text("• ", 15, y);
+          const option2Lines = doc.splitTextToSize(medicalOption2, 160);
+          option2Lines.forEach((line: string, index: number) => {
+            if (index === 0) {
+              doc.text(line, 25, y);
+            } else {
+              doc.text(line, 20, y);
+            }
+            y += lineHeight;
+          });
+        }
+      } else {
+        // No selection made - show both as unchecked
+        doc.text("• ", 15, y);
+        const option1Lines = doc.splitTextToSize(medicalOption1, 160);
+        option1Lines.forEach((line: string, index: number) => {
+          if (index === 0) {
+            doc.text(line, 25, y);
+          } else {
+            doc.text(line, 20, y);
+          }
+          y += lineHeight;
+        });
+        y += 3;
+        
+        doc.text("• ", 15, y);
+        const option2Lines = doc.splitTextToSize(medicalOption2, 160);
+        option2Lines.forEach((line: string, index: number) => {
+          if (index === 0) {
+            doc.text(line, 25, y);
+          } else {
+            doc.text(line, 20, y);
+          }
+          y += lineHeight;
+        });
+      }
+      y += lineHeight + 5;
+        // Check if we need a new page
+      if (y > pageHeight - 80) {
+        doc.addPage();
+        y = 20;
+      }
       
       // Nutrition and Hydration
       doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
       doc.text("NUTRITION AND HYDRATION", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const nutritionText = `I direct that I be given artificially administered nutrition and hydration, even if the effort to sustain life is futile or excessively burdensome to me.`;
+      doc.setFontSize(11);
+      const nutritionIntroText = "Artificial nutrition and hydration must be provided unless I initial the line below:";
+      doc.text(nutritionIntroText, 15, y);
+      y += lineHeight + 3;
       
-      if (answers.nutrition_preference) {
+      // Nutrition selection with detailed legal text
+      const nutritionText = "I direct that artificially administered nutrition and hydration be withheld or withdrawn when the application of such procedures would serve only to prolong the process of dying and would not contribute to my recovery or restoration to health.";
+        if (answers.nutrition_preference) {
         const selectedPreference = answers.nutrition_preference;
-        doc.text(`☑ ${selectedPreference}`, 15, y);
+        if (selectedPreference === 'NOT TO RECEIVE artificially administered nutrition and hydration') {
+          doc.text("• ", 15, y);
+          const nutritionLines = doc.splitTextToSize(nutritionText, 160);
+          nutritionLines.forEach((line: string, index: number) => {
+            if (index === 0) {
+              doc.text(line, 25, y);
+            } else {
+              doc.text(line, 20, y);
+            }
+            y += lineHeight;
+          });
+          y += 3;
+          doc.text("Initial: _____", 20, y);
+        } else {
+          doc.text("• ", 15, y);
+          const nutritionLines = doc.splitTextToSize(nutritionText, 160);
+          nutritionLines.forEach((line: string, index: number) => {
+            if (index === 0) {
+              doc.text(line, 25, y);
+            } else {
+              doc.text(line, 20, y);
+            }
+            y += lineHeight;
+          });
+          y += 3;
+          doc.text("Initial: _____", 20, y);
+        }
       } else {
-        doc.text(`☐ TO RECEIVE artificially administered nutrition and hydration`, 15, y);
-        y += lineHeight;
-        doc.text(`☐ NOT TO RECEIVE artificially administered nutrition and hydration`, 15, y);
+        doc.text("• ", 15, y);
+        const nutritionLines = doc.splitTextToSize(nutritionText, 160);
+        nutritionLines.forEach((line: string, index: number) => {
+          if (index === 0) {
+            doc.text(line, 25, y);
+          } else {
+            doc.text(line, 20, y);
+          }
+          y += lineHeight;
+        });
+        y += 3;
+        doc.text("Initial: _____", 20, y);
       }
       y += lineHeight + 5;
       
@@ -606,13 +804,14 @@ const TexasLivingWillForm = () => {
         doc.addPage();
         y = 20;
       }
-      
-      // Other Directions
+        // Other Directions
       doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
       doc.text("OTHER DIRECTIONS", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
       if (answers.other_directions_text && answers.other_directions_text.trim()) {
         const directionsLines = doc.splitTextToSize(answers.other_directions_text, 170);
         directionsLines.forEach((line: string) => {
@@ -638,10 +837,12 @@ const TexasLivingWillForm = () => {
       
       // Declarant Signature
       doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
       doc.text("DECLARANT SIGNATURE", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
       doc.text("Declarant Signature: _____________________________________", 15, y);
       y += lineHeight + 3;
       doc.text("Date: __________________", 15, y);
@@ -659,13 +860,14 @@ const TexasLivingWillForm = () => {
         doc.addPage();
         y = 20;
       }
-      
-      // Witnesses' Statement
+        // Witnesses' Statement
       doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
       doc.text("WITNESSES' STATEMENT", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
       const witnessText = "The declarant has been personally known to me and I believe him or her to be of sound mind. I did not sign the declarant's signature above for or at the direction of the declarant. I am not a parent, spouse, or child of the declarant. I am not entitled to any portion of the declarant's estate or directly financially responsible for the declarant's medical care.";
       
       const witnessLines = doc.splitTextToSize(witnessText, 170);
@@ -774,6 +976,10 @@ const TexasLivingWillForm = () => {
               <p><strong>Name:</strong> {secondAlternate.name || 'Not provided'}</p>
               <p><strong>Address:</strong> {secondAlternate.address || 'Not provided'}</p>
               <p><strong>Phone:</strong> {secondAlternate.phone || 'Not provided'}</p>
+            </div>
+              <div>
+              <h4 className="font-medium text-sm">Medical Treatment</h4>
+              <p><strong>Preference:</strong> {answers.medical_treatment_preference || 'Not specified'}</p>
             </div>
             
             <div>

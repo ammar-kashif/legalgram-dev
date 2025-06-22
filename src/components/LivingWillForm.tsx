@@ -85,12 +85,25 @@ const sections: Record<string, Section> = {
     description: 'Designate your second alternate health care agent',
     questions: ['second_alternate_info'],
     nextSectionId: 'physician'
-  },
-  'physician': {
+  },  'physician': {
     id: 'physician',
     title: 'Primary Physician',
     description: 'Enter your primary physician information',
     questions: ['primary_physician_info'],
+    nextSectionId: 'medical_treatment'
+  },
+  'medical_treatment': {
+    id: 'medical_treatment',
+    title: 'Medical Treatment',
+    description: 'Specify your medical treatment preferences and instructions',
+    questions: ['medical_treatment_preference'],
+    nextSectionId: 'nutrition'
+  },
+  'nutrition': {
+    id: 'nutrition',
+    title: 'Nutrition and Hydration',
+    description: 'Specify your preferences for artificial nutrition and hydration',
+    questions: ['nutrition_preference'],
     nextSectionId: 'directions'
   },
   'directions': {
@@ -189,12 +202,24 @@ const questions: Record<string, Question> = {
     type: 'witness',
     text: 'Witness 2 Information:',
     defaultNextId: 'additional_witness_info'
-  },
-  'additional_witness_info': {
+  },  'additional_witness_info': {
     id: 'additional_witness_info',
     type: 'witness',
     text: 'Additional Witness Information (Optional):',
     defaultNextId: 'confirmation'
+  },  'medical_treatment_preference': {
+    id: 'medical_treatment_preference',
+    type: 'radio',
+    text: 'Medical Treatment Instructions - These instructions depict my commitment to decline medical treatment in the circumstances mentioned below: In the event that I am diagnosed with an incurable or irreversible physical or mental condition, from which there is no reasonable prospect of recovery, I hereby instruct my Health Agent to withhold or withdraw any medical interventions that serve solely to prolong the dying process. Such conditions shall include, but are not limited to: (a) a terminal illness; (b) a state of permanent unconsciousness; or (c) a minimally conscious state wherein I am permanently incapable of making informed decisions or communicating my preferences. I instruct that my Health Agent be confined to interventions aimed solely at ensuring my comfort and alleviating pain, including any discomfort that may result from the withholding or withdrawal of life-sustaining treatment. I acknowledge that the law does not obligate me to specify in advance the particular treatments to be limited or declined.',
+    options: ['I agree to these medical treatment instructions', 'I do not agree to these medical treatment instructions'],
+    defaultNextId: 'nutrition_preference'
+  },
+  'nutrition_preference': {
+    id: 'nutrition_preference',
+    type: 'radio',
+    text: 'Nutrition and Hydration Preference:',
+    options: ['TO RECEIVE artificially administered nutrition and hydration', 'NOT TO RECEIVE artificially administered nutrition and hydration'],
+    defaultNextId: 'other_directions'
   },
   'confirmation': {
     id: 'confirmation',
@@ -314,6 +339,25 @@ const LivingWillForm = () => {
               className="mt-1 text-black w-full"
               rows={6}
             />
+          </div>        );
+      case 'radio':
+        return (
+          <div className="mb-4">
+            <Label className="block text-sm font-medium text-black mb-2">
+              {question.text}
+            </Label>
+            <RadioGroup
+              value={answers[questionId] || ''}
+              onValueChange={(value) => handleAnswer(questionId, value)}
+              className="mt-2 space-y-2 text-black"
+            >
+              {question.options?.map((option) => (
+                <div key={option} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option} id={`${questionId}-${option}`} />
+                  <Label htmlFor={`${questionId}-${option}`}>{option}</Label>
+                </div>
+              ))}
+            </RadioGroup>
           </div>
         );
       case 'agent':
@@ -489,9 +533,13 @@ const LivingWillForm = () => {
     }
     if (currentSectionId === 'second_alternate') {
       return secondAlternate.name && secondAlternate.address && secondAlternate.phone;
-    }
-    if (currentSectionId === 'physician') {
+    }    if (currentSectionId === 'physician') {
       return primaryPhysician.name && primaryPhysician.address && primaryPhysician.phone;
+    }    if (currentSectionId === 'medical_treatment') {
+      return answers.medical_treatment_preference;
+    }
+    if (currentSectionId === 'nutrition') {
+      return answers.nutrition_preference;
     }
     if (currentSectionId === 'directions') {
       // Other directions is optional, so always allow advance
@@ -629,8 +677,55 @@ const LivingWillForm = () => {
       doc.text(`Name: ${primaryPhysician.name || '____________________'}`, 15, y);
       y += lineHeight;
       doc.text(`Address: ${primaryPhysician.address || '______________________'}`, 15, y);
-      y += lineHeight;
-      doc.text(`Phone: ${primaryPhysician.phone || '____________________'}`, 15, y);
+      y += lineHeight;      doc.text(`Phone: ${primaryPhysician.phone || '____________________'}`, 15, y);
+      y += lineHeight + 5;
+      
+      // Check if we need a new page
+      if (y > pageHeight - 80) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      // Medical Treatment Section
+      doc.setFont("helvetica", "bold");
+      doc.text("MEDICAL TREATMENT", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const medicalText = "These instructions depict my commitment to decline medical treatment in the circumstances mentioned below: In the event that I am diagnosed with an incurable or irreversible physical or mental condition, from which there is no reasonable prospect of recovery, I hereby instruct my Health Agent to withhold or withdraw any medical interventions that serve solely to prolong the dying process. Such conditions shall include, but are not limited to: (a) a terminal illness; (b) a state of permanent unconsciousness; or (c) a minimally conscious state wherein I am permanently incapable of making informed decisions or communicating my preferences. I instruct that my Health Agent be confined to interventions aimed solely at ensuring my comfort and alleviating pain, including any discomfort that may result from the withholding or withdrawal of life-sustaining treatment. I acknowledge that the law does not obligate me to specify in advance the particular treatments to be limited or declined.";
+      
+      const medicalLines = doc.splitTextToSize(medicalText, 170);
+      medicalLines.forEach((line: string) => {
+        // Check if we need a new page
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      // Check if we need a new page
+      if (y > pageHeight - 40) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      // Nutrition and Hydration Section
+      doc.setFont("helvetica", "bold");
+      doc.text("NUTRITION AND HYDRATION", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const nutritionPref = answers.nutrition_preference || 'TO RECEIVE artificially administered nutrition and hydration';
+      const nutritionText = `If I have a condition state above, it is my preference ${nutritionPref}.`;
+      
+      const nutritionLines = doc.splitTextToSize(nutritionText, 170);
+      nutritionLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
       y += lineHeight + 5;
       
       // Other Directions
@@ -838,12 +933,16 @@ const LivingWillForm = () => {
               <p><strong>Address:</strong> {primaryPhysician.address || 'Not provided'}</p>
               <p><strong>Phone:</strong> {primaryPhysician.phone || 'Not provided'}</p>
             </div>
-            
-            <div>
+              <div>
               <h4 className="font-medium text-sm">Witnesses</h4>
               <p><strong>Witness 1:</strong> {witness1.name || 'Not provided'}</p>
               <p><strong>Witness 2:</strong> {witness2.name || 'Not provided'}</p>
               {additionalWitness.name && <p><strong>Additional:</strong> {additionalWitness.name}</p>}
+            </div>
+              <div>
+              <h4 className="font-medium text-sm">Medical Treatment & Nutrition</h4>
+              <p><strong>Medical Treatment:</strong> {answers.medical_treatment_preference || 'Not provided'}</p>
+              <p><strong>Nutrition/Hydration:</strong> {answers.nutrition_preference || 'TO RECEIVE artificially administered nutrition and hydration'}</p>
             </div>
           </div>
           
