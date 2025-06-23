@@ -58,6 +58,13 @@ interface Witness {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
+  'state_selection': {
+    id: 'state_selection',
+    title: 'State Selection',
+    description: 'Select the state where this Living Will will be executed',
+    questions: ['state'],
+    nextSectionId: 'declarant'
+  },
   'declarant': {
     id: 'declarant',
     title: 'Declarant Information',
@@ -137,6 +144,13 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'state': {
+    id: 'state',
+    type: 'select',
+    text: 'Select your state:',
+    options: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+    defaultNextId: 'declarant_name'
+  },
   'declarant_name': {
     id: 'declarant_name',
     type: 'text',
@@ -220,18 +234,17 @@ const questions: Record<string, Question> = {
     text: 'Nutrition and Hydration Preference:',
     options: ['TO RECEIVE artificially administered nutrition and hydration', 'NOT TO RECEIVE artificially administered nutrition and hydration'],
     defaultNextId: 'other_directions'
-  },
-  'confirmation': {
+  },  'confirmation': {
     id: 'confirmation',
     type: 'confirmation',
-    text: 'Thank you for providing the information. We will generate your California Living Will based on your answers.',
+    text: 'Thank you for providing the information. We will generate your Living Will based on your answers.',
   }
 };
 
 const LivingWillForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('declarant');
+  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['declarant']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [primaryAgent, setPrimaryAgent] = useState<HealthCareAgent>({ name: '', address: '', phone: '', designation: '', relation: '' });
   const [firstAlternate, setFirstAlternate] = useState<HealthCareAgent>({ name: '', address: '', phone: '', designation: '', relation: '' });
@@ -340,6 +353,29 @@ const LivingWillForm = () => {
               rows={6}
             />
           </div>        );
+      case 'select':
+        return (
+          <div className="mb-4">
+            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+              {question.text}
+            </Label>
+            <Select
+              value={answers[questionId] || ''}
+              onValueChange={(value) => handleAnswer(questionId, value)}
+            >
+              <SelectTrigger className="mt-1 text-black w-full">
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+              <SelectContent>
+                {question.options?.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        );
       case 'radio':
         return (
           <div className="mb-4">
@@ -517,11 +553,13 @@ const LivingWillForm = () => {
   const renderSectionQuestions = () => {
     return currentSection.questions.map(questionId => renderQuestionInput(questionId));
   };
-
   const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
     
     // Special validation for different sections
+    if (currentSectionId === 'state_selection') {
+      return answers.state;
+    }
     if (currentSectionId === 'declarant') {
       return answers.declarant_name && answers.declarant_address && answers.declarant_city && answers.declarant_zip;
     }
@@ -556,18 +594,14 @@ const LivingWillForm = () => {
     // Default validation
     return true;
   };
-
   const generateLivingWillPDF = () => {
     try {
-      console.log("Generating California Living Will PDF...");
+      console.log("Generating Living Will PDF...");
       const doc = new jsPDF();
-      
-      // Title
+        // Title - make it state-agnostic
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
       doc.text("LIVING WILL", 105, 20, { align: "center" });
-      doc.setFontSize(12);
-      doc.text("(California Probate Code Section 4701)", 105, 28, { align: "center" });
       
       // Reset to normal font
       doc.setFont("helvetica", "normal");
@@ -583,16 +617,14 @@ const LivingWillForm = () => {
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const declarantText = `I, ${answers.declarant_name || '________________'}, being of sound mind, willfully and voluntarily make known my desires that my dying shall not be artificially prolonged under the circumstances set forth below, and I hereby declare:`;
+      const selectedState = answers.state || '________';
+      const declarantText = `I, ${answers.declarant_name || '___________________'}, residing at ${answers.declarant_address || '____________________'}, ${answers.declarant_city || '__________'}, ${selectedState}, ${answers.declarant_zip || '__________'}, being of full legal capacity and sound mind, do make this statement as a Directive to be followed in case I become permanently unable to make, or participate in making own medical decisions.`;
       
       const declarantLines = doc.splitTextToSize(declarantText, 170);
       declarantLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight;
-      
-      doc.text(`Declarant's Address: ${answers.declarant_address || '_____________'}, ${answers.declarant_city || '_____________'}, California, ${answers.declarant_zip || '___________'}`, 15, y);
       y += lineHeight + 5;
       
       // Appointment of Health Care Agent
@@ -772,7 +804,7 @@ const LivingWillForm = () => {
       y += lineHeight;
       doc.text(`Line 1: ${answers.declarant_address || '_____________________________________________________________'}`, 15, y);
       y += lineHeight;
-      doc.text(`Line 2: ${answers.declarant_city || '____________________'}, California, ${answers.declarant_zip || '__________'}`, 15, y);
+      doc.text(`Line 2: ${answers.declarant_city || '____________________'}, ${answers.declarant_state || '__________'}, ${answers.declarant_zip || '__________'}`, 15, y);
       y += lineHeight + 10;
       
       // Check if we need a new page for witnesses
@@ -787,8 +819,7 @@ const LivingWillForm = () => {
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const witnessText = "I declare under penalty of perjury under the laws of California (1) that the individual who signed or acknowledged this advance health care directive is personally known to me, or that the individual's identity was proven to me by convincing evidence, (2) that the individual signed or acknowledged this advance directive in my presence, (3) that the individual appears to be of sound mind and under no duress, fraud, or undue influence, (4) that I am not a person appointed as agent by this advance directive, and (5) that I am not the individual's health care provider or an employee of the individual's health care provider.";
-      
+      const witnessText = "I declare under penalty of perjury under the laws of " + (answers.state || '__________') + " (1) that the individual who signed or acknowledged this advance health care directive is personally known to me, or that the individual's identity was proven to me by convincing evidence, (2) that the individual signed or acknowledged this advance directive in my presence, (3) that the individual appears to be of sound mind and under no duress, fraud, or undue influence, (4) that I am not a person appointed as agent by this advance directive, and (5) that I am not the individual's health care provider or an employee of the individual's health care provider.";
       const witnessLines = doc.splitTextToSize(witnessText, 170);
       witnessLines.forEach((line: string) => {
         // Check if we need a new page
@@ -875,16 +906,15 @@ const LivingWillForm = () => {
       
       // Save the PDF
       const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
-      const filename = `california_living_will_${timestamp}.pdf`;
+      const filename = `living_will_${timestamp}.pdf`;
       console.log("Saving PDF with filename:", filename);
       
       doc.save(filename);
-      
-      toast.success("California Living Will successfully generated!");
+        toast.success("Living Will successfully generated!");
       return doc;
     } catch (error) {
       console.error("Error generating PDF:", error);
-      toast.error("Failed to generate California Living Will");
+      toast.error("Failed to generate Living Will");
       return null;
     }
   };
@@ -893,11 +923,11 @@ const LivingWillForm = () => {
     return (
       <div className="space-y-4 text-black">
         <div className="border rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4">California Living Will Summary</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <h3 className="text-lg font-semibold mb-4">Living Will Summary</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">Declarant Information</h4>
+              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
               <p><strong>Name:</strong> {answers.declarant_name || 'Not provided'}</p>
               <p><strong>Address:</strong> {answers.declarant_address || 'Not provided'}</p>
               <p><strong>City:</strong> {answers.declarant_city || 'Not provided'}</p>
@@ -957,7 +987,7 @@ const LivingWillForm = () => {
         <div className="border rounded-lg p-4 bg-green-50 dark:bg-green-900/10">
           <p className="text-center mb-2">
             By generating this document, you confirm the accuracy of the information provided. 
-            This document will serve as your official California Living Will.
+            This document will serve as your official Living Will.
           </p>
         </div>
       </div>
@@ -968,7 +998,7 @@ const LivingWillForm = () => {
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl text-green-600">California Living Will</CardTitle>
+          <CardTitle className="text-xl text-green-600">Living Will</CardTitle>
           <CardDescription>
             Review your Living Will details below before generating the final document.
           </CardDescription>
@@ -978,11 +1008,10 @@ const LivingWillForm = () => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 
-            variant="outline"
-            onClick={() => {
+            variant="outline"            onClick={() => {
               setAnswers({});
-              setSectionHistory(['declarant']);
-              setCurrentSectionId('declarant');
+              setSectionHistory(['state_selection']);
+              setCurrentSectionId('state_selection');
               setIsComplete(false);
               setPrimaryAgent({ name: '', address: '', phone: '', designation: '', relation: '' });
               setFirstAlternate({ name: '', address: '', phone: '', designation: '', relation: '' });
@@ -1010,11 +1039,10 @@ const LivingWillForm = () => {
     return (
       <Card className="max-w-4xl mx-auto">
         <CardContent className="text-center p-8">
-          <p className="text-red-500">An error occurred. Please refresh the page.</p>
-          <Button 
+          <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
             onClick={() => {
-              setCurrentSectionId('declarant');
-              setSectionHistory(['declarant']);
+              setCurrentSectionId('state_selection');
+              setSectionHistory(['state_selection']);
             }}
             className="mt-4"
           >

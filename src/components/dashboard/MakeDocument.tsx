@@ -1,14 +1,17 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, ShoppingCart, Briefcase, Heart } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home } from "lucide-react";
 import ConditionalForm from "@/components/ConditionalForm";
 import ChildCareAuthForm from "@/components/ChildCareAuthForm";
 import GeneralContractForm from "@/components/GeneralContractForm";
 import IndependentContractorForm from "@/components/IndependentContractorForm";
 import LivingWillForm from "@/components/LivingWillForm";
-import TexasLivingWillForm from "@/components/TexasLivingWillForm";
+import SharePurchaseAgreementForm from "@/components/SharePurchaseAgreementForm";
+import LoanAgreementForm from "@/components/LoanAgreementForm";
+import DomesticServiceAgreementForm from "@/components/DomesticServiceAgreementForm";
+import AgreementToSellForm from "@/components/AgreementToSellForm";
+
 
 const MakeDocument = () => {
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);    const documentTypes = [
@@ -44,20 +47,41 @@ const MakeDocument = () => {
       icon: Briefcase,
       component: IndependentContractorForm
     },    {
-      id: 'living-will-california',
-      title: 'California Living Will',
+      id: 'living-will',
+      title: 'Living Will',
       description: 'Health Care & Estate Planning',
-      content: 'Create a California Living Will to specify your health care directives and agent appointments.',
+      content: 'Create a Living Will to specify your health care directives and agent appointments.',
       icon: Heart,
       component: LivingWillForm
+    },    {
+      id: 'share-purchase-agreement',
+      title: 'Share Purchase Agreement',
+      description: 'Corporate & Investment',
+      content: 'Create a comprehensive share purchase agreement for transferring company shares.',
+      icon: Building2,
+      component: SharePurchaseAgreementForm
+    },    {
+      id: 'loan-agreement',
+      title: 'Loan Agreement',
+      description: 'Financial & Lending',
+      content: 'Create a comprehensive loan agreement for personal or business lending arrangements.',
+      icon: DollarSign,
+      component: LoanAgreementForm
+    },    {
+      id: 'domestic-service-agreement',
+      title: 'Domestic Service Agreement',
+      description: 'Employment & Labor',
+      content: 'Create a domestic service agreement for household employment arrangements.',
+      icon: Home,
+      component: DomesticServiceAgreementForm
     },
     {
-      id: 'living-will-texas',
-      title: 'Texas Living Will',
-      description: 'Health Care & Estate Planning',
-      content: 'Create a Texas Living Will to specify your health care directives and agent appointments.',
-      icon: Heart,
-      component: TexasLivingWillForm
+      id: 'agreement-to-sell',
+      title: 'Agreement to Sell',
+      description: 'Real Estate & Property',
+      content: 'Create a comprehensive agreement to sell for property transactions.',
+      icon: FileText,
+      component: AgreementToSellForm
     }
   ];
   
