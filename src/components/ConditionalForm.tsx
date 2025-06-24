@@ -36,6 +36,13 @@ interface Question {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
+  'state_selection': {
+    id: 'state_selection',
+    title: 'State Selection',
+    description: 'Select the state where this agreement will be executed',
+    questions: ['state'],
+    nextSectionId: 'parties'
+  },
   'parties': {
     id: 'parties',
     title: 'Parties Information',
@@ -88,6 +95,19 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'state': {
+    id: 'state',
+    type: 'select',
+    text: 'Select the state where this agreement will be executed:',
+    options: [
+      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+      'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
+      'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
+      'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
+      'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+    ],
+    defaultNextId: 'start'
+  },
   'start': {
     id: 'start',
     type: 'text',
@@ -233,10 +253,9 @@ const questions: Record<string, Question> = {
   }
 };
 
-const ConditionalForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('parties');
+const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['parties']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
   const [isComplete, setIsComplete] = useState(false);
   
   const currentSection = sections[currentSectionId];
@@ -445,9 +464,13 @@ const ConditionalForm = () => {
   const renderSectionQuestions = () => {
     return currentSection.questions.map(questionId => renderQuestionInput(questionId));
   };
-  
-  const canAdvance = () => {
+    const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
+    
+    // Special validation for state selection
+    if (currentSectionId === 'state_selection') {
+      return answers.state;
+    }
     
     // Check if all required fields in the current section have answers
     const requiredQuestions = currentSection.questions;
@@ -650,7 +673,6 @@ Email: ${answers.tenant_email || '________'}`;
       return null;
     }
   };
-
   const renderFormSummary = () => {
     return (
       <div className="space-y-4 text-black">
@@ -658,6 +680,11 @@ Email: ${answers.tenant_email || '________'}`;
           <h3 className="text-lg font-semibold mb-4">Lease Agreement Summary</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-medium text-sm">General Information</h4>
+              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+            </div>
+            
             <div>
               <h4 className="font-medium text-sm">Parties</h4>
               <p><strong>Landlord:</strong> {answers.start || 'Not provided'}</p>
@@ -667,7 +694,7 @@ Email: ${answers.tenant_email || '________'}`;
             <div>
               <h4 className="font-medium text-sm">Property</h4>
               <p>{answers.property_address || 'Address not provided'}</p>
-              <p>{answers.property_city || 'City not provided'}, AR {answers.property_zip || 'ZIP not provided'}</p>
+              <p>{answers.property_city || 'City not provided'}, {answers.state || 'State not provided'} {answers.property_zip || 'ZIP not provided'}</p>
             </div>
             
             <div>
@@ -731,11 +758,10 @@ Email: ${answers.tenant_email || '________'}`;
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 
-            variant="outline"
-            onClick={() => {
+            variant="outline"            onClick={() => {
               setAnswers({});
-              setSectionHistory(['parties']);
-              setCurrentSectionId('parties');
+              setSectionHistory(['state_selection']);
+              setCurrentSectionId('state_selection');
               setIsComplete(false);
             }}
           >

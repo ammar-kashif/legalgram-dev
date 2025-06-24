@@ -41,6 +41,13 @@ interface Party {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
+  'state_selection': {
+    id: 'state_selection',
+    title: 'State Selection',
+    description: 'Select the state where this Independent Contractor Agreement will be executed',
+    questions: ['state'],
+    nextSectionId: 'header'
+  },
   'header': {
     id: 'header',
     title: 'Agreement Header',
@@ -114,6 +121,13 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'state': {
+    id: 'state',
+    type: 'select',
+    text: 'Select your state:',
+    options: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+    defaultNextId: 'place_of_signing'
+  },
   'place_of_signing': {
     id: 'place_of_signing',
     type: 'text',
@@ -214,10 +228,9 @@ const questions: Record<string, Question> = {
   }
 };
 
-const IndependentContractorForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('header');
+const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['header']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [company, setCompany] = useState<Party>({ name: '', address: '' });
   const [contractor, setContractor] = useState<Party>({ name: '', address: '' });
@@ -445,11 +458,13 @@ const IndependentContractorForm = () => {
     console.log("Current section:", currentSectionId, "Questions:", currentSection?.questions);
     return currentSection.questions.map(questionId => renderQuestionInput(questionId));
   };
-
   const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
     
     // Special validation for dynamic sections
+    if (currentSectionId === 'state_selection') {
+      return answers.state;
+    }
     if (currentSectionId === 'header') {
       return answers.place_of_signing && answers.agreement_date;
     }
@@ -591,8 +606,103 @@ const IndependentContractorForm = () => {
       doc.setFont("helvetica", "normal");
       const paymentText = `In consideration for the services provided, the Company shall pay the Contractor ${answers.payment_amount_rate || '_______________'}. Payment shall be made within ${answers.payment_period || '___'} days after receipt of an invoice from the Contractor.`;
       
-      const paymentLines = doc.splitTextToSize(paymentText, 170);
-      paymentLines.forEach((line: string) => {
+      const paymentLines = doc.splitTextToSize(paymentText, 170);      paymentLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // 6. Expenses
+      doc.setFont("helvetica", "bold");
+      doc.text("6. Expenses.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const expensesText = "Unless otherwise agreed in writing, the Contractor shall be responsible for all expenses incurred while performing services under this Agreement, including but not limited to travel, materials, tools, and communication costs.";
+      
+      const expensesLines = doc.splitTextToSize(expensesText, 170);
+      expensesLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // 7. Independent Contractor Status
+      doc.setFont("helvetica", "bold");
+      doc.text("7. Independent Contractor Status.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const statusText = "The Contractor is an independent contractor, not an employee of the Company. The Contractor shall have no authority to enter into contracts or agreements on behalf of the Company or otherwise bind the Company in any manner.";
+      
+      const statusLines = doc.splitTextToSize(statusText, 170);
+      statusLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // 8. Taxes
+      doc.setFont("helvetica", "bold");
+      doc.text("8. Taxes.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const taxesText = "The Contractor agrees to report and pay all federal, state, and local taxes, contributions, and other liabilities related to payments received under this Agreement, including income tax, Social Security, and self-employment taxes.";
+      
+      const taxesLines = doc.splitTextToSize(taxesText, 170);
+      taxesLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // 9. Subcontracting
+      doc.setFont("helvetica", "bold");
+      doc.text("9. Subcontracting.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const subcontractingText = "The Contractor may not assign, delegate, or subcontract any obligations under this Agreement without prior written consent from the Company.";
+      
+      const subcontractingLines = doc.splitTextToSize(subcontractingText, 170);
+      subcontractingLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // Check if we need a new page
+      if (y > pageHeight - 80) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      // 10. Ownership of Work Product
+      doc.setFont("helvetica", "bold");
+      doc.text("10. Ownership of Work Product.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const ownershipText = `All materials, documents, inventions, reports, and intellectual property created by the Contractor under this Agreement shall be the sole property of the Company. The Contractor assigns all rights, title, and interest in such work to the Company. Any and all works created or produced by the Contractor in connection with the Services under this Agreement shall be considered "work made for hire" and the exclusive property of the Company.`;
+      
+      const ownershipLines = doc.splitTextToSize(ownershipText, 170);
+      ownershipLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // 11. Confidentiality
+      doc.setFont("helvetica", "bold");
+      doc.text("11. Confidentiality.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const confidentialityText = "The Contractor agrees not to disclose or use any proprietary or confidential information obtained while providing Services for the Company. This clause shall survive the termination of this Agreement.";
+      
+      const confidentialityLines = doc.splitTextToSize(confidentialityText, 170);
+      confidentialityLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
@@ -627,12 +737,47 @@ const IndependentContractorForm = () => {
       doc.setFont("helvetica", "normal");
       const disputeText = `Any dispute arising out of or relating to this Agreement shall be resolved through binding arbitration in accordance with the rules of the ${answers.arbitration_rules_body || '_______________'}. The arbitration shall take place in ${answers.arbitration_location || '_______________'}.`;
       
-      const disputeLines = doc.splitTextToSize(disputeText, 170);
-      disputeLines.forEach((line: string) => {
+      const disputeLines = doc.splitTextToSize(disputeText, 170);      disputeLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
       y += lineHeight;
+      
+      // 13. Indemnification
+      doc.setFont("helvetica", "bold");
+      doc.text("13. Indemnification.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const indemnificationText = "The Contractor shall indemnify, defend, and hold harmless the Company, its officers, agents, and employees from and against any and all claims, losses, damages, liabilities, penalties, or expenses (including attorneys' fees) arising from or in connection with the performance of the Services.";
+      
+      const indemnificationLines = doc.splitTextToSize(indemnificationText, 170);
+      indemnificationLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // 14. Insurance
+      doc.setFont("helvetica", "bold");
+      doc.text("14. Insurance.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const insuranceText = "The Contractor agrees to maintain adequate insurance coverage, including general liability and, if applicable, professional liability insurance, during the term of this Agreement. The Contractor shall provide proof of insurance upon request.";
+      
+      const insuranceLines = doc.splitTextToSize(insuranceText, 170);
+      insuranceLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // Check if we need a new page
+      if (y > pageHeight - 80) {
+        doc.addPage();
+        y = 20;
+      }
       
       // 16. Governing Law
       doc.setFont("helvetica", "bold");
@@ -642,12 +787,77 @@ const IndependentContractorForm = () => {
       doc.setFont("helvetica", "normal");
       const governingText = `This Agreement shall be governed by and construed in accordance with the laws of the State of ${answers.governing_state || '_______________'}. The jurisdiction for any legal proceedings shall be ${answers.governing_jurisdiction || '_______________'}.`;
       
-      const governingLines = doc.splitTextToSize(governingText, 170);
-      governingLines.forEach((line: string) => {
+      const governingLines = doc.splitTextToSize(governingText, 170);      governingLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight + 10;
+      y += lineHeight;
+      
+      // 17. Severability
+      doc.setFont("helvetica", "bold");
+      doc.text("17. Severability.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const severabilityText = "If any provision of this Agreement is determined to be invalid or unenforceable, the remainder of the Agreement shall remain in full force and effect.";
+      
+      const severabilityLines = doc.splitTextToSize(severabilityText, 170);
+      severabilityLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // Force Majeure
+      doc.setFont("helvetica", "bold");
+      doc.text("Force Majeure.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const forceMajeureText = "If either Party fails to fulfil its obligations hereunder when such failure is due to an act of God, or other circumstances beyond its reasonable control, including but not limited to fire, flood, civil commotion, protests, riot, war (declared and undeclared), revolution, or embargoes, then said failure shall not be considered a default of obligations hereunder for the duration of such event, and for such time thereafter as is reasonable to enable the affected Party or Parties to resume performance under this Agreement, provided however, that in no event shall such time extend for a period of more than ten business days.";
+      
+      const forceMajeureLines = doc.splitTextToSize(forceMajeureText, 170);
+      forceMajeureLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // Check if we need a new page
+      if (y > pageHeight - 80) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      // 18. Entire Agreement
+      doc.setFont("helvetica", "bold");
+      doc.text("18. Entire Agreement.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const entireAgreementText = "This document constitutes the entire agreement between the parties. It supersedes any prior understandings, agreements, or representations, written or oral, regarding the subject matter hereof.";
+      
+      const entireAgreementLines = doc.splitTextToSize(entireAgreementText, 170);
+      entireAgreementLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // 19. Amendments
+      doc.setFont("helvetica", "bold");
+      doc.text("19. Amendments.", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const amendmentsText = "Any changes or amendments to this Agreement must be made in writing and signed by both parties.";
+      
+      const amendmentsLines = doc.splitTextToSize(amendmentsText, 170);
+      amendmentsLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight * 2;
       
       // Check if we need a new page for signatures
       if (y > pageHeight - 100) {
@@ -704,10 +914,10 @@ const IndependentContractorForm = () => {
       <div className="space-y-4 text-black">
         <div className="border rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4">Independent Contractor Agreement Summary</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">Agreement Details</h4>
+              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
               <p><strong>Place:</strong> {answers.place_of_signing || 'Not provided'}</p>
               <p><strong>Date:</strong> {answers.agreement_date || 'Not provided'}</p>
             </div>
@@ -780,11 +990,10 @@ const IndependentContractorForm = () => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 
-            variant="outline"
-            onClick={() => {
+            variant="outline"            onClick={() => {
               setAnswers({});
-              setSectionHistory(['header']);
-              setCurrentSectionId('header');
+              setSectionHistory(['state_selection']);
+              setCurrentSectionId('state_selection');
               setIsComplete(false);
               setCompany({ name: '', address: '' });
               setContractor({ name: '', address: '' });
@@ -807,11 +1016,10 @@ const IndependentContractorForm = () => {
     return (
       <Card className="max-w-4xl mx-auto">
         <CardContent className="text-center p-8">
-          <p className="text-red-500">An error occurred. Please refresh the page.</p>
-          <Button 
+          <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
             onClick={() => {
-              setCurrentSectionId('header');
-              setSectionHistory(['header']);
+              setCurrentSectionId('state_selection');
+              setSectionHistory(['state_selection']);
             }}
             className="mt-4"
           >

@@ -51,6 +51,13 @@ interface Party {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
+  'state_selection': {
+    id: 'state_selection',
+    title: 'State Selection',
+    description: 'Select the state where this contract will be executed',
+    questions: ['state'],
+    nextSectionId: 'header'
+  },
   'header': {
     id: 'header',
     title: 'Contract Header',
@@ -145,6 +152,13 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'state': {
+    id: 'state',
+    type: 'select',
+    text: 'Select your state:',
+    options: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+    defaultNextId: 'place_of_signing'
+  },
   'place_of_signing': {
     id: 'place_of_signing',
     type: 'text',
@@ -296,10 +310,9 @@ const questions: Record<string, Question> = {
   }
 };
 
-const GeneralContractForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('header');
+const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['header']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [items, setItems] = useState<Item[]>([{ description: '', quantity: '', unitPrice: '', totalPrice: '' }]);
   const [buyer, setBuyer] = useState<Party>({ name: '', type: '', stateCountry: '', address: '' });
@@ -667,11 +680,13 @@ const GeneralContractForm = () => {
     console.log("Current section:", currentSectionId, "Questions:", currentSection?.questions);
     return currentSection.questions.map(questionId => renderQuestionInput(questionId));
   };
-
   const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
     
     // Special validation for dynamic sections
+    if (currentSectionId === 'state_selection') {
+      return answers.state;
+    }
     if (currentSectionId === 'header') {
       return answers.place_of_signing && answers.contract_date;
     }
@@ -692,7 +707,6 @@ const GeneralContractForm = () => {
       return !!answers[questionId];
     });
   };
-
   const generateGeneralContractPDF = () => {
     try {
       console.log("Generating General Contract for Products PDF...");
@@ -712,96 +726,262 @@ const GeneralContractForm = () => {
       const pageHeight = 280;
       
       // Contract Header
-      doc.setFont("helvetica", "normal");
-      const headerText = `This General Contract for Products ("Contract") is entered into on ${answers.contract_date || '____ day of ___________, 20__'}, at ${answers.place_of_signing || '_______________'}, by and between ${buyer.name || '_______________'} ("Buyer"), and ${seller.name || '_______________'} ("Seller").`;
+      const headerText = `This General Contract for Products (the "Agreement") is made at ${answers.place_of_signing || '_______________'} [enter place] and entered into on ${answers.contract_date || '________________'} [Date],`;
       
       const headerLines = doc.splitTextToSize(headerText, 170);
       headerLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight;
+      y += lineHeight + 3;
       
-      // Buyer Information
+      // BY AND BETWEEN section
       doc.setFont("helvetica", "bold");
-      doc.text("Buyer Information.", 15, y);
+      doc.text("BY AND BETWEEN", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const buyerSection = `----${buyer.name || '[Name of Buyer]'}, a ${buyer.type || '[corporation/individual/partnership/LLC]'} organized and existing under the laws of ${buyer.stateCountry || '[State/Country]'}, with its principal place of business located at ${buyer.address || '[Insert Address]'} (hereinafter referred to as the "Buyer"),`;
+      
+      const buyerLines = doc.splitTextToSize(buyerSection, 170);
+      buyerLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "bold");
+      doc.text("AND", 15, y);
       y += lineHeight;
       
       doc.setFont("helvetica", "normal");
-      doc.text(`Name: ${buyer.name || '_______________'}`, 15, y);
-      y += lineHeight;
-      doc.text(`Type: ${buyer.type || '_______________'}`, 15, y);
-      y += lineHeight;
-      doc.text(`State/Country of Organization: ${buyer.stateCountry || '_______________'}`, 15, y);
-      y += lineHeight;
-      const buyerAddressLines = doc.splitTextToSize(`Principal Business Address: ${buyer.address || '_______________'}`, 170);
-      buyerAddressLines.forEach((line: string) => {
+      const sellerSection = `${seller.name || '[Full Legal Name of Seller]'}, a ${seller.type || '[corporation/individual/partnership/LLC]'} organized and existing under the laws of ${seller.stateCountry || '[State/Country]'}, with its principal place of business located at ${seller.address || '[Insert Address]'} (hereinafter referred to as the "Seller").`;
+      
+      const sellerLines = doc.splitTextToSize(sellerSection, 170);
+      sellerLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
       y += lineHeight;
       
-      // Seller Information
-      doc.setFont("helvetica", "bold");
-      doc.text("Seller Information.", 15, y);
-      y += lineHeight;
+      const partiesText = `The Buyer and Seller may be referred to individually as a "Party" and collectively as the "Parties."`;
+      doc.text(partiesText, 15, y);
+      y += lineHeight + 3;
       
-      doc.setFont("helvetica", "normal");
-      doc.text(`Name: ${seller.name || '_______________'}`, 15, y);
-      y += lineHeight;
-      doc.text(`Type: ${seller.type || '_______________'}`, 15, y);
-      y += lineHeight;
-      doc.text(`State/Country of Organization: ${seller.stateCountry || '_______________'}`, 15, y);
-      y += lineHeight;
-      const sellerAddressLines = doc.splitTextToSize(`Principal Business Address: ${seller.address || '_______________'}`, 170);
-      sellerAddressLines.forEach((line: string) => {
+      // WHEREAS clauses
+      const whereas1 = "WHEREAS, the Seller is engaged in the business of manufacturing, distributing, or selling certain goods;";
+      const whereas1Lines = doc.splitTextToSize(whereas1, 170);
+      whereas1Lines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
       y += lineHeight;
       
+      const whereas2 = "WHEREAS, the Buyer desires to purchase certain goods from the Seller under the terms and conditions set forth in this Agreement;";
+      const whereas2Lines = doc.splitTextToSize(whereas2, 170);
+      whereas2Lines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      const nowTherefore = "NOW, THEREFORE, in consideration of the mutual covenants and promises contained herein, and other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the Parties agree as follows:";
+      const nowThereforeLines = doc.splitTextToSize(nowTherefore, 170);
+      nowThereforeLines.forEach((line: string) => {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 5;      
       // Check if we need a new page
       if (y > pageHeight - 80) {
         doc.addPage();
         y = 20;
       }
       
-      // Items Purchased
+      // 1. Items Purchased
       doc.setFont("helvetica", "bold");
-      doc.text("1. Items Purchased.", 15, y);
-      y += lineHeight + 2;
+      doc.text("1. Items Purchased", 15, y);
+      y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      doc.text("The Seller agrees to sell and the Buyer agrees to purchase the following items:", 15, y);
-      y += lineHeight + 2;
+      const itemsIntroText = `The Buyer agrees to purchase, and the Seller agrees to sell and deliver, the following goods ("Goods") under the terms of this Contract:`;
       
+      const itemsIntroLines = doc.splitTextToSize(itemsIntroText, 170);
+      itemsIntroLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      // Table headers
+      doc.setFont("helvetica", "bold");
+      doc.text("Item Description", 15, y);
+      doc.text("Quantity", 80, y);
+      doc.text("Unit Price", 120, y);
+      doc.text("Total Price", 160, y);
+      y += lineHeight;
+      
+      // Table line
+      doc.line(15, y, 190, y);
+      y += 3;
+      
+      doc.setFont("helvetica", "normal");
       items.forEach((item, index) => {
         if (item.description.trim()) {
-          doc.text(`Item ${index + 1}: ${item.description}`, 15, y);
+          const itemDesc = item.description || `[Insert Item ${index + 1}]`;
+          const qty = item.quantity || '[Qty]';
+          const unitPrice = item.unitPrice || '[Price]';
+          const totalPrice = item.totalPrice || '[Total]';
+          
+          doc.text(itemDesc.substring(0, 25), 15, y);
+          doc.text(qty, 80, y);
+          doc.text(`$${unitPrice}`, 120, y);
+          doc.text(`$${totalPrice}`, 160, y);
           y += lineHeight;
-          doc.text(`Quantity: ${item.quantity || '___'}, Unit Price: $${item.unitPrice || '___'}, Total: $${item.totalPrice || '___'}`, 15, y);
-          y += lineHeight + 2;
         }
       });
       
-      doc.setFont("helvetica", "bold");
-      doc.text(`Total Contract Price: $${calculateTotalContractPrice()}`, 15, y);
-      y += lineHeight + 5;
+      // If no items, show placeholder rows
+      if (items.length === 0 || !items.some(item => item.description.trim())) {
+        doc.text("[Insert Item 1]", 15, y);
+        doc.text("[Qty]", 80, y);
+        doc.text("[Price]", 120, y);
+        doc.text("[Total]", 160, y);
+        y += lineHeight;
+        
+        doc.text("[Insert Item 2]", 15, y);
+        doc.text("[Qty]", 80, y);
+        doc.text("[Price]", 120, y);
+        doc.text("[Total]", 160, y);
+        y += lineHeight;
+      }
       
-      // Payment Terms
-      doc.setFont("helvetica", "bold");
-      doc.text("2. Payment Terms.", 15, y);
       y += lineHeight;
+      doc.setFont("helvetica", "bold");
+      doc.text(`Total Contract Price: $${calculateTotalContractPrice() || '[Insert Total Amount]'}`, 15, y);
+      y += lineHeight + 5;      
+      // 2. Payment Terms
+      doc.setFont("helvetica", "bold");
+      doc.text("2. Payment Terms", 15, y);
+      y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const paymentText = `The Buyer shall pay a deposit of ${answers.deposit_amount || '_______________'} upon signing this Contract. The remaining balance shall be paid within ${answers.payment_due_period || '___'} days via ${answers.payment_method || '_______________'}. Late payments shall incur interest at ${answers.late_payment_rate || '___'}% per month.`;
+      doc.text("Payment shall be made as follows:", 15, y);
+      y += lineHeight;
       
-      const paymentLines = doc.splitTextToSize(paymentText, 170);
-      paymentLines.forEach((line: string) => {
+      const depositText = `Deposit: $${answers.deposit_amount || '[Amount or %]'} due upon execution of this Contract.`;
+      doc.text(depositText, 15, y);
+      y += lineHeight;
+      
+      const balanceText = `Remaining Balance: Due within ${answers.payment_due_period || '[Insert Number]'} days of delivery and acceptance of the Goods.`;
+      doc.text(balanceText, 15, y);
+      y += lineHeight;
+      
+      const paymentMethodText = `Payments shall be made by ${answers.payment_method || '[Insert Method – bank transfer, check, etc.]'}, to the account designated in writing by the Seller.`;
+      const paymentMethodLines = doc.splitTextToSize(paymentMethodText, 170);
+      paymentMethodLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
+      
+      const latePaymentText = `Late payments shall incur interest at the rate of ${answers.late_payment_rate || '[Insert %]'}% per month or the maximum rate permitted by law.`;
+      const latePaymentLines = doc.splitTextToSize(latePaymentText, 170);
+      latePaymentLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;      
+      // Check if we need a new page
+      if (y > pageHeight - 80) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      // 3. Delivery Terms
+      doc.setFont("helvetica", "bold");
+      doc.text("3. Delivery Terms", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      doc.text(`Delivery Location: ${answers.delivery_location || '[Insert Delivery Address or Location]'}`, 15, y);
       y += lineHeight;
+      doc.text(`Delivery Deadline: No later than ${answers.delivery_deadline || '[Insert Date]'}`, 15, y);
+      y += lineHeight;
+      doc.text(`Shipping Method: ${answers.shipping_method || '[Insert Shipping Terms, e.g., FOB, CIF, etc.]'}`, 15, y);
+      y += lineHeight;
+      doc.text(`Shipping Costs: To be paid by ${answers.shipping_costs || '[Buyer/Seller]'}`, 15, y);
+      y += lineHeight;
+      
+      const notificationText = "The Seller shall notify the Buyer of the shipment details, including expected delivery date and carrier tracking information.";
+      const notificationLines = doc.splitTextToSize(notificationText, 170);
+      notificationLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      // 4. Inspection and Acceptance
+      doc.setFont("helvetica", "bold");
+      doc.text("4. Inspection and Acceptance", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const inspectionText1 = `The Buyer shall inspect the Goods within ${answers.inspection_period || '[Insert Number]'} business days after delivery. If the Goods fail to conform to the specifications set forth herein, the Buyer must notify the Seller in writing. Failure to do so shall constitute acceptance.`;
+      
+      const inspectionLines1 = doc.splitTextToSize(inspectionText1, 170);
+      inspectionLines1.forEach((line: string) => {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      
+      const inspectionText2 = "The Seller shall promptly correct or replace any nonconforming Goods at no additional cost to the Buyer.";
+      const inspectionLines2 = doc.splitTextToSize(inspectionText2, 170);
+      inspectionLines2.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      // 5. Title and Risk of Loss
+      doc.setFont("helvetica", "bold");
+      doc.text("5. Title and Risk of Loss", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      doc.text("Title to and risk of loss for the Goods shall pass to the Buyer upon:", 15, y);
+      y += lineHeight;
+      doc.text("☐ Delivery to Buyer's specified address", 15, y);
+      y += lineHeight;
+      doc.text("☐ Transfer to the carrier (FOB Origin)", 15, y);
+      y += lineHeight;
+      doc.text("(Select appropriate option or define custom terms.)", 15, y);
+      y += lineHeight + 3;      
+      // 6. Warranties
+      doc.setFont("helvetica", "bold");
+      doc.text("6. Warranties", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      doc.text("The Seller represents and warrants that:", 15, y);
+      y += lineHeight;
+      doc.text("• Goods are free from material defects in design, material, and workmanship.", 15, y);
+      y += lineHeight;
+      doc.text("• Goods conform to the specifications, drawings, or samples provided.", 15, y);
+      y += lineHeight;
+      doc.text("• Goods are merchantable and fit for their intended purpose.", 15, y);
+      y += lineHeight;
+      doc.text("• Goods are free from any liens, claims, or encumbrances.", 15, y);
+      y += lineHeight;
+      doc.text(`Warranty period: ${answers.warranty_period || '[Insert Number]'} months from the date of delivery.`, 15, y);
+      y += lineHeight + 3;
       
       // Check if we need a new page
       if (y > pageHeight - 80) {
@@ -809,65 +989,117 @@ const GeneralContractForm = () => {
         y = 20;
       }
       
-      // Delivery Terms
+      // 7. Limitation of Liability
       doc.setFont("helvetica", "bold");
-      doc.text("3. Delivery Terms.", 15, y);
-      y += lineHeight;
+      doc.text("7. Limitation of Liability", 15, y);
+      y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const deliveryText = `The Seller shall deliver the items to ${answers.delivery_location || '_______________'} by ${answers.delivery_deadline || '_______________'} using ${answers.shipping_method || '_______________'} shipping terms. Shipping costs shall be paid by the ${answers.shipping_costs || '_______________'}.`;
+      const limitationText = "Except for liability arising from gross negligence or willful misconduct, neither party shall be liable for indirect, incidental, consequential, special, or punitive damages, including lost profits or revenues, arising out of or related to this Contract.";
       
-      const deliveryLines = doc.splitTextToSize(deliveryText, 170);
-      deliveryLines.forEach((line: string) => {
+      const limitationLines = doc.splitTextToSize(limitationText, 170);
+      limitationLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight;
+      y += lineHeight + 3;
       
-      // Inspection and Acceptance
+      // 8. Indemnification
       doc.setFont("helvetica", "bold");
-      doc.text("4. Inspection and Acceptance.", 15, y);
-      y += lineHeight;
+      doc.text("8. Indemnification", 15, y);
+      y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const inspectionText = `The Buyer shall have ${answers.inspection_period || '___'} business days after delivery to inspect the items and notify the Seller of any defects or non-conformities.`;
+      const indemnificationText = "Each party agrees to indemnify, defend, and hold harmless the other party from and against any third-party claims, damages, liabilities, or expenses (including reasonable attorney's fees) arising out of or related to:";
       
-      const inspectionLines = doc.splitTextToSize(inspectionText, 170);
-      inspectionLines.forEach((line: string) => {
+      const indemnificationLines = doc.splitTextToSize(indemnificationText, 170);
+      indemnificationLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight;
       
-      // Title and Risk of Loss
-      doc.setFont("helvetica", "bold");
-      doc.text("5. Title and Risk of Loss.", 15, y);
+      doc.text("• Breach of this Contract", 15, y);
       y += lineHeight;
+      doc.text("• Negligent or willful misconduct", 15, y);
+      y += lineHeight;
+      doc.text("• Infringement of intellectual property rights", 15, y);
+      y += lineHeight + 3;
+      
+      // 9. Force Majeure
+      doc.setFont("helvetica", "bold");
+      doc.text("9. Force Majeure", 15, y);
+      y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const titleText = `Title and risk of loss shall transfer to the Buyer upon ${answers.title_transfer_terms || '_______________'}.`;
+      const forceMajeureText1 = "Neither party shall be liable for delays or failures in performance resulting from causes beyond its reasonable control, including but not limited to acts of God, natural disasters, war, terrorism, pandemics, government orders, labor strikes, or failure of suppliers.";
       
-      const titleLines = doc.splitTextToSize(titleText, 170);
-      titleLines.forEach((line: string) => {
+      const forceMajeureLines1 = doc.splitTextToSize(forceMajeureText1, 170);
+      forceMajeureLines1.forEach((line: string) => {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight;
       
-      // Warranties
-      doc.setFont("helvetica", "bold");
-      doc.text("6. Warranties.", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      const warrantyText = `The Seller warrants that the items shall be free from defects in materials and workmanship for a period of ${answers.warranty_period || '___'} months from the date of delivery.`;
-      
-      const warrantyLines = doc.splitTextToSize(warrantyText, 170);
-      warrantyLines.forEach((line: string) => {
+      const forceMajeureText2 = "In the event of such a delay, the affected party must promptly notify the other party and make reasonable efforts to resume performance.";
+      const forceMajeureLines2 = doc.splitTextToSize(forceMajeureText2, 170);
+      forceMajeureLines2.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
+      y += lineHeight + 3;      
+      // 10. Confidentiality
+      doc.setFont("helvetica", "bold");
+      doc.text("10. Confidentiality", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const confidentialityText1 = "Both parties agree to maintain in strict confidence all proprietary and confidential information exchanged under this Contract, and to use such information solely for the purposes of fulfilling their obligations hereunder.";
+      
+      const confidentialityLines1 = doc.splitTextToSize(confidentialityText1, 170);
+      confidentialityLines1.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      
+      const confidentialityText2 = `This clause shall survive the termination of this Contract for a period of ${answers.confidentiality_duration || '[Insert Number]'} years.`;
+      doc.text(confidentialityText2, 15, y);
+      y += lineHeight + 3;
+      
+      // 11. Termination
+      doc.setFont("helvetica", "bold");
+      doc.text("11. Termination", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      doc.text("This Contract may be terminated:", 15, y);
       y += lineHeight;
+      doc.text("• By mutual written consent of both Parties", 15, y);
+      y += lineHeight;
+      
+      const terminationText1 = `• By either party, with ${answers.termination_notice_period || '[Insert Number]'} days' written notice, for any material breach not cured within ${answers.cure_period || '[Insert Number]'} days of written notice`;
+      const terminationLines1 = doc.splitTextToSize(terminationText1, 165);
+      terminationLines1.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      
+      const terminationText2 = `• If performance is prevented due to a force majeure event exceeding ${answers.force_majeure_period || '[Insert Number]'} days`;
+      const terminationLines2 = doc.splitTextToSize(terminationText2, 165);
+      terminationLines2.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      
+      const terminationText3 = "Upon termination, the Seller shall refund any unearned amounts, and both parties shall return any confidential materials.";
+      const terminationLines3 = doc.splitTextToSize(terminationText3, 170);
+      terminationLines3.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
       
       // Check if we need a new page
       if (y > pageHeight - 80) {
@@ -875,68 +1107,135 @@ const GeneralContractForm = () => {
         y = 20;
       }
       
-      // Confidentiality
+      // 12. Governing Law and Jurisdiction
       doc.setFont("helvetica", "bold");
-      doc.text("10. Confidentiality.", 15, y);
-      y += lineHeight;
+      doc.text("12. Governing Law and Jurisdiction", 15, y);
+      y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const confidentialityText = `The parties agree to maintain confidentiality of proprietary information for ${answers.confidentiality_duration || '___'} years after termination of this Contract.`;
-      
-      const confidentialityLines = doc.splitTextToSize(confidentialityText, 170);
-      confidentialityLines.forEach((line: string) => {
+      const governingText1 = `This Contract shall be governed by and construed in accordance with the laws of the State of ${answers.governing_state || '[Insert State/Country]'}.`;
+      const governingLines1 = doc.splitTextToSize(governingText1, 170);
+      governingLines1.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight;
       
-      // Termination
+      const governingText2 = `Any disputes shall be resolved exclusively in the state or federal courts located in ${answers.governing_jurisdiction || '[Insert Jurisdiction]'}, and both parties hereby consent to personal jurisdiction therein.`;
+      const governingLines2 = doc.splitTextToSize(governingText2, 170);
+      governingLines2.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;      });
+      y += lineHeight + 3;
+      
+      // 13. Dispute Resolution
       doc.setFont("helvetica", "bold");
-      doc.text("11. Termination.", 15, y);
-      y += lineHeight;
+      doc.text("13. Dispute Resolution", 15, y);
+      y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const terminationText = `Either party may terminate this Contract with ${answers.termination_notice_period || '___'} days written notice. Material breaches must be cured within ${answers.cure_period || '___'} days. Force majeure events lasting ${answers.force_majeure_period || '___'} days may trigger termination.`;
-      
-      const terminationLines = doc.splitTextToSize(terminationText, 170);
-      terminationLines.forEach((line: string) => {
+      doc.text("Before initiating any court action, the parties agree to attempt resolution through:", 15, y);
+      y += lineHeight;
+      doc.text("• Negotiation: A good faith effort for at least 15 days", 15, y);
+      y += lineHeight;
+      doc.text("• Mediation: If negotiation fails", 15, y);
+      y += lineHeight;
+      const disputeText = `• Arbitration (optional): Binding arbitration under ${answers.arbitration_rules || '[Insert Rules, e.g., AAA]'}`;
+      const disputeLines = doc.splitTextToSize(disputeText, 165);
+      disputeLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight;
+      y += lineHeight + 3;
       
-      // Governing Law
+      // 14. Assignment
       doc.setFont("helvetica", "bold");
-      doc.text("12. Governing Law and Jurisdiction.", 15, y);
-      y += lineHeight;
+      doc.text("14. Assignment", 15, y);
+      y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const governingText = `This Contract shall be governed by the laws of ${answers.governing_state || '_______________'} and any disputes shall be resolved in ${answers.jurisdiction_location || '_______________'}.`;
-      
-      const governingLines = doc.splitTextToSize(governingText, 170);
-      governingLines.forEach((line: string) => {
+      const assignmentText = "Neither party may assign or transfer this Contract or its obligations without prior written consent of the other party, except to an affiliate or successor in interest.";
+      const assignmentLines = doc.splitTextToSize(assignmentText, 170);
+      assignmentLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight;
+      y += lineHeight + 3;
       
-      // Dispute Resolution
-      if (answers.arbitration_rules && answers.arbitration_rules !== 'None') {
-        doc.setFont("helvetica", "bold");
-        doc.text("13. Dispute Resolution.", 15, y);
-        y += lineHeight;
-        
-        doc.setFont("helvetica", "normal");
-        const disputeText = `Any disputes arising under this Contract shall be resolved through arbitration under the rules of ${answers.arbitration_rules}.`;
-        
-        const disputeLines = doc.splitTextToSize(disputeText, 170);
-        disputeLines.forEach((line: string) => {
-          doc.text(line, 15, y);
-          y += lineHeight;
-        });
-        y += lineHeight;
+      // Check if we need a new page
+      if (y > pageHeight - 100) {
+        doc.addPage();
+        y = 20;
       }
       
+      // 15. Entire Agreement
+      doc.setFont("helvetica", "bold");
+      doc.text("15. Entire Agreement", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const entireText = "This Contract constitutes the full and final understanding between the Parties regarding the subject matter herein and supersedes all prior negotiations, discussions, and agreements.";
+      const entireLines = doc.splitTextToSize(entireText, 170);
+      entireLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      // 16. Amendments
+      doc.setFont("helvetica", "bold");
+      doc.text("16. Amendments", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const amendmentText = "No change or modification to this Contract shall be valid unless in writing and signed by both Parties.";
+      const amendmentLines = doc.splitTextToSize(amendmentText, 170);
+      amendmentLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      // 17. Severability
+      doc.setFont("helvetica", "bold");
+      doc.text("17. Severability", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const severabilityText = "If any provision of this Contract is found to be invalid or unenforceable, the remaining provisions shall remain in full force and effect.";
+      const severabilityLines = doc.splitTextToSize(severabilityText, 170);
+      severabilityLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      // 18. Waiver
+      doc.setFont("helvetica", "bold");
+      doc.text("18. Waiver", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const waiverText = "The failure of either party to enforce any provision shall not be deemed a waiver of future enforcement of that or any other provision.";
+      const waiverLines = doc.splitTextToSize(waiverText, 170);
+      waiverLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
+      // 19. Counterparts and Electronic Signatures
+      doc.setFont("helvetica", "bold");
+      doc.text("19. Counterparts and Electronic Signatures", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      const counterpartText = "This Contract may be executed in counterparts, each of which shall be deemed an original. A signed copy transmitted electronically or via e-signature shall be deemed valid and binding.";
+      const counterpartLines = doc.splitTextToSize(counterpartText, 170);
+      counterpartLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 5;      
       // Check if we need a new page for signatures
       if (y > pageHeight - 100) {
         doc.addPage();
@@ -945,14 +1244,19 @@ const GeneralContractForm = () => {
       
       // Signatures
       doc.setFont("helvetica", "bold");
-      doc.text("Signatures.", 15, y);
-      y += lineHeight + 10;
+      doc.text("Signatures", 15, y);
+      y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
+      doc.text("IN WITNESS WHEREOF, the parties hereto have executed this General Contract for Products as of the date first above written.", 15, y);
+      y += lineHeight + 10;
       
-      // Buyer signature
-      doc.text("The Buyer:", 15, y);
+      // The Buyer
+      doc.setFont("helvetica", "bold");
+      doc.text("The Buyer", 15, y);
       y += lineHeight + 5;
+      
+      doc.setFont("helvetica", "normal");
       doc.text("Signature: _______________________________", 15, y);
       y += lineHeight + 2;
       doc.text(`Name: ${buyer.name || '___________________________________'}`, 15, y);
@@ -962,9 +1266,12 @@ const GeneralContractForm = () => {
       doc.text("Date: ____________________________________", 15, y);
       y += lineHeight + 10;
       
-      // Seller signature
-      doc.text("The Seller:", 15, y);
+      // The Seller
+      doc.setFont("helvetica", "bold");
+      doc.text("The Seller", 15, y);
       y += lineHeight + 5;
+      
+      doc.setFont("helvetica", "normal");
       doc.text("Signature: _______________________________", 15, y);
       y += lineHeight + 2;
       doc.text(`Name: ${seller.name || '___________________________________'}`, 15, y);

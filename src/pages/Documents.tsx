@@ -11,9 +11,12 @@ import SharePurchaseAgreementForm from "@/components/SharePurchaseAgreementForm"
 import LoanAgreementForm from "@/components/LoanAgreementForm";
 import DomesticServiceAgreementForm from "@/components/DomesticServiceAgreementForm";
 import AgreementToSellForm from "@/components/AgreementToSellForm";
+import GeneralPowerOfAttorneyForm from "@/components/GeneralPowerOfAttorneyForm";
+import SpecialPowerOfAttorneyForm from "@/components/SpecialPowerOfAttorneyForm";
+import SaleAgreementForm from "@/components/SaleAgreementForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale } from "lucide-react";
 
 const Documents = () => {
   const { id } = useParams();
@@ -69,13 +72,31 @@ const Documents = () => {
       description: 'Create a comprehensive domestic service agreement for household employment arrangements',
       icon: Home,
       component: DomesticServiceAgreementForm
-    },
-    {
+    },    {
       id: 'agreement-to-sell',
       title: 'Agreement to Sell',
       description: 'Create a comprehensive agreement to sell for property transactions',
       icon: FileText,
       component: AgreementToSellForm
+    },    {
+      id: 'general-power-of-attorney',
+      title: 'General Power of Attorney',
+      description: 'Create a comprehensive general power of attorney for legal representation',
+      icon: FileText,
+      component: GeneralPowerOfAttorneyForm
+    },    {
+      id: 'special-power-of-attorney',
+      title: 'Special Power of Attorney',
+      description: 'Create a special power of attorney for specific legal matters and court proceedings',
+      icon: Scale,
+      component: SpecialPowerOfAttorneyForm
+    },
+    {
+      id: 'sale-agreement',
+      title: 'Sale Agreement',
+      description: 'Create a comprehensive sale agreement for business transactions',
+      icon: Briefcase,
+      component: SaleAgreementForm
     }
   ];
 

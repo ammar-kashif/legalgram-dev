@@ -593,15 +593,19 @@ const LivingWillForm = () => {
     
     // Default validation
     return true;
-  };
-  const generateLivingWillPDF = () => {
+  };  const generateLivingWillPDF = () => {
     try {
       console.log("Generating Living Will PDF...");
       const doc = new jsPDF();
-        // Title - make it state-agnostic
+      
+      // Title
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
       doc.text("LIVING WILL", 105, 20, { align: "center" });
+      
+      // Subtitle
+      doc.setFontSize(12);
+      doc.text("(California Probate Code Section 4701)", 105, 30, { align: "center" });
       
       // Reset to normal font
       doc.setFont("helvetica", "normal");
@@ -617,32 +621,31 @@ const LivingWillForm = () => {
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const selectedState = answers.state || '________';
-      const declarantText = `I, ${answers.declarant_name || '___________________'}, residing at ${answers.declarant_address || '____________________'}, ${answers.declarant_city || '__________'}, ${selectedState}, ${answers.declarant_zip || '__________'}, being of full legal capacity and sound mind, do make this statement as a Directive to be followed in case I become permanently unable to make, or participate in making own medical decisions.`;
+      const selectedState = answers.state || 'California';
+      const declarantText = `I, ${answers.declarant_name || '________________'}, residing at ${answers.declarant_address || '_____________'}, California, ${answers.declarant_zip || '___________'}, being of full legal capacity and sound mind, do make this statement as a Directive to be followed in case I become permanently unable to make, or participate in making own medical decisions.`;
       
       const declarantLines = doc.splitTextToSize(declarantText, 170);
       declarantLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight + 5;
-      
+      y += lineHeight + 5;      
       // Appointment of Health Care Agent
       doc.setFont("helvetica", "bold");
       doc.text("APPOINTMENT OF HEALTH CARE AGENT", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const agentText = "I hereby appoint the following person as my agent to make health care decisions for me:";
-      doc.text(agentText, 15, y);
+      const agentText = "I hereby appoint the following person as my Health Care Agent (hereinafter referred as 'Health Agent') in case I become unable to make my own health care decision as mentioned in Clause 1";
+      
+      const agentLines = doc.splitTextToSize(agentText, 170);
+      agentLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
       y += lineHeight + 3;
       
       // Primary Health Care Agent
-      doc.setFont("helvetica", "bold");
-      doc.text("Primary Health Care Agent:", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
       doc.text(`Name: ${primaryAgent.name || '____________________'}`, 15, y);
       y += lineHeight;
       doc.text(`Address: ${primaryAgent.address || '______________________'}`, 15, y);
@@ -651,7 +654,7 @@ const LivingWillForm = () => {
       y += lineHeight;
       doc.text(`Designation: ${primaryAgent.designation || '_________________'}`, 15, y);
       y += lineHeight;
-      doc.text(`Relation (if any): ${primaryAgent.relation || '________________'}`, 15, y);
+      doc.text(`Relation, if any: ${primaryAgent.relation || '________________'}`, 15, y);
       y += lineHeight + 3;
       
       // Check if we need a new page
@@ -660,10 +663,18 @@ const LivingWillForm = () => {
         y = 20;
       }
       
+      const firstAlternateText = "In case I revoke my Health Agent authority, or if my agent is not willing or unable to undertake the responsibilities stipulated in this Living Will, I designate my First Alternate Agent:";
+      const firstAlternateLines = doc.splitTextToSize(firstAlternateText, 170);
+      firstAlternateLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;
+      
       // First Alternate Agent
       doc.setFont("helvetica", "bold");
-      doc.text("First Alternate Agent:", 15, y);
-      y += lineHeight;
+      doc.text("First Alternate:", 15, y);
+      y += lineHeight + 5;
       
       doc.setFont("helvetica", "normal");
       doc.text(`Name: ${firstAlternate.name || '____________________'}`, 15, y);
@@ -674,13 +685,21 @@ const LivingWillForm = () => {
       y += lineHeight;
       doc.text(`Designation: ${firstAlternate.designation || '_________________'}`, 15, y);
       y += lineHeight;
-      doc.text(`Relation (if any): ${firstAlternate.relation || '________________'}`, 15, y);
+      doc.text(`Relation, if any: ${firstAlternate.relation || '________________'}`, 15, y);
+      y += lineHeight + 3;
+      
+      const secondAlternateText = "If I revoke the authority of my Health Agent of First Alternate, or neither is willing, or unable to undertake the duties stipulated in this Living Will, I designate my Second Alternate Agent:";
+      const secondAlternateLines = doc.splitTextToSize(secondAlternateText, 170);
+      secondAlternateLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
       y += lineHeight + 3;
       
       // Second Alternate Agent
       doc.setFont("helvetica", "bold");
       doc.text("Second Alternate Agent:", 15, y);
-      y += lineHeight;
+      y += lineHeight + 5;
       
       doc.setFont("helvetica", "normal");
       doc.text(`Name: ${secondAlternate.name || '____________________'}`, 15, y);
@@ -691,27 +710,8 @@ const LivingWillForm = () => {
       y += lineHeight;
       doc.text(`Designation: ${secondAlternate.designation || '_________________'}`, 15, y);
       y += lineHeight;
-      doc.text(`Relation (if any): ${secondAlternate.relation || '________________'}`, 15, y);
+      doc.text(`Relation, if any: ${secondAlternate.relation || '________________'}`, 15, y);
       y += lineHeight + 5;
-      
-      // Check if we need a new page
-      if (y > pageHeight - 60) {
-        doc.addPage();
-        y = 20;
-      }
-      
-      // Primary Physician
-      doc.setFont("helvetica", "bold");
-      doc.text("PRIMARY PHYSICIAN", 15, y);
-      y += lineHeight + 3;
-      
-      doc.setFont("helvetica", "normal");
-      doc.text(`Name: ${primaryPhysician.name || '____________________'}`, 15, y);
-      y += lineHeight;
-      doc.text(`Address: ${primaryPhysician.address || '______________________'}`, 15, y);
-      y += lineHeight;      doc.text(`Phone: ${primaryPhysician.phone || '____________________'}`, 15, y);
-      y += lineHeight + 5;
-      
       // Check if we need a new page
       if (y > pageHeight - 80) {
         doc.addPage();
@@ -724,11 +724,19 @@ const LivingWillForm = () => {
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const medicalText = "These instructions depict my commitment to decline medical treatment in the circumstances mentioned below: In the event that I am diagnosed with an incurable or irreversible physical or mental condition, from which there is no reasonable prospect of recovery, I hereby instruct my Health Agent to withhold or withdraw any medical interventions that serve solely to prolong the dying process. Such conditions shall include, but are not limited to: (a) a terminal illness; (b) a state of permanent unconsciousness; or (c) a minimally conscious state wherein I am permanently incapable of making informed decisions or communicating my preferences. I instruct that my Health Agent be confined to interventions aimed solely at ensuring my comfort and alleviating pain, including any discomfort that may result from the withholding or withdrawal of life-sustaining treatment. I acknowledge that the law does not obligate me to specify in advance the particular treatments to be limited or declined.";
+      const medicalText = "These instructions depict my commitment to decline medical treatment in the circumstances mentioned below:";
       
       const medicalLines = doc.splitTextToSize(medicalText, 170);
       medicalLines.forEach((line: string) => {
-        // Check if we need a new page
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      const medicalText1 = "In the event that I am diagnosed with an incurable or irreversible physical or mental condition, from which there is no reasonable prospect of recovery, I hereby instruct my Health Agent to withhold or withdraw any medical interventions that serve solely to prolong the dying process.";
+      
+      const medicalLines1 = doc.splitTextToSize(medicalText1, 170);
+      medicalLines1.forEach((line: string) => {
         if (y > pageHeight - 20) {
           doc.addPage();
           y = 20;
@@ -736,8 +744,33 @@ const LivingWillForm = () => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
-      y += lineHeight + 3;
+      y += lineHeight;
       
+      const medicalText2 = "Such conditions shall include, but are not limited to: (a) a terminal illness; (b) a state of permanent unconsciousness; or (c) a minimally conscious state wherein I am permanently incapable of making informed decisions or communicating my preferences.";
+      
+      const medicalLines2 = doc.splitTextToSize(medicalText2, 170);
+      medicalLines2.forEach((line: string) => {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      const medicalText3 = "I instruct that my Health Agent be confined to interventions aimed solely at ensuring my comfort and alleviating pain, including any discomfort that may result from the withholding or withdrawal of life-sustaining treatment. I acknowledge that the law does not obligate me to specify in advance the particular treatments to be limited or declined.";
+      
+      const medicalLines3 = doc.splitTextToSize(medicalText3, 170);
+      medicalLines3.forEach((line: string) => {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 3;      
       // Check if we need a new page
       if (y > pageHeight - 40) {
         doc.addPage();
@@ -750,8 +783,7 @@ const LivingWillForm = () => {
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const nutritionPref = answers.nutrition_preference || 'TO RECEIVE artificially administered nutrition and hydration';
-      const nutritionText = `If I have a condition state above, it is my preference ${nutritionPref}.`;
+      const nutritionText = "If I have a condition state above, it is my preference TO RECEIVE artificially administered nutrition and hydration.";
       
       const nutritionLines = doc.splitTextToSize(nutritionText, 170);
       nutritionLines.forEach((line: string) => {
@@ -760,16 +792,56 @@ const LivingWillForm = () => {
       });
       y += lineHeight + 5;
       
+      // Primary Physician
+      doc.setFont("helvetica", "bold");
+      doc.text("PRIMARY PHYSICIAN", 15, y);
+      y += lineHeight + 3;
+      
+      doc.setFont("helvetica", "normal");
+      doc.text("I designate the following as my Primary Physician:", 15, y);
+      y += lineHeight + 3;
+      
+      doc.text(`Name: ${primaryPhysician.name || '____________________'}`, 15, y);
+      y += lineHeight;
+      doc.text(`Address: ${primaryPhysician.address || '______________________'}`, 15, y);
+      y += lineHeight;
+      doc.text(`Phone: ${primaryPhysician.phone || '____________________'}`, 15, y);
+      y += lineHeight + 3;
+      
+      const physicianText = "If a primary physician is not selected as per Clause 5, then I request that the rules of California Medical Association be applied for the identification of my primary physician.";
+      const physicianLines = doc.splitTextToSize(physicianText, 170);
+      physicianLines.forEach((line: string) => {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight + 5;      
       // Other Directions
       doc.setFont("helvetica", "bold");
       doc.text("OTHER DIRECTIONS", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
+      const otherDirectionsText = "These instructions represent the lawful exercise of my right to refuse medical treatment following the laws of New York. I intend that these directives be honoured and implemented unless I have revoked them through a subsequent written statement or by an unmistakable expression of a change in my wishes:";
+      
+      const otherDirectionsLines = doc.splitTextToSize(otherDirectionsText, 170);
+      otherDirectionsLines.forEach((line: string) => {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // Add space for additional directions
       if (answers.other_directions && answers.other_directions.trim()) {
         const directionsLines = doc.splitTextToSize(answers.other_directions, 170);
         directionsLines.forEach((line: string) => {
-          // Check if we need a new page
           if (y > pageHeight - 20) {
             doc.addPage();
             y = 20;
@@ -777,11 +849,19 @@ const LivingWillForm = () => {
           doc.text(line, 15, y);
           y += lineHeight;
         });
+        y += lineHeight;
       } else {
-        doc.text("(This section is left blank to be filled in manually.)", 15, y);
+        // Add blank lines for manual completion
+        for (let i = 0; i < 6; i++) {
+          doc.text("______________________________________________________________________", 15, y);
+          y += lineHeight;
+          if (y > pageHeight - 20) {
+            doc.addPage();
+            y = 20;
+          }
+        }
         y += lineHeight;
       }
-      y += lineHeight + 5;
       
       // Check if we need a new page for signatures
       if (y > pageHeight - 100) {
@@ -790,23 +870,14 @@ const LivingWillForm = () => {
       }
       
       // Declarant Signature
-      doc.setFont("helvetica", "bold");
-      doc.text("DECLARANT SIGNATURE", 15, y);
-      y += lineHeight + 3;
-      
-      doc.setFont("helvetica", "normal");
-      doc.text("Declarant Signature: _____________________________________", 15, y);
-      y += lineHeight + 3;
-      doc.text("Date: __________________", 15, y);
-      y += lineHeight + 3;
-      
-      doc.text("Declarant Address:", 15, y);
-      y += lineHeight;
-      doc.text(`Line 1: ${answers.declarant_address || '_____________________________________________________________'}`, 15, y);
-      y += lineHeight;
-      doc.text(`Line 2: ${answers.declarant_city || '____________________'}, ${answers.declarant_state || '__________'}, ${answers.declarant_zip || '__________'}`, 15, y);
+      doc.text("Declarant Signature _____________________________________", 15, y);
       y += lineHeight + 10;
-      
+      doc.text("Date __________________", 15, y);
+      y += lineHeight + 5;
+      doc.text("Address _____________________________________________________________", 15, y);
+      y += lineHeight;
+      doc.text("____________________________________________________", 15, y);
+      y += lineHeight + 10;      
       // Check if we need a new page for witnesses
       if (y > pageHeight - 120) {
         doc.addPage();
@@ -815,41 +886,37 @@ const LivingWillForm = () => {
       
       // Statement of Witness
       doc.setFont("helvetica", "bold");
-      doc.text("STATEMENT OF WITNESS", 15, y);
+      doc.text("STATEMENT OF WITNESS:", 15, y);
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const witnessText = "I declare under penalty of perjury under the laws of " + (answers.state || '__________') + " (1) that the individual who signed or acknowledged this advance health care directive is personally known to me, or that the individual's identity was proven to me by convincing evidence, (2) that the individual signed or acknowledged this advance directive in my presence, (3) that the individual appears to be of sound mind and under no duress, fraud, or undue influence, (4) that I am not a person appointed as agent by this advance directive, and (5) that I am not the individual's health care provider or an employee of the individual's health care provider.";
-      const witnessLines = doc.splitTextToSize(witnessText, 170);
-      witnessLines.forEach((line: string) => {
-        // Check if we need a new page
-        if (y > pageHeight - 20) {
-          doc.addPage();
-          y = 20;
-        }
-        doc.text(line, 15, y);
-        y += lineHeight;
+      const witnessText = "I declare under the penalty of perjury under the laws of California:";
+      doc.text(witnessText, 15, y);
+      y += lineHeight;
+      
+      const witnessItems = [
+        "That I am over the age of eighteen (18) and competent to testify to the matters stated herein;",
+        "That the Individual signed or acknowledged this advance directive in my presence;",
+        "That the individual who signed or acknowledged this advance directive is personally known to me, or that his identity was proven to me through cogent evidence;",
+        "That the individual appears to be of sound mind and not under any kind of duress or undue influence;",
+        "That I am not the person appointed as a Health Agent by this advance directive",
+        "That I am not the individual's Health Care provider, an employee of the Health Care provider, the operator of the community care facility, an employee of the an operator of a community care facility, the operator of a residential care facility for the elderly, nor an employee of an operator of a residential care facility for the elderly;"
+      ];
+      
+      witnessItems.forEach((item) => {
+        const itemLines = doc.splitTextToSize(item, 165);
+        itemLines.forEach((line: string) => {
+          if (y > pageHeight - 20) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(line, 20, y);
+          y += lineHeight;
+        });
+        y += 2;
       });
-      y += lineHeight + 3;
       
-      // Witness 1
-      doc.setFont("helvetica", "bold");
-      doc.text("Witness 1", 15, y);
       y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      doc.text(`Name: ${witness1.name || '___________________________'}`, 15, y);
-      y += lineHeight;
-      doc.text("Signature: _____________________________________", 15, y);
-      y += lineHeight;
-      doc.text("Date: __________________", 15, y);
-      y += lineHeight;
-      doc.text("Address:", 15, y);
-      y += lineHeight;
-      doc.text(`Line 1: ${witness1.addressLine1 || '_____________________________________________________________'}`, 15, y);
-      y += lineHeight;
-      doc.text(`Line 2: ${witness1.addressLine2 || '____________________________________________________'}`, 15, y);
-      y += lineHeight + 5;
       
       // Check if we need a new page
       if (y > pageHeight - 80) {
@@ -857,52 +924,68 @@ const LivingWillForm = () => {
         y = 20;
       }
       
-      // Witness 2
-      doc.setFont("helvetica", "bold");
-      doc.text("Witness 2", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      doc.text(`Name: ${witness2.name || '___________________________'}`, 15, y);
-      y += lineHeight;
-      doc.text("Signature: _____________________________________", 15, y);
-      y += lineHeight;
-      doc.text("Date: __________________", 15, y);
-      y += lineHeight;
-      doc.text("Address:", 15, y);
-      y += lineHeight;
-      doc.text(`Line 1: ${witness2.addressLine1 || '_____________________________________________________________'}`, 15, y);
-      y += lineHeight;
-      doc.text(`Line 2: ${witness2.addressLine2 || '____________________________________________________'}`, 15, y);
+      // Witness 1
+      doc.text(`Name of Witness 1:  ${witness1.name || '___________________________'}`, 15, y);
       y += lineHeight + 5;
+      doc.text("Signed _____________________________________", 15, y);
+      y += lineHeight;
+      doc.text("Date __________________", 120, y - lineHeight);
+      y += lineHeight + 5;
+      doc.text("Address _____________________________________________________________", 15, y);
+      y += lineHeight;
+      doc.text("____________________________________________________", 15, y);
+      y += lineHeight + 10;
       
-      // Additional Statement of Witness (if provided)
-      if (additionalWitness.name || additionalWitness.addressLine1) {
-        // Check if we need a new page
-        if (y > pageHeight - 80) {
+      // Witness 2
+      doc.text(`Name of Witness 2: ${witness2.name || '_________________________'}`, 15, y);
+      y += lineHeight + 5;
+      doc.text("Signed _____________________________________", 15, y);
+      y += lineHeight;
+      doc.text("Date __________________", 120, y - lineHeight);
+      y += lineHeight + 5;
+      doc.text("Address _____________________________________________________________", 15, y);
+      y += lineHeight;
+      doc.text("____________________________________________________", 15, y);
+      y += lineHeight + 10;
+      
+      // Check if we need a new page
+      if (y > pageHeight - 100) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      // Additional Statement of Witness
+      doc.setFont("helvetica", "bold");
+      doc.text("ADDITIONAL STATEMENT OF WITNESS:", 15, y);
+      y += lineHeight;
+      
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text("At least one of the above witnesses must also sign the following declaration", 15, y);
+      y += lineHeight;
+      doc.text("(If you are a resident in a skilled working facility, the patient advocate or ombudsman must sign this statement)", 15, y);
+      y += lineHeight + 3;
+      doc.setFontSize(11);
+      
+      const additionalWitnessText = "I further declare under the laws of perjury of California that I am not related to the individual executing this advance directive by blood, marriage, or adoption, and to the best of my knowledge, I am not entitled to any part of of the individual's estate upon their death under a will or operation of law";
+      
+      const additionalWitnessLines = doc.splitTextToSize(additionalWitnessText, 170);
+      additionalWitnessLines.forEach((line: string) => {
+        if (y > pageHeight - 20) {
           doc.addPage();
           y = 20;
         }
-        
-        doc.setFont("helvetica", "bold");
-        doc.text("ADDITIONAL STATEMENT OF WITNESS", 15, y);
-        y += lineHeight;
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text("(Required for residents of a skilled nursing facility or if applicable)", 15, y);
-        y += lineHeight + 3;
-        doc.setFontSize(11);
-        
-        doc.text("Witness Signature: _____________________________________", 15, y);
-        y += lineHeight;
-        doc.text("Date: __________________", 15, y);
-        y += lineHeight;
-        doc.text("Address:", 15, y);
-        y += lineHeight;
-        doc.text(`Line 1: ${additionalWitness.addressLine1 || '_____________________________________________________________'}`, 15, y);
-        y += lineHeight;
-        doc.text(`Line 2: ${additionalWitness.addressLine2 || '____________________________________________________'}`, 15, y);
-      }
+        doc.text(line, 15, y);
+        y += lineHeight;      });
+      y += lineHeight + 5;
+      
+      doc.text("Witness Signature _____________________________________", 15, y);
+      y += lineHeight;
+      doc.text("Date __________________", 120, y - lineHeight);
+      y += lineHeight + 5;
+      doc.text("Address _____________________________________________________________", 15, y);
+      y += lineHeight;
+      doc.text("____________________________________________________", 15, y);
       
       // Save the PDF
       const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
@@ -910,7 +993,8 @@ const LivingWillForm = () => {
       console.log("Saving PDF with filename:", filename);
       
       doc.save(filename);
-        toast.success("Living Will successfully generated!");
+      
+      toast.success("Living Will successfully generated!");
       return doc;
     } catch (error) {
       console.error("Error generating PDF:", error);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale } from "lucide-react";
 import ConditionalForm from "@/components/ConditionalForm";
 import ChildCareAuthForm from "@/components/ChildCareAuthForm";
 import GeneralContractForm from "@/components/GeneralContractForm";
@@ -11,6 +11,9 @@ import SharePurchaseAgreementForm from "@/components/SharePurchaseAgreementForm"
 import LoanAgreementForm from "@/components/LoanAgreementForm";
 import DomesticServiceAgreementForm from "@/components/DomesticServiceAgreementForm";
 import AgreementToSellForm from "@/components/AgreementToSellForm";
+import GeneralPowerOfAttorneyForm from "@/components/GeneralPowerOfAttorneyForm";
+import SpecialPowerOfAttorneyForm from "@/components/SpecialPowerOfAttorneyForm";
+import SaleAgreementForm from "@/components/SaleAgreementForm";
 
 
 const MakeDocument = () => {
@@ -74,14 +77,35 @@ const MakeDocument = () => {
       content: 'Create a domestic service agreement for household employment arrangements.',
       icon: Home,
       component: DomesticServiceAgreementForm
-    },
-    {
+    },    {
       id: 'agreement-to-sell',
       title: 'Agreement to Sell',
       description: 'Real Estate & Property',
       content: 'Create a comprehensive agreement to sell for property transactions.',
       icon: FileText,
       component: AgreementToSellForm
+    },    {
+      id: 'general-power-of-attorney',
+      title: 'General Power of Attorney',
+      description: 'Legal Authority & Powers',
+      content: 'Create a comprehensive general power of attorney for legal representation.',
+      icon: FileText,
+      component: GeneralPowerOfAttorneyForm
+    },    {
+      id: 'special-power-of-attorney',
+      title: 'Special Power of Attorney',
+      description: 'Legal Authority & Powers',
+      content: 'Create a special power of attorney for specific legal matters and court proceedings.',
+      icon: Scale,
+      component: SpecialPowerOfAttorneyForm
+    },
+    {
+      id: 'sale-agreement',
+      title: 'Sale Agreement',
+      description: 'Business & Commercial',
+      content: 'Create a comprehensive sale agreement for business transactions.',
+      icon: Briefcase,
+      component: SaleAgreementForm
     }
   ];
   

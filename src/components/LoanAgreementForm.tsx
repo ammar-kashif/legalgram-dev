@@ -53,6 +53,13 @@ interface LoanDetails {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
+  'state_selection': {
+    id: 'state_selection',
+    title: 'State Selection',
+    description: 'Select the state where this Loan Agreement will be executed',
+    questions: ['state'],
+    nextSectionId: 'general_details'
+  },
   'general_details': {
     id: 'general_details',
     title: 'General Details',
@@ -517,7 +524,6 @@ const LoanAgreementForm = () => {
     // Default validation
     return true;
   };
-
   const generateLoanAgreementPDF = () => {
     try {
       console.log("Generating Loan Agreement PDF...");
@@ -526,7 +532,7 @@ const LoanAgreementForm = () => {
       // Title
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
-      doc.text("Loan Agreement", 105, 20, { align: "center" });
+      doc.text("LOAN AGREEMENT", 105, 20, { align: "center" });
       
       // Reset to normal font
       doc.setFont("helvetica", "normal");
@@ -536,204 +542,142 @@ const LoanAgreementForm = () => {
       const lineHeight = 6;
       const pageHeight = 280;
       
-      // Introduction paragraph
+      // Helper function to add text with automatic page breaks
+      const addText = (text: string, isBold = false, fontSize = 11) => {
+        if (isBold) {
+          doc.setFont("helvetica", "bold");
+        } else {
+          doc.setFont("helvetica", "normal");
+        }
+        doc.setFontSize(fontSize);
+        
+        const lines = doc.splitTextToSize(text, 170);
+        lines.forEach((line: string) => {
+          if (y > pageHeight - 20) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(line, 15, y);
+          y += lineHeight;
+        });
+        y += 3; // Extra spacing after sections
+      };
+
+      // Dynamic field values
       const agreementDateStr = agreementDate ? format(agreementDate, 'MMMM dd, yyyy') : '_______________';
-      
-      const introText = `This Loan Agreement ("Agreement") is entered into on ${agreementDateStr}, by and between ${lender.name || '_______________'} ("Lender") and ${borrower.name || '_______________'} ("Borrower").`;
-      
-      const introLines = doc.splitTextToSize(introText, 170);
-      introLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
-      
-      // Lender Information Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Lender Information.", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      const lenderInfoText = `The Lender hereby agrees to lend money to the Borrower under the terms specified in this Agreement. Lender's details: Name: ${lender.name || '_______________'}, Address: ${lender.address || '_______________________________________________'}.`;
-      
-      const lenderInfoLines = doc.splitTextToSize(lenderInfoText, 170);
-      lenderInfoLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
-      
-      // Borrower Information Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Borrower Information.", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      const borrowerInfoText = `The Borrower hereby agrees to borrow money from the Lender and repay it according to the terms specified in this Agreement. Borrower's details: Name: ${borrower.name || '_______________'}, Address: ${borrower.address || '_______________________________________________'}.`;
-      
-      const borrowerInfoLines = doc.splitTextToSize(borrowerInfoText, 170);
-      borrowerInfoLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
-      
-      // Loan Details Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Loan Details.", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
       const loanDueDateStr = loanDueDate ? format(loanDueDate, 'MMMM dd, yyyy') : '_______________';
-      const loanDetailsText = `The Lender agrees to loan the Borrower the sum of $${loanDetails.amount || '_______________'} (the "Loan Amount"). The purpose of this loan is: ${loanDetails.purpose || '_______________________________________________'}. The full amount of the loan shall be due and payable on ${loanDueDateStr}.`;
-      
-      const loanDetailsLines = doc.splitTextToSize(loanDetailsText, 170);
-      loanDetailsLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
-      
-      // Check if we need a new page
-      if (y > pageHeight - 60) {
-        doc.addPage();
-        y = 20;
-      }
-      
-      // Repayment Terms Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Repayment Terms.", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
       const installmentStartDateStr = installmentStartDate ? format(installmentStartDate, 'MMMM dd, yyyy') : '_______________';
-      let repaymentText = `The Borrower agrees to repay the loan according to the following schedule: `;
       
+      // THE PARTIES
+      addText("THE PARTIES.", true, 12);
+      
+      addText(`This Loan Agreement ("Agreement") made on ${agreementDateStr} is between:`);
+      
+      addText(`Borrower: ${borrower.name || '[BORROWER\'S NAME]'} with address of ${borrower.address || '[ADDRESS]'} ("Borrower") and agrees to borrow money from:`);
+      
+      addText(`Lender: ${lender.name || '[LENDER\'S NAME]'} with address of ${lender.address || '[ADDRESS]'} and agrees to lend money to the Borrower under the following terms:`);
+      
+      // LOAN AMOUNT
+      addText("LOAN AMOUNT.", true, 12);
+      
+      addText(`The total amount of money being borrowed from the Lender to the Borrower is $${loanDetails.amount || '[INSERT AMOUNT]'} ("Borrowed Money").`);
+      
+      // TERM
+      addText("TERM.", true, 12);
+      
+      addText(`The total amount of the Borrowed Money, shall be due and payable till ${loanDueDateStr} ("Due Date")`);
+      
+      // PURPOSE OF LOAN
+      addText("PURPOSE OF LOAN", true, 12);
+      
+      addText("The Loan Amount shall be used by the Borrower for the following purpose:");
+      addText(`${loanDetails.purpose || '[Briefly describe the purpose]'}`);
+      
+      // PAYMENTS
+      addText("PAYMENTS.", true, 12);
+      
+      let paymentText = '';
       if (loanDetails.installmentFrequency === 'One-time payment') {
-        repaymentText += `The entire loan amount shall be repaid in one lump sum on the due date specified above.`;
+        paymentText = `The Borrower shall repay the entire Loan Amount in one lump sum payment on the Due Date specified above.`;
       } else {
-        repaymentText += `${loanDetails.installmentFrequency || '_______________'} installments of $${loanDetails.installmentAmount || '_______________'} each, beginning on ${installmentStartDateStr}.`;
+        paymentText = `The Borrower shall repay the Loan in ${loanDetails.installmentFrequency || '[Quarterly]'} installments of $${loanDetails.installmentAmount || '[Installment Amount]'} starting from ${installmentStartDateStr} until full payment is made.`;
       }
       
-      const repaymentLines = doc.splitTextToSize(repaymentText, 170);
-      repaymentLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
+      addText(paymentText);
+      addText("All payments shall be made in bank transfer to the Lender's designated account, details of which will be provided separately in writing.");
       
-      // Interest and Late Fees Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Interest and Late Fees.", 15, y);
-      y += lineHeight;
+      // GOVERNING LAW
+      addText("GOVERNING LAW.", true, 12);
       
-      doc.setFont("helvetica", "normal");
-      const interestText = "This loan shall bear no interest unless specifically agreed upon in writing by both parties. In the event of late payment, additional fees may apply as mutually agreed by the parties.";
+      addText(`This Agreement shall be construed and governed by the laws located in ${answers.governing_jurisdiction || 'the state'} ("Governing Law") and if not fulfilled will be punished under the laws of ${answers.governing_jurisdiction || 'state'}.`);
       
-      const interestLines = doc.splitTextToSize(interestText, 170);
-      interestLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
+      // SUCCESSORS
+      addText("SUCCESSORS.", true, 12);
       
-      // Default Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Default.", 15, y);
-      y += lineHeight;
+      addText("All of the foregoing is the promise of Borrower and shall bind Borrower and Borrower's successors, heirs, and assigns; provided, however, that Lender may not assign any of its rights or delegate any of its obligations hereunder without the prior written consent of the holder of this Agreement.");
       
-      doc.setFont("helvetica", "normal");
-      const defaultText = "If the Borrower fails to make any payment when due under this Agreement, the Borrower shall be in default. Upon default, the entire unpaid balance of the loan shall become immediately due and payable.";
+      // EVENTS OF DEFAULT
+      addText("EVENTS OF DEFAULT", true, 12);
       
-      const defaultLines = doc.splitTextToSize(defaultText, 170);
-      defaultLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
+      addText("The Borrower shall be considered in default under this Agreement if:");
+      addText("• Fails to repay the Loan Amount or any installment by the Due Date;");
+      addText("• Uses the funds for purposes other than agreed;");
+      addText("• Becomes insolvent or is declared bankrupt.");
       
-      // Governing Law Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Governing Law.", 15, y);
-      y += lineHeight;
+      addText("In the event of default:");
+      addText("• The entire outstanding amount shall become immediately due and payable;");
+      addText("• The Lender shall have the right to pursue legal remedies to recover the amount, including legal costs and damages.");
       
-      doc.setFont("helvetica", "normal");
-      const governingText = `This Agreement shall be governed by and construed in accordance with the laws of ${answers.governing_jurisdiction || '_______________'}.`;
+      // ENTIRE AGREEMENT
+      addText("ENTIRE AGREEMENT.", true, 12);
       
-      const governingLines = doc.splitTextToSize(governingText, 170);
-      governingLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
+      addText("This Agreement contains all the terms agreed to by the parties relating to its subject matter. This Agreement replaces all previous discussions, understandings, and oral agreements. The Borrower and Lender agree to the terms and conditions and shall be bound until the Borrowed Amount is repaid in full.");
       
-      // Check if we need a new page
-      if (y > pageHeight - 80) {
-        doc.addPage();
-        y = 20;
-      }
+      // NOTICES
+      addText("NOTICES", true, 12);
       
-      // Witness Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Witnesses.", 15, y);
-      y += lineHeight;
+      addText("Any notice under this Agreement shall be in writing and delivered personally, by courier, or by registered mail to the addresses of the Parties mentioned above.");
       
-      doc.setFont("helvetica", "normal");
-      const witnessText = `The following witnesses attest to the execution of this Agreement: ${witness1.name || '_______________'} and ${witness2.name || '_______________'}.`;
-      
-      const witnessLines = doc.splitTextToSize(witnessText, 170);
-      witnessLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight + 10;
+      // Add some space before signatures
+      y += 15;
       
       // Check if we need a new page for signatures
-      if (y > pageHeight - 120) {
+      if (y > pageHeight - 150) {
         doc.addPage();
         y = 20;
       }
       
-      // Signatures Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Signatures.", 15, y);
-      y += lineHeight + 5;
+      // IN WITNESS WHEREOF
+      addText("IN WITNESS WHEREOF, Borrower and Lender have executed this Agreement as of the day and year first above written.", true);
       
-      doc.setFont("helvetica", "normal");
+      y += 10;
+      
+      // SIGNATURES
+      addText("SIGNATURES:", true, 12);
       
       // Borrower signature
-      doc.text("The Borrower:", 15, y);
+      doc.text("Borrower's Signature: _____________________", 15, y);
+      doc.text("Date: _____________", 130, y);
       y += lineHeight + 5;
-      doc.text("____________________________", 15, y);
-      y += lineHeight;
-      doc.text(`${borrower.name || '_______________'} (Printed Name)`, 15, y);
-      y += lineHeight;
-      doc.text("Date: _________________", 15, y);
-      y += lineHeight + 8;
+      doc.text(`Name: ${borrower.name || '_____________________'}`, 15, y);
+      y += lineHeight + 15;
       
       // Lender signature
-      doc.text("The Lender:", 15, y);
+      doc.text("Lender's Signature: _____________________", 15, y);
+      doc.text("Date: _____________", 130, y);
       y += lineHeight + 5;
-      doc.text("____________________________", 15, y);
-      y += lineHeight;
-      doc.text(`${lender.name || '_______________'} (Printed Name)`, 15, y);
-      y += lineHeight;
-      doc.text("Date: _________________", 15, y);
-      y += lineHeight + 8;
+      doc.text(`Name: ${lender.name || '_____________________'}`, 15, y);
+      y += lineHeight + 15;
       
       // Witness signatures
-      doc.text("Witness 1:", 15, y);
+      doc.text("Witness No.1", 15, y);
       y += lineHeight + 5;
-      doc.text("____________________________", 15, y);
-      y += lineHeight;
-      doc.text(`${witness1.name || '_______________'} (Printed Name)`, 15, y);
-      y += lineHeight + 5;
+      doc.text(`Name and signature: ${witness1.name || '_____________________'}`, 15, y);
+      y += lineHeight + 10;
       
-      doc.text("Witness 2:", 15, y);
+      doc.text("Witness No.2", 15, y);
       y += lineHeight + 5;
-      doc.text("____________________________", 15, y);
-      y += lineHeight;
-      doc.text(`${witness2.name || '_______________'} (Printed Name)`, 15, y);
+      doc.text(`Name and signature: ${witness2.name || '_____________________'}`, 15, y);
       
       // Save the PDF
       const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');

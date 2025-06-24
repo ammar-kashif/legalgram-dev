@@ -58,6 +58,13 @@ interface EmergencyContact {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
+  'state_selection': {
+    id: 'state_selection',
+    title: 'State Selection',
+    description: 'Select the state where this authorization will be executed',
+    questions: ['state'],
+    nextSectionId: 'parties'
+  },
   'parties': {
     id: 'parties',
     title: 'Parties Information',
@@ -117,6 +124,19 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'state': {
+    id: 'state',
+    type: 'select',
+    text: 'Select the state where this authorization will be executed:',
+    options: [
+      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+      'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
+      'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
+      'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
+      'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+    ],
+    defaultNextId: 'parent_names'
+  },
   'parent_names': {
     id: 'parent_names',
     type: 'parent',
@@ -221,10 +241,9 @@ const questions: Record<string, Question> = {
   }
 };
 
-const ChildCareAuthForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('parties');
+const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['parties']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [children, setChildren] = useState<Child[]>([{ fullName: '', dateOfBirth: '' }]);
   const [parents, setParents] = useState<Parent[]>([{ name: '' }]);
@@ -694,10 +713,13 @@ const ChildCareAuthForm = () => {
     const renderSectionQuestions = () => {
     console.log("Current section:", currentSectionId, "Questions:", currentSection?.questions);
     return currentSection.questions.map(questionId => renderQuestionInput(questionId));
-  };
-    const canAdvance = () => {
+  };    const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
     
+    // Special validation for state selection
+    if (currentSectionId === 'state_selection') {
+      return answers.state;
+    }
     // Special validation for dynamic sections
     if (currentSectionId === 'parties') {
       return parents.some(p => p.name.trim()) && answers.parent_address && answers.parent_phones && answers.parent_emails;
@@ -991,7 +1013,6 @@ const ChildCareAuthForm = () => {
       return null;
     }
   };
-
   const renderFormSummary = () => {
     return (
       <div className="space-y-4 text-black">
@@ -999,6 +1020,11 @@ const ChildCareAuthForm = () => {
           <h3 className="text-lg font-semibold mb-4">Child Care Authorization Agreement Summary</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-medium text-sm">General Information</h4>
+              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+            </div>
+            
             <div>
               <h4 className="font-medium text-sm">Parents/Guardians</h4>
               <p><strong>Names:</strong> {parents.map(p => p.name).filter(n => n.trim()).join(", ") || 'Not provided'}</p>
@@ -1100,9 +1126,8 @@ const ChildCareAuthForm = () => {
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
-            onClick={() => {
-              setCurrentSectionId('parties');
-              setSectionHistory(['parties']);
+            onClick={() => {              setCurrentSectionId('state_selection');
+              setSectionHistory(['state_selection']);
             }}
             className="mt-4"
           >

@@ -63,6 +63,13 @@ interface ExistingShareholder {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
+  'state_selection': {
+    id: 'state_selection',
+    title: 'State Selection',
+    description: 'Select the state where this Share Purchase Agreement will be executed',
+    questions: ['state'],
+    nextSectionId: 'general_details'
+  },
   'general_details': {
     id: 'general_details',
     title: 'General Details',
@@ -104,11 +111,10 @@ const sections: Record<string, Section> = {
     description: 'Enter information about existing shareholder notifications',
     questions: ['existing_shareholder_info'],
     nextSectionId: 'witnesses'
-  },
-  'witnesses': {
+  },  'witnesses': {
     id: 'witnesses',
     title: 'Witness Information',
-    description: 'Enter witness information for the agreement',
+    description: 'Enter witness information for the agreement. Witnesses are required to validate the legal execution of this agreement.',
     questions: ['witness1_info', 'witness2_info'],
     nextSectionId: 'confirmation'
   },
@@ -122,6 +128,13 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'state': {
+    id: 'state',
+    type: 'select',
+    text: 'Select your state:',
+    options: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+    defaultNextId: 'effective_date'
+  },
   'effective_date': {
     id: 'effective_date',
     type: 'date',
@@ -177,17 +190,16 @@ const questions: Record<string, Question> = {
     type: 'text',
     text: 'Existing Shareholder Information:',
     defaultNextId: 'witness1_info'
-  },
-  'witness1_info': {
+  },  'witness1_info': {
     id: 'witness1_info',
     type: 'witness',
-    text: 'Witness 1 Information:',
+    text: 'First Witness Information (Required for legal validation):',
     defaultNextId: 'witness2_info'
   },
   'witness2_info': {
     id: 'witness2_info',
     type: 'witness',
-    text: 'Witness 2 Information:',
+    text: 'Second Witness Information (Required for legal validation):',
     defaultNextId: 'confirmation'
   },
   'confirmation': {
@@ -198,9 +210,9 @@ const questions: Record<string, Question> = {
 };
 
 const SharePurchaseAgreementForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('general_details');
+  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['general_details']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [seller, setSeller] = useState<Party>({ name: '', address: '' });
   const [buyer, setBuyer] = useState<Party>({ name: '', address: '' });
@@ -524,8 +536,10 @@ const SharePurchaseAgreementForm = () => {
 
   const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
-    
-    // Special validation for different sections
+      // Special validation for different sections
+    if (currentSectionId === 'state_selection') {
+      return answers.state;
+    }
     if (currentSectionId === 'general_details') {
       return effectiveDate && answers.agreement_location;
     }
@@ -612,8 +626,7 @@ const SharePurchaseAgreementForm = () => {
       }
       return renderQuestionInput(questionId);
     });
-  };
-  const generateSharePurchaseAgreementPDF = () => {
+  };  const generateSharePurchaseAgreementPDF = () => {
     try {
       console.log("Generating Share Purchase Agreement PDF...");
       const doc = new jsPDF();
@@ -621,7 +634,7 @@ const SharePurchaseAgreementForm = () => {
       // Title
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
-      doc.text("Share Purchase Agreement", 105, 20, { align: "center" });
+      doc.text("SHARE PURCHASE AGREEMENT", 105, 20, { align: "center" });
       
       // Reset to normal font
       doc.setFont("helvetica", "normal");
@@ -631,198 +644,209 @@ const SharePurchaseAgreementForm = () => {
       const lineHeight = 6;
       const pageHeight = 280;
       
-      // Introduction paragraph (similar to Child Care form style)
-      const currentDate = format(new Date(), 'yyyy-MM-dd');
+      // Helper function to add text with automatic page breaks
+      const addText = (text: string, isBold = false, fontSize = 11) => {
+        if (isBold) {
+          doc.setFont("helvetica", "bold");
+        } else {
+          doc.setFont("helvetica", "normal");
+        }
+        doc.setFontSize(fontSize);
+        
+        const lines = doc.splitTextToSize(text, 170);
+        lines.forEach((line: string) => {
+          if (y > pageHeight - 20) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(line, 15, y);
+          y += lineHeight;
+        });
+        y += 3; // Extra spacing after sections
+      };
+
+      // Dynamic field values
       const effectiveDateStr = effectiveDate ? format(effectiveDate, 'MMMM dd, yyyy') : '_______________';
       const agreementLocation = answers.agreement_location || '_______________';
-      
-      const introText = `This Share Purchase Agreement ("Agreement") is entered into on ${effectiveDateStr}, at ${agreementLocation}, by and between ${seller.name || '_______________'} ("Seller"), ${buyer.name || '_______________'} ("Buyer"), and ${existingShareholder.name || '_______________'} ("Existing Shareholder").`;
-      
-      const introLines = doc.splitTextToSize(introText, 170);
-      introLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
-      
-      // Seller Information Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Seller Information.", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      const sellerInfoText = `The Seller hereby agrees to sell and transfer the shares as specified in this Agreement. Seller's details: Name: ${seller.name || '_______________'}, Address: ${seller.address || '_______________________________________________'}.`;
-      
-      const sellerInfoLines = doc.splitTextToSize(sellerInfoText, 170);
-      sellerInfoLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
-      
-      // Buyer Information Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Buyer Information.", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      const buyerInfoText = `The Buyer hereby agrees to purchase the shares as specified in this Agreement. Buyer's details: Name: ${buyer.name || '_______________'}, Address: ${buyer.address || '_______________________________________________'}.`;
-      
-      const buyerInfoLines = doc.splitTextToSize(buyerInfoText, 170);
-      buyerInfoLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
-      
-      // Company and Share Details Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Company and Share Details.", 15, y);
-      y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
       const shareTransferDateStr = shareTransferDate ? format(shareTransferDate, 'MMMM dd, yyyy') : '_______________';
-      const companyDetailsText = `This Agreement pertains to the sale and purchase of shares in ${company.name || '_______________'} (Incorporation Number: ${company.incorporationNumber || '_______________'}), incorporated under the laws of ${company.jurisdiction || '_______________'}. The transaction involves ${company.sharesSold || '_______________'} ordinary shares, with the effective date of share transfer being ${shareTransferDateStr}.`;
+      const certificatesDelivery = answers.share_certificates_delivery || 'Not specified';
       
-      const companyDetailsLines = doc.splitTextToSize(companyDetailsText, 170);
-      companyDetailsLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
+      // RECITALS
+      addText("RECITALS", true, 12);
       
-      // Check if we need a new page
-      if (y > pageHeight - 60) {
+      addText(`WHEREAS, ${seller.name || '_______________'} ("Seller") is the owner of ${company.sharesSold || '_______________'} shares of ${company.name || '_______________'} (the "Company"), a corporation organized and existing under the laws of ${company.jurisdiction || '_______________'};`);
+      
+      addText(`WHEREAS, ${buyer.name || '_______________'} ("Buyer") desires to purchase from Seller the shares described herein;`);
+      
+      addText(`WHEREAS, the Company was incorporated on ${effectiveDateStr} under the laws of ${company.jurisdiction || '_______________'} with Incorporation Number ${company.incorporationNumber || '_______________'};`);
+      
+      addText(`WHEREAS, the parties wish to set forth the terms and conditions of the sale and purchase of the shares;`);
+      
+      addText(`NOW, THEREFORE, in consideration of the mutual covenants and agreements contained herein, and for other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the parties agree as follows:`);
+      
+      // ARTICLE I - DEFINITIONS
+      addText("ARTICLE I - DEFINITIONS", true, 12);
+      
+      addText(`1.1 "Shares" means the ${company.sharesSold || '_______________'} shares of common stock of the Company owned by Seller.`);
+      
+      addText(`1.2 "Closing Date" means ${shareTransferDateStr}.`);
+      
+      addText(`1.3 "Purchase Price" means the total consideration to be paid by Buyer to Seller for the Shares.`);
+      
+      addText(`1.4 "Company" means ${company.name || '_______________'}, a corporation incorporated under the laws of ${company.jurisdiction || '_______________'}.`);
+      
+      // ARTICLE II - SALE AND PURCHASE OF SHARES
+      addText("ARTICLE II - SALE AND PURCHASE OF SHARES", true, 12);
+      
+      addText(`2.1 Sale of Shares. Subject to the terms and conditions of this Agreement, Seller hereby agrees to sell, transfer, and deliver to Buyer, and Buyer hereby agrees to purchase from Seller, the Shares.`);
+      
+      addText(`2.2 Purchase Price. The aggregate purchase price for the Shares shall be determined by mutual agreement of the parties and shall be paid in cash at Closing.`);
+      
+      addText(`2.3 Closing. The closing of the purchase and sale of the Shares (the "Closing") shall take place on the Closing Date at ${agreementLocation} or such other place as the parties may mutually agree.`);
+      
+      // ARTICLE III - REPRESENTATIONS AND WARRANTIES OF SELLER
+      addText("ARTICLE III - REPRESENTATIONS AND WARRANTIES OF SELLER", true, 12);
+      
+      addText(`3.1 Title to Shares. Seller has good and marketable title to the Shares, free and clear of all liens, encumbrances, and restrictions.`);
+      
+      addText(`3.2 Authority. Seller has full corporate power and authority to execute and deliver this Agreement and to perform its obligations hereunder.`);
+      
+      addText(`3.3 No Conflicts. The execution and delivery of this Agreement by Seller does not conflict with any agreement, instrument, or obligation to which Seller is a party.`);
+      
+      // ARTICLE IV - REPRESENTATIONS AND WARRANTIES OF BUYER
+      addText("ARTICLE IV - REPRESENTATIONS AND WARRANTIES OF BUYER", true, 12);
+      
+      addText(`4.1 Authority. Buyer has full power and authority to execute and deliver this Agreement and to perform its obligations hereunder.`);
+      
+      addText(`4.2 Financial Capacity. Buyer has sufficient financial resources to pay the Purchase Price and perform its obligations under this Agreement.`);
+      
+      // ARTICLE V - COVENANTS
+      addText("ARTICLE V - COVENANTS", true, 12);
+      
+      addText(`5.1 Further Assurances. Each party agrees to execute and deliver such additional documents and instruments as may be reasonably necessary to effectuate the transactions contemplated by this Agreement.`);
+      
+      addText(`5.2 Existing Shareholder Consent. ${existingShareholder.name || '_______________'} ("Existing Shareholder") hereby consents to this share transfer. The offer letter was sent on ${existingShareholder.offerLetterDate || '_______________'}, refusal letter received on ${existingShareholder.refusalLetterDate || '_______________'}, and board resolution executed on ${existingShareholder.boardResolutionDate || '_______________'}.`);
+      
+      // ARTICLE VI - CONDITIONS TO CLOSING
+      addText("ARTICLE VI - CONDITIONS TO CLOSING", true, 12);
+      
+      addText(`6.1 Conditions to Buyer's Obligations. Buyer's obligation to purchase the Shares is subject to the following conditions:`);
+      addText(`(a) The representations and warranties of Seller shall be true and correct as of the Closing Date.`);
+      addText(`(b) Seller shall have performed all covenants and agreements required to be performed by it under this Agreement.`);
+      
+      if (certificatesDelivery.includes('Yes')) {
+        addText(`(c) Seller shall deliver to Buyer the share certificates representing the Shares, duly endorsed for transfer.`);
+      }
+      
+      addText(`6.2 Conditions to Seller's Obligations. Seller's obligation to sell the Shares is subject to the following conditions:`);
+      addText(`(a) The representations and warranties of Buyer shall be true and correct as of the Closing Date.`);
+      addText(`(b) Buyer shall have performed all covenants and agreements required to be performed by it under this Agreement.`);
+      
+      // ARTICLE VII - INDEMNIFICATION
+      addText("ARTICLE VII - INDEMNIFICATION", true, 12);
+      
+      addText(`7.1 Indemnification. ${answers.indemnifying_party || '_______________'} shall indemnify and hold harmless the other parties from and against any and all losses, damages, liabilities, costs, and expenses arising out of or resulting from any breach of the representations, warranties, or covenants contained in this Agreement.`);
+      
+      // ARTICLE VIII - MISCELLANEOUS
+      addText("ARTICLE VIII - MISCELLANEOUS", true, 12);
+      
+      addText(`8.1 Governing Law. This Agreement shall be governed by and construed in accordance with the laws of ${company.jurisdiction || '_______________'}.`);
+      
+      addText(`8.2 Entire Agreement. This Agreement constitutes the entire agreement between the parties and supersedes all prior agreements and understandings.`);
+      
+      addText(`8.3 Amendment. This Agreement may be amended only by a written instrument signed by all parties.`);
+      
+      addText(`8.4 Binding Effect. This Agreement shall be binding upon and inure to the benefit of the parties and their respective heirs, successors, and assigns.`);
+      
+      addText(`8.5 Counterparts. This Agreement may be executed in counterparts, each of which shall be deemed an original.`);
+      
+      // Add some space before signatures
+      y += 15;
+      
+      // Check if we need a new page for signatures
+      if (y > pageHeight - 120) {
         doc.addPage();
         y = 20;
       }
       
-      // Transaction Terms Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Transaction Terms.", 15, y);
+      // IN WITNESS WHEREOF
+      addText("IN WITNESS WHEREOF, the parties have executed this Share Purchase Agreement as of the date first written above.", true);
+      
+      y += 10;
+      
+      // Signatures Section
+      addText("SIGNATURES:", true, 12);
+      
+      // Seller signature
+      doc.text("SELLER:", 15, y);
+      y += lineHeight + 10;
+      doc.text("____________________________", 15, y);
       y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      const certificatesDelivery = answers.share_certificates_delivery || 'Not specified';
-      let transactionText = "The shares being transferred are ordinary shares of the Company. ";
-      
-      if (certificatesDelivery.includes('Yes')) {
-        transactionText += "The following documents shall be delivered as part of this transaction: share certificates, transfer deeds, and board resolutions. ";
-      } else {
-        transactionText += "The delivery of share certificates and related documents shall be as mutually agreed by the parties. ";
-      }
-      
-      const transactionLines = doc.splitTextToSize(transactionText, 170);
-      transactionLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
+      doc.text(`${seller.name || '_______________'}`, 15, y);
+      doc.text("Date: _________________", 110, y);
       y += lineHeight;
+      doc.text(`Address: ${seller.address || '_______________'}`, 15, y);
+      y += lineHeight + 15;
       
-      // Existing Shareholder Consent Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Existing Shareholder Consent.", 15, y);
+      // Buyer signature
+      doc.text("BUYER:", 15, y);
+      y += lineHeight + 10;
+      doc.text("____________________________", 15, y);
       y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      const consentText = `The Existing Shareholder, ${existingShareholder.name || '_______________'}, hereby consents to this share transfer. The offer letter was sent on ${existingShareholder.offerLetterDate || '_______________'}, refusal letter received on ${existingShareholder.refusalLetterDate || '_______________'}, and board resolution executed on ${existingShareholder.boardResolutionDate || '_______________'}.`;
-      
-      const consentLines = doc.splitTextToSize(consentText, 170);
-      consentLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
+      doc.text(`${buyer.name || '_______________'}`, 15, y);
+      doc.text("Date: _________________", 110, y);
       y += lineHeight;
+      doc.text(`Address: ${buyer.address || '_______________'}`, 15, y);
+      y += lineHeight + 15;
       
-      // Indemnification Section
-      doc.setFont("helvetica", "bold");
-      doc.text("Indemnification.", 15, y);
+      // Existing Shareholder signature
+      doc.text("EXISTING SHAREHOLDER:", 15, y);
+      y += lineHeight + 10;
+      doc.text("____________________________", 15, y);
       y += lineHeight;
-      
-      doc.setFont("helvetica", "normal");
-      const indemnificationText = `The indemnifying party for this transaction shall be ${answers.indemnifying_party || '_______________'}, who agrees to hold harmless the other parties from any claims, damages, or liabilities arising from this share purchase transaction.`;
-      
-      const indemnificationLines = doc.splitTextToSize(indemnificationText, 170);
-      indemnificationLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight;
-      
-      // Check if we need a new page
+      doc.text(`${existingShareholder.name || '_______________'}`, 15, y);
+      doc.text("Date: _________________", 110, y);
+      y += lineHeight + 15;      // Check if we need a new page for witnesses
       if (y > pageHeight - 80) {
         doc.addPage();
         y = 20;
       }
       
-      // Witness Section
+      // Witness signatures section with enhanced formatting
       doc.setFont("helvetica", "bold");
-      doc.text("Witnesses.", 15, y);
-      y += lineHeight;
-      
+      doc.setFontSize(12);
+      doc.text("WITNESS ATTESTATION", 15, y);
       doc.setFont("helvetica", "normal");
-      const witnessText = `The following witnesses attest to the execution of this Agreement: ${witness1.name || '_______________'} (CNIC: ${witness1.cnic || '_______________'}) and ${witness2.name || '_______________'} (CNIC: ${witness2.cnic || '_______________'}).`;
+      doc.setFontSize(11);
+      y += lineHeight + 5;
       
-      const witnessLines = doc.splitTextToSize(witnessText, 170);
-      witnessLines.forEach((line: string) => {
-        doc.text(line, 15, y);
-        y += lineHeight;
-      });
-      y += lineHeight + 10;
+      addText("The undersigned witnesses hereby attest that they have witnessed the execution of this Share Purchase Agreement by all parties, and that each party has signed this Agreement voluntarily and with full understanding of its terms and conditions.");
+      y += 5;
       
-      // Check if we need a new page for signatures
-      if (y > pageHeight - 100) {
-        doc.addPage();
-        y = 20;
-      }
-      
-      // Signatures Section
+      // Witness 1
       doc.setFont("helvetica", "bold");
-      doc.text("Signatures.", 15, y);
-      y += lineHeight + 5;
-      
+      doc.text("WITNESS 1:", 15, y);
       doc.setFont("helvetica", "normal");
+      y += lineHeight + 8;
+      doc.text("Signature: ____________________________", 15, y);
+      y += lineHeight + 3;
+      doc.text(`Print Name: ${witness1.name || '_______________'}`, 15, y);
+      doc.text("Date: _________________", 110, y);
+      y += lineHeight + 3;
+      doc.text(`CNIC No.: ${witness1.cnic || '_______________'}`, 15, y);
+      y += lineHeight + 15;
       
-      // Seller signature
-      doc.text("The Seller:", 15, y);
-      y += lineHeight + 5;
-      doc.text("____________________________", 15, y);
-      y += lineHeight;
-      doc.text(`${seller.name || '_______________'} (Printed Name)`, 15, y);
-      y += lineHeight + 5;
-      
-      // Buyer signature
-      doc.text("The Buyer:", 15, y);
-      y += lineHeight + 5;
-      doc.text("____________________________", 15, y);
-      y += lineHeight;
-      doc.text(`${buyer.name || '_______________'} (Printed Name)`, 15, y);
-      y += lineHeight + 5;
-      
-      // Existing Shareholder signature
-      doc.text("The Existing Shareholder:", 15, y);
-      y += lineHeight + 5;
-      doc.text("____________________________", 15, y);
-      y += lineHeight;
-      doc.text(`${existingShareholder.name || '_______________'} (Printed Name)`, 15, y);
-      y += lineHeight + 5;
-      
-      // Witness signatures
-      doc.text("Witness 1:", 15, y);
-      y += lineHeight + 5;
-      doc.text("____________________________", 15, y);
-      y += lineHeight;
-      doc.text(`${witness1.name || '_______________'} (Printed Name)`, 15, y);
-      y += lineHeight + 5;
-      
-      doc.text("Witness 2:", 15, y);
-      y += lineHeight + 5;
-      doc.text("____________________________", 15, y);
-      y += lineHeight;
-      doc.text(`${witness2.name || '_______________'} (Printed Name)`, 15, y);
-      y += lineHeight + 5;
-      
-      doc.text("Date: _________________", 15, y);
+      // Witness 2
+      doc.setFont("helvetica", "bold");
+      doc.text("WITNESS 2:", 15, y);
+      doc.setFont("helvetica", "normal");
+      y += lineHeight + 8;
+      doc.text("Signature: ____________________________", 15, y);
+      y += lineHeight + 3;
+      doc.text(`Print Name: ${witness2.name || '_______________'}`, 15, y);
+      doc.text("Date: _________________", 110, y);
+      y += lineHeight + 3;
+      doc.text(`CNIC No.: ${witness2.cnic || '_______________'}`, 15, y);
       
       // Save the PDF
       const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
@@ -845,10 +869,10 @@ const SharePurchaseAgreementForm = () => {
       <div className="space-y-4 text-black">
         <div className="border rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4">Share Purchase Agreement Summary</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">General Details</h4>
+              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
               <p><strong>Effective Date:</strong> {effectiveDate ? format(effectiveDate, 'dd/MM/yyyy') : 'Not provided'}</p>
               <p><strong>Location:</strong> {answers.agreement_location || 'Not provided'}</p>
             </div>
@@ -886,11 +910,20 @@ const SharePurchaseAgreementForm = () => {
               <p><strong>Offer Letter Date:</strong> {existingShareholder.offerLetterDate || 'Not provided'}</p>
               <p><strong>Refusal Letter Date:</strong> {existingShareholder.refusalLetterDate || 'Not provided'}</p>
             </div>
-            
-            <div>
-              <h4 className="font-medium text-sm">Witnesses</h4>
-              <p><strong>Witness 1:</strong> {witness1.name || 'Not provided'} ({witness1.cnic || 'CNIC not provided'})</p>
-              <p><strong>Witness 2:</strong> {witness2.name || 'Not provided'} ({witness2.cnic || 'CNIC not provided'})</p>
+              <div>
+              <h4 className="font-medium text-sm">Witness Information</h4>
+              <div className="space-y-2">
+                <div>
+                  <p><strong>Witness 1:</strong></p>
+                  <p className="ml-4">Name: {witness1.name || 'Not provided'}</p>
+                  <p className="ml-4">CNIC: {witness1.cnic || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p><strong>Witness 2:</strong></p>
+                  <p className="ml-4">Name: {witness2.name || 'Not provided'}</p>
+                  <p className="ml-4">CNIC: {witness2.cnic || 'Not provided'}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -919,11 +952,10 @@ const SharePurchaseAgreementForm = () => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 
-            variant="outline"
-            onClick={() => {
+            variant="outline"            onClick={() => {
               setAnswers({});
-              setSectionHistory(['general_details']);
-              setCurrentSectionId('general_details');
+              setSectionHistory(['state_selection']);
+              setCurrentSectionId('state_selection');
               setIsComplete(false);
               setSeller({ name: '', address: '' });
               setBuyer({ name: '', address: '' });
@@ -952,11 +984,10 @@ const SharePurchaseAgreementForm = () => {
     return (
       <Card className="max-w-4xl mx-auto">
         <CardContent className="text-center p-8">
-          <p className="text-red-500">An error occurred. Please refresh the page.</p>
-          <Button 
+          <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
             onClick={() => {
-              setCurrentSectionId('general_details');
-              setSectionHistory(['general_details']);
+              setCurrentSectionId('state_selection');
+              setSectionHistory(['state_selection']);
             }}
             className="mt-4"
           >
