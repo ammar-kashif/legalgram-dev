@@ -100,7 +100,7 @@ const questions: Record<string, Question> = {
     type: 'select',
     text: 'Select the state where this agreement will be executed:',
     options: [
-      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+      'Alabama', 'Alaska', 'Arizona',      'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
       'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
       'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
       'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
@@ -245,11 +245,10 @@ const questions: Record<string, Question> = {
     type: 'email',
     text: 'Tenant\'s email address:',
     defaultNextId: 'confirmation'
-  },
-  'confirmation': {
+  },  'confirmation': {
     id: 'confirmation',
     type: 'confirmation',
-    text: 'Thank you for providing the information. We will generate your Arkansas Lease Agreement based on your answers.',
+    text: 'Thank you for providing the information. We will generate your complete Lease Agreement based on your answers.',
   }
 };
 
@@ -476,7 +475,6 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
     const requiredQuestions = currentSection.questions;
     return requiredQuestions.every(questionId => !!answers[questionId]);
   };
-
   const generateLeaseAgreementPDF = () => {
     try {
       console.log("Generating PDF document...");
@@ -485,20 +483,21 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
       // Set font styles
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
-      doc.text("Arkansas Lease Agreement", 105, 20, { align: "center" });
+      doc.text("Lease Agreement", 105, 20, { align: "center" });
       
       // Reset to normal font for the body
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
+      doc.setFontSize(10);
       
       // Starting position for content
-      let y = 30;
-      const lineHeight = 6;
+      let y = 35;
+      const lineHeight = 5;
+      const pageHeight = 280;
       
-      // Insert the template with form values
+      // Insert the complete template with form values
       const currentDate = format(new Date(), 'yyyy-MM-dd');
       
-      let leaseContent = `This Lease Agreement ("Lease") is entered into on ${currentDate}, by and between ${answers.start || '________'} ("Landlord"), and ${answers.tenant_name || '________'} ("Tenant").
+      const fullLeaseContent = `This Lease Agreement ("Lease") is entered into on ${currentDate}, by and between ${answers.start || '________'} ("Landlord"), and ${answers.tenant_name || '________'} ("Tenant").
 
 Leased Property.
 The Landlord hereby leases to the Tenant the located at ${answers.property_address || '________'}, ${answers.property_city || '________'}, Arkansas ${answers.property_zip || '________'} ("Leased Property").
@@ -514,80 +513,61 @@ The Landlord can be reached by phone at ${answers.landlord_phone || '________'} 
 If any payment is returned for non-sufficient funds or because the Tenant stops payments, then, after that, the Landlord may, in writing, require the Tenant to pay future Rent payments by cash, cashier's check, or money order.
 
 Security Deposit.
-At the time of the signing of this Lease, the Tenant shall pay to the Landlord, in trust, a security deposit of $${answers.security_deposit || '________'} to be held and disbursed for the Tenant damages to the Leased Property or other defaults under this Lease (if any) as provided by law.`;
+At the time of the signing of this Lease, the Tenant shall pay to the Landlord, in trust, a security deposit of $${answers.security_deposit || '________'} to be held and disbursed for the Tenant damages to the Leased Property or other defaults under this Lease (if any) as provided by law.
 
-      // Split the text to fit the page width
-      const splitText = doc.splitTextToSize(leaseContent, 180);
-      doc.text(splitText, 15, y);
-      
-      // Update the Y position after the main content
-      y += splitText.length * lineHeight;
-      
-      // Check if we need a new page
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
-      
-      // Add the legal text from the template
-      let legalText = `
 (2) However, the money may be applied to the payment of accrued unpaid Rent and any damages which the Landlord has suffered by reason of the Tenant's non-compliance with the Lease, all as itemized by the Landlord in a written notice delivered to the Tenant, together with the remainder of the amount due sixty (60) days after termination of the tenancy and delivery of possession by the Tenant.
 (b)(1) The Landlord shall be deemed to have complied with subsection (a) of this section by mailing via first class mail the written notice and any payment required to the last known address of the Tenant.
 (2) If the letter containing the payment is returned to the Landlord and if the Landlord is unable to locate the Tenant after reasonable effort, then the payment shall become the property of the Landlord one hundred eighty (180) days from the date the payment was mailed.
- 
-Default.
-The Tenant will be in default of this Lease if the Tenant fails to comply with any material provisions of this Lease by which the Tenant is bound. Subject to any governing provisions of law to the contrary, if the Tenant fails to cure any financial obligation (or any other obligation) after written notice of such default is provided by the Landlord to the Tenant, the Landlord may elect to cure such default and the cost of such action will be added to the Tenant's financial obligations under this Lease. All sums of money or charges required to be paid by the Tenant under this Lease will be additional rent, whether or not such sums or charges are designated as "additional rent." The rights provided by this Paragraph are cumulative in nature and are in addition to any other rights afforded by law.`;
 
-      const splitLegalText = doc.splitTextToSize(legalText, 180);
-      doc.text(splitLegalText, 15, y);
-      
-      y += splitLegalText.length * lineHeight + 10;
-      
-      // Check if we need a new page
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
-      
-      // Add the keys section
-      let keysSection = `
+Default.
+The Tenant will be in default of this Lease if the Tenant fails to comply with any material provisions of this Lease by which the Tenant is bound. Subject to any governing provisions of law to the contrary, if the Tenant fails to cure any financial obligation (or any other obligation) after written notice of such default is provided by the Landlord to the Tenant, the Landlord may elect to cure such default and the cost of such action will be added to the Tenant's financial obligations under this Lease. All sums of money or charges required to be paid by the Tenant under this Lease will be additional rent, whether or not such sums or charges are designated as "additional rent." The rights provided by this Paragraph are cumulative in nature and are in addition to any other rights afforded by law.
+
+Utilities.
+The Tenant agrees to pay all charges for all utilities, including electricity, internet, cable, gas, water, garbage disposal, and telephones, used in or on the Leased Property during the term of this Lease. The Tenant shall make payments for these utilities directly to the utility companies. The Tenant also agrees to comply with any environmental, waste management, recycling, energy conservation, or water conservation programs implemented by the Landlord.
+
+Separate Gas Meter.
+The Landlord does provide a separate gas meter for the Leased Property so that the Tenant's meter measures only the gas service to the Leased Property.
+
+Separate Electric Meter.
+The Landlord does provide a separate electric meter for the Leased Property so that the Tenant's meter measures only the electric service to the Leased Property.
+
 Keys.
-The Tenant will be given ${answers.house_keys || '________'} key(s) to the Leased Property and ${answers.mailbox_keys || '________'} mailbox key(s). If the Tenant misplaces a key or does not return all keys following the Termination Date, the Tenant will be charged $${answers.key_replacement_fee || '________'}.
+The Tenant will be given ${answers.house_keys || '________'} key(s) to the Leased Property and ${answers.mailbox_keys || '________'} mailbox key(s). If the Tenant misplaces a key or does not return all keys following the Termination Date, the Tenant will be charged $${answers.key_replacement_fee || '________'}. The Tenant is not permitted to change any lock or place additional locking devices on any door of the Leased Property without the Landlord's approval. If allowed, the Tenant must provide the Landlord with keys to any changed lock immediately upon installation.
 If the Tenant becomes locked out of the Leased Property, the Tenant will be charged $${answers.lockout_fee || '________'} to regain entry.
 
 Occupancy of Leased Property.
-Except as stated otherwise in this Paragraph, only those individuals identified in this Lease as the "Tenant" (including their minor children) may reside in the Leased Property. The individuals identified as the "Tenant" shall sign this Lease. It is explicitly understood that this Lease is between the Landlord and each Tenant signatory individually and jointly. If any one signatory defaults, the remaining signatories are collectively responsible for timely Rent payment and all other terms of this Lease. The Tenant may have up to ${answers.max_guests || '________'} guests on the Leased Property at any one time. A "guest" shall be considered anyone who is invited by the Tenant to be present at the Leased Property, and who is also not included in the Lease. The Tenant may not have guests on the Leased Property for more than ${answers.max_guest_days || '________'} days. No other person shall be permitted to occupy the Leased Property except with the prior written approval of the Landlord.`;
-      
-      const splitKeysText = doc.splitTextToSize(keysSection, 180);
-      doc.text(splitKeysText, 15, y);
-      
-      y += splitKeysText.length * lineHeight + 10;
-      
-      // Check if we need another new page
-      if (y > 230) {
-        doc.addPage();
-        y = 20;
-      }
-      
-      // Add early termination section
-      let earlyTerminationSection = `
-Early Termination Clause.
-The Tenant may, upon ${answers.early_termination_days || '________'} days' written notice to the Landlord, terminate this Lease provided that the Tenant pays a termination charge equal to $0.00 or the maximum allowable by law, whichever is less. Termination will be effective as of the last day of the calendar month following the end of the ${answers.early_termination_days || '________'} day notice period. The termination charge will be in addition to all Rent due up to the termination day.`;
-      
-      const splitTerminationText = doc.splitTextToSize(earlyTerminationSection, 180);
-      doc.text(splitTerminationText, 15, y);
-      
-      y += splitTerminationText.length * lineHeight + 15;
-      
-      // Check if we need a new page for signatures
-      if (y > 230) {
-        doc.addPage();
-        y = 20;
-      }
+Except as stated otherwise in this Paragraph, only those individuals identified in this Lease as the "Tenant" (including their minor children) may reside in the Leased Property. The individuals identified as the "Tenant" shall sign this Lease. It is explicitly understood that this Lease is between the Landlord and each Tenant signatory individually and jointly. If any one signatory defaults, the remaining signatories are collectively responsible for timely Rent payment and all other terms of this Lease. The Tenant may have up to ${answers.max_guests || '________'} guests on the Leased Property at any one time. A "guest" shall be considered anyone who is invited by the Tenant to be present at the Leased Property, and who is also not included in the Lease. The Tenant may not have guests on the Leased Property for more than ${answers.max_guest_days || '________'} days. No other person shall be permitted to occupy the Leased Property except with the prior written approval of the Landlord.
 
-      // Add occupancy section from template
-      let noticesSection = `
+Use of Leased Property.
+No retail, commercial, or professional use of the Leased Property is allowed unless the Tenant receives prior written consent of the Landlord and such use conforms to applicable zoning laws. In such a case, the Landlord may require the Tenant to obtain liability insurance for the benefit of the Landlord. The Landlord reserves the right to refuse to consent to such use in its sole and absolute discretion.
+The Tenant is required to obtain the Landlord's approval in writing before bringing pets onto the Leased Property or allowing pets to reside there.
+The Tenant must ensure that no actions or activities in or around the Leased Property obstruct or interfere with the rights of neighboring occupants, causing them harm or annoyance, or utilize the Leased Property for improper, illegal, or objectionable purposes. Additionally, the Tenant must prevent or refrain from creating or allowing any nuisances on the Leased Property, or engaging in any activities that may lead to increased insurance rates, affect fire insurance coverage, or result in the cancellation of any insurance policies for the Leased Property or its content.
+Use of the roof and/or the fire escapes by the Tenant and/or guests is limited to emergency use only. No other use is permitted, including but not limited to, the placement of personal property.
+
+Assigning or Subletting.
+The Tenant may not do any of the following without the Landlord's prior written consent:
+(1) assign this Lease;
+(2) sublet all or any part of the Leased Property;
+(3) allow any person to use the Leased Property other than those uses specified in the Use of Leased Property Paragraph above.
+Unless the Tenant has obtained the Landlord's prior written consent to assign or sublease, any unapproved assignment or subletting may be deemed invalid by the Landlord, and the Tenant shall continue to remain responsible for all the terms and conditions of this Lease.
+
+Common Areas.
+The Tenant shall have the non-exclusive right to use the entrances, lobbies, accessways, hallways, stairways, elevators, sidewalks, driveways, parking areas, landscaped areas, and other areas of the Leased Property that are designated for the non-exclusive common use of the Tenant and their guests ("Common Areas"). The Tenant shall use the Common Areas in accordance with any rules or notices the Landlord sets forth from time to time. The Tenant shall be responsible for...
+
+Property Maintenance.
+The Landlord shall have the responsibility to maintain the Leased Property in reasonably good repair at all times and perform all repairs reasonably necessary to satisfy any implied warranty of habitability. Except in an emergency, the Tenant is hereby informed that any property maintenance issue, repair requests, or concerns should be reported to the Landlord at ${answers.landlord_phone || '________'} or ${answers.landlord_email || '________'}. A repair request will be deemed permission for entry into the Leased Property by the Landlord or their agents to perform such maintenance or repairs. The Tenant may not place any unreasonable restrictions upon the Landlord or the Landlord's agents' access or entry. The Landlord shall have the expectation that the Leased Property is in a safe and habitable condition upon entry.
+The Tenant acknowledges that the Leased Property from time to time may require renovations or repairs to keep them in good condition and repair and that such work may result in temporary loss of use of portions of the Leased Property and may inconvenience the Tenant. The Tenant agrees that any such loss shall not constitute a reduction in housing services or otherwise warrant a reduction in Rent. Further, subject to local law, the Tenant agrees, upon request of the Landlord, to temporarily vacate the Leased Property for a reasonable period, to allow for fumigation (or other methods) to control wood-destroying pests or organisms, or other repairs to the Leased Property. The Tenant agrees to comply with all instructions and requirements necessary to prepare the Leased Property to accommodate pest control, fumigation or other work, including bagging or storage of food and medicine and removal of perishables and valuables. The Tenant shall only be entitled to a credit of rent equal to the per diem rent for the period of time the Tenant is required to vacate the Leased Property.
+The Tenant further agrees to cooperate in any efforts undertaken by the Landlord to rid the Leased Property of pests of any kind. Failure of the Tenant to cooperate may be deemed an obstruction of the free use of property so as to interfere with the comfortable enjoyment of life or property thereby constituting a nuisance.
+The Tenant shall properly use, operate, and safeguard the Leased Property, including if applicable, any landscaping, furniture, furnishings, and appliances, and all mechanical, electrical, gas, and plumbing fixtures, and keep them and the Leased Property clean, sanitary, and well ventilated. The Tenant shall be responsible for checking and maintaining all smoke detectors. The Tenant shall immediately notify the Landlord, in writing, of any problem, malfunction, or damage. The Tenant shall be charged for all repairs or replacements caused by the Tenant, pets, or guests of the Tenant, excluding ordinary wear and tear. The Tenant shall be charged for all damage to the Leased Property as a result of failure to report a problem in a timely manner. The Tenant shall be charged for repair of drain blockages or stoppages, unless caused by defective plumbing parts or the roots invading sewer lines.
+
+Pets.
+No pets, dogs, cats, birds, fish, or other animals shall be allowed on the Leased Property, even temporarily or with a visiting guest. As required by law, service animals are the only exception to this rule. If a pet has been in the Tenant's apartment, even temporarily, the Tenant may be charged for cleaning, de-fleaing, deodorizing, or shampooing any portion of the Leased Property at the discretion of the Landlord.
+
+Stray pets shall not be kept or fed in or about the Leased Property. They can be dangerous and the Landlord must be notified immediately of any stray pets in or about the Leased Property.
+
 Notices.
+Notices under this Lease shall not be deemed valid unless given or served in writing and forwarded by mail, postage pre-paid, addressed to the party at the appropriate address set forth below. Such addresses may be changed from time to time by either party by providing notice as set forth below. Notices mailed in accordance with these Provisions shall be deemed received on the third day after posting.
+
 The Landlord:
 ${answers.landlord_address || '________'}
 Phone: ${answers.landlord_phone || '________'}
@@ -596,37 +576,97 @@ Email: ${answers.landlord_email || '________'}
 The Tenant:
 ${answers.tenant_address || '________'}
 Phone: ${answers.tenant_phone || '________'}
-Email: ${answers.tenant_email || '________'}`;
+Email: ${answers.tenant_email || '________'}
 
-      const splitNoticesText = doc.splitTextToSize(noticesSection, 180);
-      doc.text(splitNoticesText, 15, y);
+Military Termination Clause.
+In the event the Tenant is, or hereafter becomes, a member of the United States Armed Forces on extended active duty and hereafter the Tenant receives permanent change of station orders to depart from the area where the Leased Property is located; is relieved from active duty, retired or separated from the military; or is ordered into military housing, the Tenant may terminate this Lease upon giving 30 days' written notice to the Landlord. The Tenant shall also provide to the Landlord a copy of the official orders or a letter signed by the Tenant's commanding officer reflecting the change that warrants termination under this clause. The Tenant will pay pro-rated Rent for any days they occupy the dwelling past the first day of the month. The security deposit will be promptly returned to the Tenant, provided there are no damages to the Leased Property.
+
+Early Termination Clause.
+The Tenant may, upon ${answers.early_termination_days || '________'} days' written notice to the Landlord, terminate this Lease provided that the Tenant pays a termination charge equal to $0.00 or the maximum allowable by law, whichever is less. Termination will be effective as of the last day of the calendar month following the end of the ${answers.early_termination_days || '________'} day notice period. The termination charge will be in addition to all Rent due up to the termination day.
+
+Governing Law.
+This Lease shall be constructed in accordance with the laws of the State of Arkansas.
+
+Severability.
+If any portion of this Lease shall be held to be invalid or unenforceable for any reason, the remaining provisions shall continue to be valid and enforceable. If a court finds that any provision of this Lease is invalid or unenforceable, but that by limiting such provision it would become valid and enforceable, then such provision shall be deemed to be written, construed, and enforced as so limited. The failure of either party to enforce any provisions of this Lease shall not be construed as a waiver or limitation of that party's right to subsequently enforce and comply with strict compliance with every provision of this Lease.
+
+Estoppel Certificate.
+The Tenant shall execute and return a tenant estoppel certificate delivered to the Tenant by the Landlord or the Landlord's agent within 3 days after its receipt. Failure to comply with this requirement shall be deemed the Tenant's acknowledgment that the estoppel certificate is true and correct, and may be relied upon by a lender or purchaser.
+
+Attorney's Fees.
+If either party to this Lease initiates a legal action or proceeding arising from or relating to this Lease, the party that prevails in such action or proceeding shall be entitled to receive, in addition to any other remedies granted, reasonable attorney's fees, costs, and expenses incurred in the action or proceeding. This Provision also covers the recovery of expert witness fees, if applicable.
+
+Binding on Heirs and Successors.
+The Provisions of this Lease shall be binding upon and inure to the benefit of both parties and their respective legal representatives, successors, and assigns.
+
+Time of Essence.
+Time is of the essence with respect to the execution of this Lease.
+
+Full Lease.
+This Lease contains the entire agreement of the parties and there are no other promises, conditions, understandings or other agreements, whether oral or written, relating to the subject matter of this Lease. This Lease may be modified or amended in writing, if the writing is signed by the party obligated under the amendment.
+
+Asbestos.
+The Landlord is unaware of any asbestos-containing construction materials or any prior reports assessing their presence. Additionally, the Landlord has no knowledge of any potential carcinogens within the Leased Property.`;
+
+      // Split the text to fit the page and add to document
+      const splitText = doc.splitTextToSize(fullLeaseContent, 180);
       
-      y += splitNoticesText.length * lineHeight + 15;
+      // Add content with proper page breaks
+      for (let i = 0; i < splitText.length; i++) {
+        if (y > pageHeight) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(splitText[i], 15, y);
+        y += lineHeight;
+      }
       
-      // Add a new page for signatures
+      // Add signatures section on new page
       doc.addPage();
       y = 20;
       
-      // Add the signatures section
+      doc.setFont("helvetica", "normal");
       doc.text("The Landlord:", 15, y);
-      y += lineHeight * 2;
+      y += lineHeight * 3;
       doc.text("____________________________", 15, y);
+      y += lineHeight;
+      doc.text("(Signature)", 15, y);
       y += lineHeight;
       doc.text(`${answers.start || '________'} (Printed Name)`, 15, y);
       
-      y += lineHeight * 2;
+      y += lineHeight * 3;
       
       doc.text("The Tenant:", 15, y);
-      y += lineHeight * 2;
+      y += lineHeight * 3;
       doc.text("____________________________", 15, y);
+      y += lineHeight;
+      doc.text("(Signature)", 15, y);
       y += lineHeight;
       doc.text(`${answers.tenant_name || '________'} (Printed Name)`, 15, y);
       
-      y += lineHeight * 2;
+      y += lineHeight * 3;
       
+      doc.text("The Tenant:", 15, y);
+      y += lineHeight * 3;
+      doc.text("____________________________", 15, y);
+      y += lineHeight;
+      doc.text("(Signature)", 15, y);
+      y += lineHeight;
+      doc.text(`${answers.tenant_name || '________'} (Printed Name)`, 15, y);
+      
+      y += lineHeight * 3;
       doc.text("Date: _________________", 15, y);
       
-      // Add another page for inspection checklist
+      y += lineHeight * 3;
+      doc.setFont("helvetica", "bold");
+      doc.text("Receipt", 15, y);
+      doc.setFont("helvetica", "normal");
+      y += lineHeight * 2;
+      doc.text(`By signing above the Landlord hereby acknowledges receipt and the Tenant acknowledges the payment of the following:`, 15, y);
+      y += lineHeight;
+      doc.text(`Security Deposit: $${answers.security_deposit || '________'}`, 15, y);
+      
+      // Add inspection checklist on new page
       doc.addPage();
       y = 20;
       
@@ -635,28 +675,76 @@ Email: ${answers.tenant_email || '________'}`;
       y += lineHeight * 2;
       
       doc.setFont("helvetica", "normal");
-      doc.text("The Tenant has inspected the Leased Property and states that it is in satisfactory condition, free of defects, except as noted below:", 15, y);
-      y += lineHeight * 2;
+      const splitInspectionText = doc.splitTextToSize("The Tenant has inspected the Leased Property and states that it is in satisfactory condition, free of defects, except as noted below:", 180);
+      doc.text(splitInspectionText, 15, y);
+      y += splitInspectionText.length * lineHeight + lineHeight;
       
       // Table headers
       doc.text("ITEM", 15, y);
-      doc.text("SATISFACTORY", 100, y);
-      doc.text("COMMENTS", 150, y);
+      doc.text("SATISFACTORY", 80, y);
+      doc.text("COMMENTS", 130, y);
       y += lineHeight;
       
-      // Sample inspection items
+      // Inspection items
       const inspectionItems = [
         "Bathrooms", "Carpeting", "Ceilings", "Closets", "Countertops",
-        "Dishwasher", "Disposal", "Doors", "Walls", "Windows", 
-        "Window coverings"
+        "Dishwasher", "Disposal", "Doors", "Fireplace", "Lights",
+        "Walls", "Windows", "Window coverings"
       ];
       
       inspectionItems.forEach(item => {
         doc.text(item, 15, y);
-        doc.text("________", 100, y);
-        doc.text("________________________", 150, y);
+        doc.text("________", 80, y);
+        doc.text("______________________", 130, y);
         y += lineHeight;
       });
+      
+      // Add blank lines for additional items
+      for (let i = 0; i < 2; i++) {
+        doc.text("_____________", 15, y);
+        doc.text("________", 80, y);
+        doc.text("______________________", 130, y);
+        y += lineHeight;
+      }
+      
+      y += lineHeight * 2;
+      doc.text("Date: _________________", 15, y);
+      
+      y += lineHeight * 3;
+      doc.text("The Tenant:", 15, y);
+      y += lineHeight * 3;
+      doc.text("____________________________", 15, y);
+      y += lineHeight;
+      doc.text("(Signature)", 15, y);
+      y += lineHeight;
+      doc.text("Date: ___________________", 15, y);
+      y += lineHeight;
+      doc.text(`${answers.tenant_name || '________'} (Printed Name)`, 15, y);
+      
+      // Add lead-based paint disclosure on new page
+      doc.addPage();
+      y = 20;
+      
+      doc.setFont("helvetica", "bold");
+      doc.text("Disclosure of Information on Lead-Based Paint or Lead-Based Hazards", 105, y, { align: "center" });
+      y += lineHeight * 2;
+      
+      doc.setFont("helvetica", "bold");
+      doc.text("Lead Warning Statement:", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      const leadWarningText = "Housing built before 1978 may contain lead-based paint. Lead from paint, paint chips, and dust can pose health hazards if not managed properly. Lead exposure is especially harmful to young children and pregnant women. Before renting pre-1978 housing, landlords must disclose the presence of known lead-based paint and/or lead-based paint hazards in the dwelling. The Tenant must also receive a federally approved pamphlet on lead poisoning prevention.";
+      const splitLeadText = doc.splitTextToSize(leadWarningText, 180);
+      doc.text(splitLeadText, 15, y);
+      y += splitLeadText.length * lineHeight + lineHeight;
+      
+      doc.setFont("helvetica", "bold");
+      doc.text("Landlord's Disclosure:", 15, y);
+      y += lineHeight;
+      
+      doc.setFont("helvetica", "normal");
+      doc.text("Because the Leased Property was built after 1978, the lead-based paint disclosure is not required under applicable law.", 15, y);
       
       // Save the PDF
       const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
@@ -665,7 +753,7 @@ Email: ${answers.tenant_email || '________'}`;
       
       doc.save(filename);
       
-      toast.success("Lease agreement successfully generated!");
+      toast.success("Complete Lease Agreement successfully generated with all sections and disclosures!");
       return doc;
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -737,7 +825,7 @@ Email: ${answers.tenant_email || '________'}`;
         <div className="border rounded-lg p-4 bg-green-50 dark:bg-green-900/10">
           <p className="text-center mb-2">
             By generating this document, you confirm the accuracy of the information provided. 
-            This document will serve as your official Arkansas Lease Agreement.
+            This document will serve as your official Lease Agreement.
           </p>
         </div>
       </div>
@@ -748,7 +836,7 @@ Email: ${answers.tenant_email || '________'}`;
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl text-green-600">Arkansas Lease Agreement</CardTitle>
+          <CardTitle className="text-xl text-green-600">Lease Agreement</CardTitle>
           <CardDescription>
             Review your lease agreement details below before generating the final document.
           </CardDescription>

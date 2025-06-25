@@ -22,7 +22,7 @@ const MakeDocument = () => {
       id: 'lease-agreement',
       title: 'Residential Lease Agreement',
       description: 'Real Estate',
-      content: 'Create a customized Arkansas Lease Agreement for residential rental properties.',
+      content: 'Create a customized Lease Agreement for residential rental properties.',
       icon: FileText,
       component: ConditionalForm
     },
