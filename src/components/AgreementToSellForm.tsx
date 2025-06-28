@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -64,13 +65,60 @@ interface ArbitrationDetails {
   umpireName: string;
 }
 
+// Define interfaces for the new countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
+
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
   'state_selection': {
     id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this agreement will be executed',
-    questions: ['state'],
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this agreement will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'general_details'
   },
   'general_details': {
@@ -139,17 +187,18 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select the country where this agreement will be executed:',
+    options: [], // Will be populated dynamically from the database
+    defaultNextId: 'state'
+  },
   'state': {
     id: 'state',
     type: 'select',
-    text: 'Select the state where this agreement will be executed:',
-    options: [
-      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-      'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-      'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-      'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-      'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-    ],
+    text: 'Select the state/province where this agreement will be executed:',
+    options: [], // Will be populated dynamically based on country selection
     defaultNextId: 'agreement_date'
   },
   'agreement_date': {
@@ -326,9 +375,9 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
               </Label>
               <Input
                 id={questionId}
-                value={answers[questionId] || 'Islamabad'}
+                value={answers[questionId] || ''}
                 onChange={(e) => handleAnswer(questionId, e.target.value)}
-                placeholder="Location of signing (default: Islamabad)"
+                placeholder="Enter location of signing (e.g., Islamabad)"
                 className="mt-1 text-black w-full"
               />
             </div>
@@ -570,6 +619,26 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
           </div>
         );
       case 'select':
+        // Get options based on question type
+        let optionsToShow: Array<{value: string, label: string}> = [];
+        
+        if (questionId === 'country') {
+          // Get all countries from the database using the new API
+          const countries = getAllCountries();
+          optionsToShow = countries.map(country => ({
+            value: country.id.toString(),
+            label: country.name
+          }));
+        } else if (questionId === 'state' && answers.country) {
+          // Get states for the selected country using country ID
+          const countryId = parseInt(answers.country);
+          const states = getStatesByCountry(countryId);
+          optionsToShow = states.map(state => ({
+            value: state.id.toString(),
+            label: state.name
+          }));
+        }
+        
         return (
           <div className="mb-4">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
@@ -577,15 +646,26 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
             </Label>
             <Select
               value={answers[questionId] || ''}
-              onValueChange={(value) => handleAnswer(questionId, value)}
+              onValueChange={(value) => {
+                handleAnswer(questionId, value);
+                // Clear state selection when country changes
+                if (questionId === 'country' && answers.state) {
+                  handleAnswer('state', '');
+                }
+              }}
+              disabled={questionId === 'state' && !answers.country}
             >
               <SelectTrigger className="mt-1 text-black w-full">
-                <SelectValue placeholder="Select an option" />
+                <SelectValue placeholder={
+                  questionId === 'state' && !answers.country 
+                    ? "Please select a country first" 
+                    : "Select an option"
+                } />
               </SelectTrigger>
               <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
+                {optionsToShow.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -614,10 +694,10 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
     
     // Special validation for different sections
     if (currentSectionId === 'state_selection') {
-      return answers.state;
+      return answers.country && answers.state;
     }
     if (currentSectionId === 'general_details') {
-      return agreementDate && answers.location_signing && signingDate;
+      return agreementDate && signingDate; // location_signing is optional, will default to 'Islamabad' in PDF
     }
     if (currentSectionId === 'seller_info') {
       return seller.name && seller.address;
@@ -854,27 +934,29 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
       // SIGNATURES
       addText("SIGNATURES:", true, 12);
       
-      // Seller signature
+      // Store the starting Y position for signatures
+      const signatureStartY = y;
+      
+      // Seller signature (left side)
       doc.text("On Behalf of Seller:", 15, y);
       y += lineHeight + 10;
       doc.text("____________________________", 15, y);
       y += lineHeight;
+      doc.text("Signature", 15, y);
+      y += lineHeight;
       doc.text(`Name: ${seller.name || '[SELLER NAME]'}`, 15, y);
       y += lineHeight;
-      doc.text("Designation: ____________________", 15, y);
-      y += lineHeight;
       doc.text(`Date: ${agreementDateStr}`, 15, y);
-      y += lineHeight + 15;
       
-      // Buyer signature (right aligned)
-      let buyerY = y - (lineHeight * 5 + 15); // Align with seller signature
+      // Buyer signature (right side) - start from the same Y position as seller
+      let buyerY = signatureStartY;
       doc.text("Buyer:", 120, buyerY);
       buyerY += lineHeight + 10;
       doc.text("____________________________", 120, buyerY);
       buyerY += lineHeight;
-      doc.text(`Name: ${buyer.name || '[BUYER NAME]'}`, 120, buyerY);
-      buyerY += lineHeight;
       doc.text("Signature", 120, buyerY);
+      buyerY += lineHeight;
+      doc.text(`Name: ${buyer.name || '[BUYER NAME]'}`, 120, buyerY);
       buyerY += lineHeight;
       doc.text(`Date: ${agreementDateStr}`, 120, buyerY);
       
@@ -901,7 +983,8 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">Agreement Details</h4>
-              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state && answers.country ? getStateName(answers.country, answers.state) : 'Not provided'}</p>
               <p><strong>Effective Date:</strong> {agreementDate ? format(agreementDate, 'dd/MM/yyyy') : 'Not provided'}</p>
               <p><strong>Location of Signing:</strong> {answers.location_signing || 'Not provided'}</p>
               <p><strong>Signing Reference Date:</strong> {signingDate ? format(signingDate, 'dd/MM/yyyy') : 'Not provided'}</p>

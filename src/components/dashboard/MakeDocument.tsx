@@ -14,6 +14,7 @@ import AgreementToSellForm from "@/components/AgreementToSellForm";
 import GeneralPowerOfAttorneyForm from "@/components/GeneralPowerOfAttorneyForm";
 import SpecialPowerOfAttorneyForm from "@/components/SpecialPowerOfAttorneyForm";
 import SaleAgreementForm from "@/components/SaleAgreementForm";
+import BusinessAgreementForm from "@/components/BusinessAgreementForm";
 
 
 const MakeDocument = () => {
@@ -81,7 +82,7 @@ const MakeDocument = () => {
       id: 'agreement-to-sell',
       title: 'Agreement to Sell',
       description: 'Real Estate & Property',
-      content: 'Create a comprehensive agreement to sell for property transactions.',
+      content: 'Create a comprehensive agreement to sell for property transactions with full global support - 250+ countries and their respective states/provinces.',
       icon: FileText,
       component: AgreementToSellForm
     },    {
@@ -106,6 +107,14 @@ const MakeDocument = () => {
       content: 'Create a comprehensive sale agreement for business transactions.',
       icon: Briefcase,
       component: SaleAgreementForm
+    },
+    {
+      id: 'business-agreement',
+      title: 'Business Agreement',
+      description: 'Partnership & Joint Ventures',
+      content: 'Create a comprehensive business partnership agreement with marketing rights, financial terms, and construction timeline provisions.',
+      icon: Building2,
+      component: BusinessAgreementForm
     }
   ];
   
