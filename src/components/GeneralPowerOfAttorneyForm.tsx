@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -31,6 +32,53 @@ interface Question {
   nextQuestionId?: Record<string, string>;
   defaultNextId?: string;
 }
+
+// Define interfaces for the countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
 
 // Party interface (Declarant)
 interface Party {
@@ -60,11 +108,11 @@ interface NotaryInfo {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
-  'state_selection': {
-    id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this power of attorney will be executed',
-    questions: ['state'],
+  'location_selection': {
+    id: 'location_selection',
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this power of attorney will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'declarant_info'
   },
   'declarant_info': {
@@ -119,17 +167,18 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select the country where this power of attorney will be executed:',
+    options: [], // Will be populated dynamically from the database
+    defaultNextId: 'state'
+  },
   'state': {
     id: 'state',
     type: 'select',
-    text: 'Select the state where this power of attorney will be executed:',
-    options: [
-      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-      'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-      'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-      'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-      'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-    ],
+    text: 'Select the state/province where this power of attorney will be executed:',
+    options: [], // Will be populated dynamically based on country selection
     defaultNextId: 'declarant_info'
   },
   'declarant_info': {
@@ -181,9 +230,9 @@ const questions: Record<string, Question> = {
   }
 };
 
-const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
+const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [declarant, setDeclarant] = useState<Party>({ name: '', address: '' });
   const [agent, setAgent] = useState<Agent>({ name: '', address: '', phone: '', email: '' });
@@ -436,6 +485,32 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
           </div>
         );
       case 'select':
+        // Get options based on question type
+        let optionsToShow: Array<{value: string, label: string}> = [];
+        
+        if (questionId === 'country') {
+          // Get all countries from the database using the new API
+          const countries = getAllCountries();
+          optionsToShow = countries.map(country => ({
+            value: country.id.toString(),
+            label: country.name
+          }));
+        } else if (questionId === 'state' && answers.country) {
+          // Get states for the selected country using country ID
+          const countryId = parseInt(answers.country);
+          const states = getStatesByCountry(countryId);
+          optionsToShow = states.map(state => ({
+            value: state.id.toString(),
+            label: state.name
+          }));
+        } else if (question.options) {
+          // Use static options for other select questions
+          optionsToShow = question.options.map(option => ({
+            value: option,
+            label: option
+          }));
+        }
+        
         return (
           <div className="mb-4">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
@@ -443,15 +518,26 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
             </Label>
             <Select
               value={answers[questionId] || ''}
-              onValueChange={(value) => handleAnswer(questionId, value)}
+              onValueChange={(value) => {
+                handleAnswer(questionId, value);
+                // Clear state selection when country changes
+                if (questionId === 'country' && answers.state) {
+                  handleAnswer('state', '');
+                }
+              }}
+              disabled={questionId === 'state' && !answers.country}
             >
               <SelectTrigger className="mt-1 text-black w-full">
-                <SelectValue placeholder="Select an option" />
+                <SelectValue placeholder={
+                  questionId === 'state' && !answers.country 
+                    ? "Please select a country first" 
+                    : "Select an option"
+                } />
               </SelectTrigger>
               <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
+                {optionsToShow.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -479,8 +565,8 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
     if (currentSectionId === 'confirmation') return true;
     
     // Special validation for different sections
-    if (currentSectionId === 'state_selection') {
-      return answers.state;
+    if (currentSectionId === 'location_selection') {
+      return answers.country && answers.state;
     }
     if (currentSectionId === 'declarant_info') {
       return declarant.name && declarant.address;
@@ -541,6 +627,19 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
       
       const alternateAgentLines = doc.splitTextToSize(alternateAgentText, 170);
       alternateAgentLines.forEach((line: string) => {
+        doc.text(line, 15, y);
+        y += lineHeight;
+      });
+      y += lineHeight;
+      
+      // Governing Law Statement (add before powers section)
+      const countryName = answers.country ? getCountryName(answers.country) : '_______________';
+      const stateName = answers.state && answers.country ? getStateName(answers.country, answers.state) : '_______________';
+      
+      const governingLawText = `This Power of Attorney shall be governed by the laws of ${countryName}${answers.state ? ', ' + stateName : ''}.`;
+      
+      const governingLawLines = doc.splitTextToSize(governingLawText, 170);
+      governingLawLines.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
@@ -709,7 +808,8 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">General Information</h4>
-              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state && answers.country ? getStateName(answers.country, answers.state) : 'Not provided'}</p>
               <p><strong>Execution Date:</strong> {executionDate ? format(executionDate, 'dd/MM/yyyy') : 'Not provided'}</p>
             </div>
             
@@ -737,6 +837,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
             <div>
               <h4 className="font-medium text-sm">Execution Details</h4>
               <p><strong>Date of Execution:</strong> {executionDate ? format(executionDate, 'dd/MM/yyyy') : 'Not provided'}</p>
+              <p><strong>Governing Law:</strong> {answers.country ? getCountryName(answers.country) + (answers.state ? ', ' + getStateName(answers.country, answers.state) : '') : 'Not provided'}</p>
             </div>
             
             <div>
@@ -780,8 +881,8 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
             variant="outline"
             onClick={() => {
               setAnswers({});
-              setSectionHistory(['declarant_info']);
-              setCurrentSectionId('declarant_info');
+              setSectionHistory(['location_selection']);
+              setCurrentSectionId('location_selection');
               setIsComplete(false);
               setDeclarant({ name: '', address: '' });
               setAgent({ name: '', address: '', phone: '', email: '' });
@@ -811,8 +912,8 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
-            onClick={() => {              setCurrentSectionId('state_selection');
-              setSectionHistory(['state_selection']);
+            onClick={() => {              setCurrentSectionId('location_selection');
+              setSectionHistory(['location_selection']);
             }}
             className="mt-4"
           >

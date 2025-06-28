@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -31,6 +32,53 @@ interface Question {
   nextQuestionId?: Record<string, string>;
   defaultNextId?: string;
 }
+
+// Define interfaces for the countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
 
 // Party interface (Borrower/Lender)
 interface Party {
@@ -53,11 +101,11 @@ interface LoanDetails {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
-  'state_selection': {
-    id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this Loan Agreement will be executed',
-    questions: ['state'],
+  'location_selection': {
+    id: 'location_selection',
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this Loan Agreement will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'general_details'
   },
   'general_details': {
@@ -119,6 +167,20 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select the country where this Loan Agreement will be executed:',
+    options: [], // Will be populated dynamically from the database
+    defaultNextId: 'state'
+  },
+  'state': {
+    id: 'state',
+    type: 'select',
+    text: 'Select the state/province where this Loan Agreement will be executed:',
+    options: [], // Will be populated dynamically based on country selection
+    defaultNextId: 'agreement_date'
+  },
   'agreement_date': {
     id: 'agreement_date',
     type: 'date',
@@ -200,9 +262,9 @@ const questions: Record<string, Question> = {
 };
 
 const LoanAgreementForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('general_details');
+  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['general_details']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [borrower, setBorrower] = useState<Party>({ name: '', address: '' });
   const [lender, setLender] = useState<Party>({ name: '', address: '' });
@@ -321,34 +383,92 @@ const LoanAgreementForm = () => {
           </div>
         );
       case 'select':
-        return (
-          <div className="mb-4">
-            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
-              {question.text}
-            </Label>
-            <Select
-              value={questionId === 'installment_frequency' ? loanDetails.installmentFrequency : answers[questionId] || ''}
-              onValueChange={(value) => {
-                if (questionId === 'installment_frequency') {
-                  updateLoanDetails('installmentFrequency', value);
-                } else {
+        if (questionId === 'country') {
+          return (
+            <div className="mb-4">
+              <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+                {question.text}
+              </Label>
+              <Select
+                value={answers[questionId] || ''}
+                onValueChange={(value) => {
                   handleAnswer(questionId, value);
-                }
-              }}
-            >
-              <SelectTrigger className="mt-1 text-black w-full">
-                <SelectValue placeholder="Select an option" />
-              </SelectTrigger>
-              <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        );
+                  // Reset state when country changes
+                  if (answers.state) {
+                    handleAnswer('state', '');
+                  }
+                }}
+              >
+                <SelectTrigger className="mt-1 text-black w-full">
+                  <SelectValue placeholder="Select a country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getAllCountries().map((country) => (
+                    <SelectItem key={country.id} value={`${country.id}`}>
+                      {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        } else if (questionId === 'state') {
+          const selectedCountryId = answers.country;
+          const states = selectedCountryId ? getStatesByCountry(parseInt(selectedCountryId)) : [];
+          
+          return (
+            <div className="mb-4">
+              <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+                {question.text}
+              </Label>
+              <Select
+                value={answers[questionId] || ''}
+                onValueChange={(value) => handleAnswer(questionId, value)}
+                disabled={!selectedCountryId}
+              >
+                <SelectTrigger className="mt-1 text-black w-full">
+                  <SelectValue placeholder={selectedCountryId ? "Select a state/province" : "Select a country first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {states.map((state) => (
+                    <SelectItem key={state.id} value={`${state.id}`}>
+                      {state.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        } else {
+          return (
+            <div className="mb-4">
+              <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+                {question.text}
+              </Label>
+              <Select
+                value={questionId === 'installment_frequency' ? loanDetails.installmentFrequency : answers[questionId] || ''}
+                onValueChange={(value) => {
+                  if (questionId === 'installment_frequency') {
+                    updateLoanDetails('installmentFrequency', value);
+                  } else {
+                    handleAnswer(questionId, value);
+                  }
+                }}
+              >
+                <SelectTrigger className="mt-1 text-black w-full">
+                  <SelectValue placeholder="Select an option" />
+                </SelectTrigger>
+                <SelectContent>
+                  {question.options?.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        }
       case 'date':
         let dateValue: Date | undefined;
         let setDateValue: (date: Date | undefined) => void;
@@ -499,6 +619,9 @@ const LoanAgreementForm = () => {
     if (currentSectionId === 'confirmation') return true;
     
     // Special validation for different sections
+    if (currentSectionId === 'location_selection') {
+      return answers.country && answers.state;
+    }
     if (currentSectionId === 'general_details') {
       return agreementDate;
     }
@@ -609,7 +732,7 @@ const LoanAgreementForm = () => {
       // GOVERNING LAW
       addText("GOVERNING LAW.", true, 12);
       
-      addText(`This Agreement shall be construed and governed by the laws located in ${answers.governing_jurisdiction || 'the state'} ("Governing Law") and if not fulfilled will be punished under the laws of ${answers.governing_jurisdiction || 'state'}.`);
+      addText(`This Agreement shall be construed and governed by the laws located in ${answers.country ? getCountryName(answers.country) + (answers.state ? ', ' + getStateName(answers.country, answers.state) : '') : answers.governing_jurisdiction || 'the state'} ("Governing Law") and if not fulfilled will be punished under the laws of ${answers.country ? getCountryName(answers.country) + (answers.state ? ', ' + getStateName(answers.country, answers.state) : '') : answers.governing_jurisdiction || 'state'}.`);
       
       // SUCCESSORS
       addText("SUCCESSORS.", true, 12);
@@ -703,6 +826,12 @@ const LoanAgreementForm = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+              <h4 className="font-medium text-sm">Location Information</h4>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state && answers.country ? getStateName(answers.country, answers.state) : 'Not provided'}</p>
+            </div>
+            
+            <div>
               <h4 className="font-medium text-sm">General Details</h4>
               <p><strong>Agreement Date:</strong> {agreementDate ? format(agreementDate, 'dd/MM/yyyy') : 'Not provided'}</p>
             </div>
@@ -735,7 +864,8 @@ const LoanAgreementForm = () => {
             
             <div>
               <h4 className="font-medium text-sm">Governing Law</h4>
-              <p><strong>Jurisdiction:</strong> {answers.governing_jurisdiction || 'Not provided'}</p>
+              <p><strong>Primary Jurisdiction:</strong> {answers.country ? getCountryName(answers.country) + (answers.state ? ', ' + getStateName(answers.country, answers.state) : '') : 'Not provided'}</p>
+              {answers.governing_jurisdiction && <p><strong>Additional Jurisdiction:</strong> {answers.governing_jurisdiction}</p>}
             </div>
             
             <div>
@@ -773,8 +903,8 @@ const LoanAgreementForm = () => {
             variant="outline"
             onClick={() => {
               setAnswers({});
-              setSectionHistory(['general_details']);
-              setCurrentSectionId('general_details');
+              setSectionHistory(['location_selection']);
+              setCurrentSectionId('location_selection');
               setIsComplete(false);
               setBorrower({ name: '', address: '' });
               setLender({ name: '', address: '' });
@@ -806,8 +936,8 @@ const LoanAgreementForm = () => {
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
             onClick={() => {
-              setCurrentSectionId('general_details');
-              setSectionHistory(['general_details']);
+              setCurrentSectionId('location_selection');
+              setSectionHistory(['location_selection']);
             }}
             className="mt-4"
           >

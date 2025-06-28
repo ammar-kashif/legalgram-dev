@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -32,6 +33,53 @@ interface Question {
   nextQuestionId?: Record<string, string>;
   defaultNextId?: string;
 }
+
+// Define interfaces for the countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
 
 // Health Care Agent interface
 interface HealthCareAgent {
@@ -58,11 +106,11 @@ interface Witness {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
-  'state_selection': {
-    id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this Living Will will be executed',
-    questions: ['state'],
+  'location_selection': {
+    id: 'location_selection',
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this Living Will will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'declarant'
   },
   'declarant': {
@@ -144,11 +192,18 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select your country:',
+    options: getAllCountries().map(country => `${country.id}|${country.name}`),
+    defaultNextId: 'state'
+  },
   'state': {
     id: 'state',
     type: 'select',
-    text: 'Select your state:',
-    options: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+    text: 'Select your state/province:',
+    options: [], // Will be populated dynamically
     defaultNextId: 'declarant_name'
   },
   'declarant_name': {
@@ -242,9 +297,9 @@ const questions: Record<string, Question> = {
 };
 
 const LivingWillForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
+  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [primaryAgent, setPrimaryAgent] = useState<HealthCareAgent>({ name: '', address: '', phone: '', designation: '', relation: '' });
   const [firstAlternate, setFirstAlternate] = useState<HealthCareAgent>({ name: '', address: '', phone: '', designation: '', relation: '' });
@@ -354,28 +409,86 @@ const LivingWillForm = () => {
             />
           </div>        );
       case 'select':
-        return (
-          <div className="mb-4">
-            <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
-              {question.text}
-            </Label>
-            <Select
-              value={answers[questionId] || ''}
-              onValueChange={(value) => handleAnswer(questionId, value)}
-            >
-              <SelectTrigger className="mt-1 text-black w-full">
-                <SelectValue placeholder="Select an option" />
-              </SelectTrigger>
-              <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        );
+        if (questionId === 'country') {
+          return (
+            <div className="mb-4">
+              <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+                {question.text}
+              </Label>
+              <Select
+                value={answers[questionId] || ''}
+                onValueChange={(value) => {
+                  handleAnswer(questionId, value);
+                  // Reset state when country changes
+                  if (answers.state) {
+                    handleAnswer('state', '');
+                  }
+                }}
+              >
+                <SelectTrigger className="mt-1 text-black w-full">
+                  <SelectValue placeholder="Select a country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getAllCountries().map((country) => (
+                    <SelectItem key={country.id} value={`${country.id}`}>
+                      {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        } else if (questionId === 'state') {
+          const selectedCountryId = answers.country;
+          const states = selectedCountryId ? getStatesByCountry(parseInt(selectedCountryId)) : [];
+          
+          return (
+            <div className="mb-4">
+              <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+                {question.text}
+              </Label>
+              <Select
+                value={answers[questionId] || ''}
+                onValueChange={(value) => handleAnswer(questionId, value)}
+                disabled={!selectedCountryId}
+              >
+                <SelectTrigger className="mt-1 text-black w-full">
+                  <SelectValue placeholder={selectedCountryId ? "Select a state/province" : "Select a country first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {states.map((state) => (
+                    <SelectItem key={state.id} value={`${state.id}`}>
+                      {state.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        } else {
+          return (
+            <div className="mb-4">
+              <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
+                {question.text}
+              </Label>
+              <Select
+                value={answers[questionId] || ''}
+                onValueChange={(value) => handleAnswer(questionId, value)}
+              >
+                <SelectTrigger className="mt-1 text-black w-full">
+                  <SelectValue placeholder="Select an option" />
+                </SelectTrigger>
+                <SelectContent>
+                  {question.options?.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        }
       case 'radio':
         return (
           <div className="mb-4">
@@ -557,8 +670,8 @@ const LivingWillForm = () => {
     if (currentSectionId === 'confirmation') return true;
     
     // Special validation for different sections
-    if (currentSectionId === 'state_selection') {
-      return answers.state;
+    if (currentSectionId === 'location_selection') {
+      return answers.country && answers.state;
     }
     if (currentSectionId === 'declarant') {
       return answers.declarant_name && answers.declarant_address && answers.declarant_city && answers.declarant_zip;
@@ -605,7 +718,7 @@ const LivingWillForm = () => {
       
       // Subtitle
       doc.setFontSize(12);
-      doc.text("(California Probate Code Section 4701)", 105, 30, { align: "center" });
+      doc.text("(Living Will Declaration)", 105, 30, { align: "center" });
       
       // Reset to normal font
       doc.setFont("helvetica", "normal");
@@ -621,8 +734,9 @@ const LivingWillForm = () => {
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const selectedState = answers.state || 'California';
-      const declarantText = `I, ${answers.declarant_name || '________________'}, residing at ${answers.declarant_address || '_____________'}, California, ${answers.declarant_zip || '___________'}, being of full legal capacity and sound mind, do make this statement as a Directive to be followed in case I become permanently unable to make, or participate in making own medical decisions.`;
+      const selectedCountry = getCountryName(answers.country || '');
+      const selectedState = getStateName(answers.country || '', answers.state || '');
+      const declarantText = `I, ${answers.declarant_name || '________________'}, residing at ${answers.declarant_address || '_____________'}, ${selectedState}, ${selectedCountry}, ${answers.declarant_zip || '___________'}, being of full legal capacity and sound mind, do make this statement as a Directive to be followed in case I become permanently unable to make, or participate in making own medical decisions.`;
       
       const declarantLines = doc.splitTextToSize(declarantText, 170);
       declarantLines.forEach((line: string) => {
@@ -808,7 +922,7 @@ const LivingWillForm = () => {
       doc.text(`Phone: ${primaryPhysician.phone || '____________________'}`, 15, y);
       y += lineHeight + 3;
       
-      const physicianText = "If a primary physician is not selected as per Clause 5, then I request that the rules of California Medical Association be applied for the identification of my primary physician.";
+      const physicianText = "If a primary physician is not selected as per Clause 5, then I request that the applicable medical association rules be applied for the identification of my primary physician.";
       const physicianLines = doc.splitTextToSize(physicianText, 170);
       physicianLines.forEach((line: string) => {
         if (y > pageHeight - 20) {
@@ -825,7 +939,7 @@ const LivingWillForm = () => {
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const otherDirectionsText = "These instructions represent the lawful exercise of my right to refuse medical treatment following the laws of New York. I intend that these directives be honoured and implemented unless I have revoked them through a subsequent written statement or by an unmistakable expression of a change in my wishes:";
+      const otherDirectionsText = "These instructions represent the lawful exercise of my right to refuse medical treatment following the applicable laws. I intend that these directives be honoured and implemented unless I have revoked them through a subsequent written statement or by an unmistakable expression of a change in my wishes:";
       
       const otherDirectionsLines = doc.splitTextToSize(otherDirectionsText, 170);
       otherDirectionsLines.forEach((line: string) => {
@@ -890,7 +1004,7 @@ const LivingWillForm = () => {
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const witnessText = "I declare under the penalty of perjury under the laws of California:";
+      const witnessText = "I declare under the penalty of perjury under the applicable laws:";
       doc.text(witnessText, 15, y);
       y += lineHeight;
       
@@ -967,7 +1081,7 @@ const LivingWillForm = () => {
       y += lineHeight + 3;
       doc.setFontSize(11);
       
-      const additionalWitnessText = "I further declare under the laws of perjury of California that I am not related to the individual executing this advance directive by blood, marriage, or adoption, and to the best of my knowledge, I am not entitled to any part of of the individual's estate upon their death under a will or operation of law";
+      const additionalWitnessText = "I further declare under the applicable laws of perjury that I am not related to the individual executing this advance directive by blood, marriage, or adoption, and to the best of my knowledge, I am not entitled to any part of of the individual's estate upon their death under a will or operation of law";
       
       const additionalWitnessLines = doc.splitTextToSize(additionalWitnessText, 170);
       additionalWitnessLines.forEach((line: string) => {
@@ -1011,7 +1125,8 @@ const LivingWillForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">Declarant Information</h4>
-              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state ? getStateName(answers.country || '', answers.state) : 'Not provided'}</p>
               <p><strong>Name:</strong> {answers.declarant_name || 'Not provided'}</p>
               <p><strong>Address:</strong> {answers.declarant_address || 'Not provided'}</p>
               <p><strong>City:</strong> {answers.declarant_city || 'Not provided'}</p>
@@ -1094,8 +1209,8 @@ const LivingWillForm = () => {
           <Button 
             variant="outline"            onClick={() => {
               setAnswers({});
-              setSectionHistory(['state_selection']);
-              setCurrentSectionId('state_selection');
+              setSectionHistory(['location_selection']);
+              setCurrentSectionId('location_selection');
               setIsComplete(false);
               setPrimaryAgent({ name: '', address: '', phone: '', designation: '', relation: '' });
               setFirstAlternate({ name: '', address: '', phone: '', designation: '', relation: '' });
@@ -1125,8 +1240,8 @@ const LivingWillForm = () => {
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
             onClick={() => {
-              setCurrentSectionId('state_selection');
-              setSectionHistory(['state_selection']);
+              setCurrentSectionId('location_selection');
+              setSectionHistory(['location_selection']);
             }}
             className="mt-4"
           >

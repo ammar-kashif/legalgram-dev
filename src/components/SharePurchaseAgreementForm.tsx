@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -32,6 +33,53 @@ interface Question {
   nextQuestionId?: Record<string, string>;
   defaultNextId?: string;
 }
+
+// Define interfaces for the countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
 
 // Party interface (Seller/Buyer)
 interface Party {
@@ -63,11 +111,11 @@ interface ExistingShareholder {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
-  'state_selection': {
-    id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this Share Purchase Agreement will be executed',
-    questions: ['state'],
+  'location_selection': {
+    id: 'location_selection',
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this Share Purchase Agreement will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'general_details'
   },
   'general_details': {
@@ -128,11 +176,18 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select the country where this Share Purchase Agreement will be executed:',
+    options: [], // Will be populated dynamically from the database
+    defaultNextId: 'state'
+  },
   'state': {
     id: 'state',
     type: 'select',
-    text: 'Select your state:',
-    options: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+    text: 'Select the state/province where this Share Purchase Agreement will be executed:',
+    options: [], // Will be populated dynamically based on country selection
     defaultNextId: 'effective_date'
   },
   'effective_date': {
@@ -210,9 +265,9 @@ const questions: Record<string, Question> = {
 };
 
 const SharePurchaseAgreementForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
+  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [seller, setSeller] = useState<Party>({ name: '', address: '' });
   const [buyer, setBuyer] = useState<Party>({ name: '', address: '' });
@@ -329,6 +384,32 @@ const SharePurchaseAgreementForm = () => {
           </div>
         );
       case 'select':
+        // Get options based on question type
+        let optionsToShow: Array<{value: string, label: string}> = [];
+        
+        if (questionId === 'country') {
+          // Get all countries from the database using the new API
+          const countries = getAllCountries();
+          optionsToShow = countries.map(country => ({
+            value: country.id.toString(),
+            label: country.name
+          }));
+        } else if (questionId === 'state' && answers.country) {
+          // Get states for the selected country using country ID
+          const countryId = parseInt(answers.country);
+          const states = getStatesByCountry(countryId);
+          optionsToShow = states.map(state => ({
+            value: state.id.toString(),
+            label: state.name
+          }));
+        } else if (question.options) {
+          // Use static options for other select questions
+          optionsToShow = question.options.map(option => ({
+            value: option,
+            label: option
+          }));
+        }
+        
         return (
           <div className="mb-4">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
@@ -336,15 +417,26 @@ const SharePurchaseAgreementForm = () => {
             </Label>
             <Select
               value={answers[questionId] || ''}
-              onValueChange={(value) => handleAnswer(questionId, value)}
+              onValueChange={(value) => {
+                handleAnswer(questionId, value);
+                // Clear state selection when country changes
+                if (questionId === 'country' && answers.state) {
+                  handleAnswer('state', '');
+                }
+              }}
+              disabled={questionId === 'state' && !answers.country}
             >
               <SelectTrigger className="mt-1 text-black w-full">
-                <SelectValue placeholder="Select an option" />
+                <SelectValue placeholder={
+                  questionId === 'state' && !answers.country 
+                    ? "Please select a country first" 
+                    : "Select an option"
+                } />
               </SelectTrigger>
               <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
+                {optionsToShow.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -537,8 +629,8 @@ const SharePurchaseAgreementForm = () => {
   const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
       // Special validation for different sections
-    if (currentSectionId === 'state_selection') {
-      return answers.state;
+    if (currentSectionId === 'location_selection') {
+      return answers.country && answers.state;
     }
     if (currentSectionId === 'general_details') {
       return effectiveDate && answers.agreement_location;
@@ -670,6 +762,8 @@ const SharePurchaseAgreementForm = () => {
       const agreementLocation = answers.agreement_location || '_______________';
       const shareTransferDateStr = shareTransferDate ? format(shareTransferDate, 'MMMM dd, yyyy') : '_______________';
       const certificatesDelivery = answers.share_certificates_delivery || 'Not specified';
+      const selectedCountryName = answers.country ? getCountryName(answers.country) : '_______________';
+      const selectedStateName = answers.state && answers.country ? getStateName(answers.country, answers.state) : '_______________';
       
       // RECITALS
       addText("RECITALS", true, 12);
@@ -750,7 +844,7 @@ const SharePurchaseAgreementForm = () => {
       // ARTICLE VIII - MISCELLANEOUS
       addText("ARTICLE VIII - MISCELLANEOUS", true, 12);
       
-      addText(`8.1 Governing Law. This Agreement shall be governed by and construed in accordance with the laws of ${company.jurisdiction || '_______________'}.`);
+      addText(`8.1 Governing Law. This Agreement shall be governed by and construed in accordance with the laws of ${selectedStateName}, ${selectedCountryName}.`);
       
       addText(`8.2 Entire Agreement. This Agreement constitutes the entire agreement between the parties and supersedes all prior agreements and understandings.`);
       
@@ -872,7 +966,8 @@ const SharePurchaseAgreementForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">General Details</h4>
-              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state && answers.country ? getStateName(answers.country, answers.state) : 'Not provided'}</p>
               <p><strong>Effective Date:</strong> {effectiveDate ? format(effectiveDate, 'dd/MM/yyyy') : 'Not provided'}</p>
               <p><strong>Location:</strong> {answers.agreement_location || 'Not provided'}</p>
             </div>
@@ -952,10 +1047,11 @@ const SharePurchaseAgreementForm = () => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 
-            variant="outline"            onClick={() => {
+            variant="outline"
+            onClick={() => {
               setAnswers({});
-              setSectionHistory(['state_selection']);
-              setCurrentSectionId('state_selection');
+              setSectionHistory(['location_selection']);
+              setCurrentSectionId('location_selection');
               setIsComplete(false);
               setSeller({ name: '', address: '' });
               setBuyer({ name: '', address: '' });
@@ -984,10 +1080,11 @@ const SharePurchaseAgreementForm = () => {
     return (
       <Card className="max-w-4xl mx-auto">
         <CardContent className="text-center p-8">
-          <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
+          <p className="text-red-500">An error occurred. Please refresh the page.</p>
+          <Button 
             onClick={() => {
-              setCurrentSectionId('state_selection');
-              setSectionHistory(['state_selection']);
+              setCurrentSectionId('location_selection');
+              setSectionHistory(['location_selection']);
             }}
             className="mt-4"
           >

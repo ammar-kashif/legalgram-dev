@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -34,13 +35,60 @@ interface Question {
   defaultNextId?: string;
 }
 
+// Define interfaces for the countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
+
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
-  'state_selection': {
-    id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this agreement will be executed',
-    questions: ['state'],
+  'location_selection': {
+    id: 'location_selection',
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this lease agreement will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'parties'
   },
   'parties': {
@@ -95,17 +143,18 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select the country where this lease agreement will be executed:',
+    options: [], // Will be populated dynamically from the database
+    defaultNextId: 'state'
+  },
   'state': {
     id: 'state',
     type: 'select',
-    text: 'Select the state where this agreement will be executed:',
-    options: [
-      'Alabama', 'Alaska', 'Arizona',      'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-      'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-      'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-      'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-      'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-    ],
+    text: 'Select the state/province where this lease agreement will be executed:',
+    options: [], // Will be populated dynamically based on country selection
     defaultNextId: 'start'
   },
   'start': {
@@ -252,9 +301,9 @@ const questions: Record<string, Question> = {
   }
 };
 
-const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
+const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   
   const currentSection = sections[currentSectionId];
@@ -388,6 +437,32 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
           </div>
         );
       case 'select':
+        // Get options based on question type
+        let optionsToShow: Array<{value: string, label: string}> = [];
+        
+        if (questionId === 'country') {
+          // Get all countries from the database using the new API
+          const countries = getAllCountries();
+          optionsToShow = countries.map(country => ({
+            value: country.id.toString(),
+            label: country.name
+          }));
+        } else if (questionId === 'state' && answers.country) {
+          // Get states for the selected country using country ID
+          const countryId = parseInt(answers.country);
+          const states = getStatesByCountry(countryId);
+          optionsToShow = states.map(state => ({
+            value: state.id.toString(),
+            label: state.name
+          }));
+        } else if (question.options) {
+          // Use static options for other select questions
+          optionsToShow = question.options.map(option => ({
+            value: option,
+            label: option
+          }));
+        }
+        
         return (
           <div className="mb-4">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
@@ -395,15 +470,26 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
             </Label>
             <Select 
               value={answers[questionId] || ''} 
-              onValueChange={(value) => handleAnswer(questionId, value)}
+              onValueChange={(value) => {
+                handleAnswer(questionId, value);
+                // Clear state selection when country changes
+                if (questionId === 'country' && answers.state) {
+                  handleAnswer('state', '');
+                }
+              }}
+              disabled={questionId === 'state' && !answers.country}
             >
               <SelectTrigger className="mt-1 text-black w-full">
-                <SelectValue placeholder="Select an option" />
+                <SelectValue placeholder={
+                  questionId === 'state' && !answers.country 
+                    ? "Please select a country first" 
+                    : "Select an option"
+                } />
               </SelectTrigger>
               <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
+                {optionsToShow.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -466,9 +552,9 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
     const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
     
-    // Special validation for state selection
-    if (currentSectionId === 'state_selection') {
-      return answers.state;
+    // Special validation for location selection
+    if (currentSectionId === 'location_selection') {
+      return answers.country && answers.state;
     }
     
     // Check if all required fields in the current section have answers
@@ -500,10 +586,10 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
       const fullLeaseContent = `This Lease Agreement ("Lease") is entered into on ${currentDate}, by and between ${answers.start || '________'} ("Landlord"), and ${answers.tenant_name || '________'} ("Tenant").
 
 Leased Property.
-The Landlord hereby leases to the Tenant the located at ${answers.property_address || '________'}, ${answers.property_city || '________'}, Arkansas ${answers.property_zip || '________'} ("Leased Property").
+The Landlord hereby leases to the Tenant the located at ${answers.property_address || '________'}, ${answers.property_city || '________'}, ${answers.state && answers.country ? getStateName(answers.country, answers.state) : 'State'} ${answers.property_zip || '________'} ("Leased Property").
 
 Term.
-This Lease shall be for a fixed term, starting on ${answers.lease_start || '________'} ("Start Date") and ending on ${answers.lease_end || '________'} ("Termination Date"). The Tenant will be entitled to possession of the Leased Property beginning on the Start Date and shall maintain possession of the Leased Property until the Termination Date unless terminated through approved methods outlined in this Lease or under Arkansas law.
+This Lease shall be for a fixed term, starting on ${answers.lease_start || '________'} ("Start Date") and ending on ${answers.lease_end || '________'} ("Termination Date"). The Tenant will be entitled to possession of the Leased Property beginning on the Start Date and shall maintain possession of the Leased Property until the Termination Date unless terminated through approved methods outlined in this Lease or under applicable law.
 
 Rent.
 The Tenant agrees to pay to the Landlord as rent for the use and occupancy of the Leased Property the sum of $${answers.rent_amount || '________'} due on the first day of each month ("Rent").
@@ -585,7 +671,7 @@ Early Termination Clause.
 The Tenant may, upon ${answers.early_termination_days || '________'} days' written notice to the Landlord, terminate this Lease provided that the Tenant pays a termination charge equal to $0.00 or the maximum allowable by law, whichever is less. Termination will be effective as of the last day of the calendar month following the end of the ${answers.early_termination_days || '________'} day notice period. The termination charge will be in addition to all Rent due up to the termination day.
 
 Governing Law.
-This Lease shall be constructed in accordance with the laws of the State of Arkansas.
+This Lease shall be constructed in accordance with the laws of the ${answers.country ? getCountryName(answers.country) + (answers.state ? ', State of ' + getStateName(answers.country, answers.state) : '') : 'Country and State as specified'}.
 
 Severability.
 If any portion of this Lease shall be held to be invalid or unenforceable for any reason, the remaining provisions shall continue to be valid and enforceable. If a court finds that any provision of this Lease is invalid or unenforceable, but that by limiting such provision it would become valid and enforceable, then such provision shall be deemed to be written, construed, and enforced as so limited. The failure of either party to enforce any provisions of this Lease shall not be construed as a waiver or limitation of that party's right to subsequently enforce and comply with strict compliance with every provision of this Lease.
@@ -770,7 +856,8 @@ The Landlord is unaware of any asbestos-containing construction materials or any
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">General Information</h4>
-              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state && answers.country ? getStateName(answers.country, answers.state) : 'Not provided'}</p>
             </div>
             
             <div>
@@ -782,7 +869,7 @@ The Landlord is unaware of any asbestos-containing construction materials or any
             <div>
               <h4 className="font-medium text-sm">Property</h4>
               <p>{answers.property_address || 'Address not provided'}</p>
-              <p>{answers.property_city || 'City not provided'}, {answers.state || 'State not provided'} {answers.property_zip || 'ZIP not provided'}</p>
+              <p>{answers.property_city || 'City not provided'}, {answers.state && answers.country ? getStateName(answers.country, answers.state) : 'State not provided'} {answers.property_zip || 'ZIP not provided'}</p>
             </div>
             
             <div>
@@ -846,10 +933,11 @@ The Landlord is unaware of any asbestos-containing construction materials or any
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 
-            variant="outline"            onClick={() => {
+            variant="outline"
+            onClick={() => {
               setAnswers({});
-              setSectionHistory(['state_selection']);
-              setCurrentSectionId('state_selection');
+              setSectionHistory(['location_selection']);
+              setCurrentSectionId('location_selection');
               setIsComplete(false);
             }}
           >

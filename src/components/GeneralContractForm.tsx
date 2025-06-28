@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -49,13 +50,60 @@ interface Party {
   address: string;
 }
 
+// Define interfaces for the countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
+
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
-  'state_selection': {
-    id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this contract will be executed',
-    questions: ['state'],
+  'location_selection': {
+    id: 'location_selection',
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this contract will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'header'
   },
   'header': {
@@ -152,11 +200,18 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select the country where this contract will be executed:',
+    options: [], // Will be populated dynamically from the database
+    defaultNextId: 'state'
+  },
   'state': {
     id: 'state',
     type: 'select',
-    text: 'Select your state:',
-    options: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+    text: 'Select the state/province where this contract will be executed:',
+    options: [], // Will be populated dynamically based on country selection
     defaultNextId: 'place_of_signing'
   },
   'place_of_signing': {
@@ -286,8 +341,8 @@ const questions: Record<string, Question> = {
   'governing_state': {
     id: 'governing_state',
     type: 'select',
-    text: 'Governing State/Country:',
-    options: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'Canada', 'United Kingdom', 'Other'],
+    text: 'Governing Country/State:',
+    options: [], // Will be populated dynamically from the database
     defaultNextId: 'jurisdiction_location'
   },
   'jurisdiction_location': {
@@ -310,9 +365,9 @@ const questions: Record<string, Question> = {
   }
 };
 
-const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
+const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [items, setItems] = useState<Item[]>([{ description: '', quantity: '', unitPrice: '', totalPrice: '' }]);
   const [buyer, setBuyer] = useState<Party>({ name: '', type: '', stateCountry: '', address: '' });
@@ -464,6 +519,39 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
           </div>
         );
       case 'select':
+        // Get options based on question type
+        let optionsToShow: Array<{value: string, label: string}> = [];
+        
+        if (questionId === 'country') {
+          // Get all countries from the database using the new API
+          const countries = getAllCountries();
+          optionsToShow = countries.map(country => ({
+            value: country.id.toString(),
+            label: country.name
+          }));
+        } else if (questionId === 'state' && answers.country) {
+          // Get states for the selected country using country ID
+          const countryId = parseInt(answers.country);
+          const states = getStatesByCountry(countryId);
+          optionsToShow = states.map(state => ({
+            value: state.id.toString(),
+            label: state.name
+          }));
+        } else if (questionId === 'governing_state') {
+          // For governing state, show all countries as options
+          const countries = getAllCountries();
+          optionsToShow = countries.map(country => ({
+            value: country.id.toString(),
+            label: country.name
+          }));
+        } else if (question.options) {
+          // Use static options for other select questions
+          optionsToShow = question.options.map(option => ({
+            value: option,
+            label: option
+          }));
+        }
+        
         return (
           <div className="mb-4">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
@@ -471,15 +559,26 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
             </Label>
             <Select 
               value={answers[questionId] || ''} 
-              onValueChange={(value) => handleAnswer(questionId, value)}
+              onValueChange={(value) => {
+                handleAnswer(questionId, value);
+                // Clear state selection when country changes
+                if (questionId === 'country' && answers.state) {
+                  handleAnswer('state', '');
+                }
+              }}
+              disabled={questionId === 'state' && !answers.country}
             >
               <SelectTrigger className="mt-1 text-black w-full">
-                <SelectValue placeholder="Select an option" />
+                <SelectValue placeholder={
+                  questionId === 'state' && !answers.country 
+                    ? "Please select a country first" 
+                    : "Select an option"
+                } />
               </SelectTrigger>
               <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
+                {optionsToShow.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -684,8 +783,8 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
     if (currentSectionId === 'confirmation') return true;
     
     // Special validation for dynamic sections
-    if (currentSectionId === 'state_selection') {
-      return answers.state;
+    if (currentSectionId === 'location_selection') {
+      return answers.country && answers.state;
     }
     if (currentSectionId === 'header') {
       return answers.place_of_signing && answers.contract_date;
@@ -726,7 +825,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       const pageHeight = 280;
       
       // Contract Header
-      const headerText = `This General Contract for Products (the "Agreement") is made at ${answers.place_of_signing || '_______________'} [enter place] and entered into on ${answers.contract_date || '________________'} [Date],`;
+      const headerText = `This General Contract for Products (the "Agreement") is made at ${answers.place_of_signing || '_______________'} in ${answers.state && answers.country ? getStateName(answers.country, answers.state) + ', ' + getCountryName(answers.country) : '[location]'} and entered into on ${answers.contract_date || '________________'} [Date],`;
       
       const headerLines = doc.splitTextToSize(headerText, 170);
       headerLines.forEach((line: string) => {
@@ -1113,7 +1212,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       y += lineHeight + 3;
       
       doc.setFont("helvetica", "normal");
-      const governingText1 = `This Contract shall be governed by and construed in accordance with the laws of the State of ${answers.governing_state || '[Insert State/Country]'}.`;
+      const governingText1 = `This Contract shall be governed by and construed in accordance with the laws of ${answers.governing_state ? getCountryName(answers.governing_state) : '[Insert State/Country]'}.`;
       const governingLines1 = doc.splitTextToSize(governingText1, 170);
       governingLines1.forEach((line: string) => {
         doc.text(line, 15, y);
@@ -1305,6 +1404,8 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">Contract Details</h4>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state && answers.country ? getStateName(answers.country, answers.state) : 'Not provided'}</p>
               <p><strong>Place:</strong> {answers.place_of_signing || 'Not provided'}</p>
               <p><strong>Date:</strong> {answers.contract_date || 'Not provided'}</p>
             </div>
@@ -1381,8 +1482,8 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
             variant="outline"
             onClick={() => {
               setAnswers({});
-              setSectionHistory(['header']);
-              setCurrentSectionId('header');
+              setSectionHistory(['location_selection']);
+              setCurrentSectionId('location_selection');
               setIsComplete(false);
               setItems([{ description: '', quantity: '', unitPrice: '', totalPrice: '' }]);
               setBuyer({ name: '', type: '', stateCountry: '', address: '' });
@@ -1409,8 +1510,8 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
             onClick={() => {
-              setCurrentSectionId('header');
-              setSectionHistory(['header']);
+              setCurrentSectionId('location_selection');
+              setSectionHistory(['location_selection']);
             }}
             className="mt-4"
           >

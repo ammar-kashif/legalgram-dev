@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -53,13 +54,60 @@ interface Witness {
   cnic: string;
 }
 
+// Define interfaces for the countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
+
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
-  'state_selection': {
-    id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this agreement will be executed',
-    questions: ['state'],
+  'location_selection': {
+    id: 'location_selection',
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this agreement will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'general_details'
   },
   'general_details': {
@@ -107,17 +155,18 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select the country where this agreement will be executed:',
+    options: [], // Will be populated dynamically from the database
+    defaultNextId: 'state'
+  },
   'state': {
     id: 'state',
     type: 'select',
-    text: 'Select the state where this agreement will be executed:',
-    options: [
-      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-      'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-      'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-      'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-      'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-    ],
+    text: 'Select the state/province where this agreement will be executed:',
+    options: [], // Will be populated dynamically based on country selection
     defaultNextId: 'agreement_date'
   },
   'agreement_date': {
@@ -170,9 +219,9 @@ const questions: Record<string, Question> = {
 };
 
 const DomesticServiceAgreementForm = () => {
-  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
+  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [master, setMaster] = useState<Master>({ name: '', address: '', cnic: '' });
   const [servant, setServant] = useState<Servant>({ name: '', relationshipField: '', address: '', cnic: '' });
@@ -425,6 +474,32 @@ const DomesticServiceAgreementForm = () => {
           </div>
         );
       case 'select':
+        // Get options based on question type
+        let optionsToShow: Array<{value: string, label: string}> = [];
+        
+        if (questionId === 'country') {
+          // Get all countries from the database using the new API
+          const countries = getAllCountries();
+          optionsToShow = countries.map(country => ({
+            value: country.id.toString(),
+            label: country.name
+          }));
+        } else if (questionId === 'state' && answers.country) {
+          // Get states for the selected country using country ID
+          const countryId = parseInt(answers.country);
+          const states = getStatesByCountry(countryId);
+          optionsToShow = states.map(state => ({
+            value: state.id.toString(),
+            label: state.name
+          }));
+        } else if (question.options) {
+          // Use static options for other select questions
+          optionsToShow = question.options.map(option => ({
+            value: option,
+            label: option
+          }));
+        }
+        
         return (
           <div className="mb-4">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
@@ -432,15 +507,26 @@ const DomesticServiceAgreementForm = () => {
             </Label>
             <Select
               value={answers[questionId] || ''}
-              onValueChange={(value) => handleAnswer(questionId, value)}
+              onValueChange={(value) => {
+                handleAnswer(questionId, value);
+                // Clear state selection when country changes
+                if (questionId === 'country' && answers.state) {
+                  handleAnswer('state', '');
+                }
+              }}
+              disabled={questionId === 'state' && !answers.country}
             >
               <SelectTrigger className="mt-1 text-black w-full">
-                <SelectValue placeholder="Select an option" />
+                <SelectValue placeholder={
+                  questionId === 'state' && !answers.country 
+                    ? "Please select a country first" 
+                    : "Select an option"
+                } />
               </SelectTrigger>
               <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
+                {optionsToShow.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -468,8 +554,8 @@ const DomesticServiceAgreementForm = () => {
     if (currentSectionId === 'confirmation') return true;
     
     // Special validation for different sections
-    if (currentSectionId === 'state_selection') {
-      return answers.state;
+    if (currentSectionId === 'location_selection') {
+      return answers.country && answers.state;
     }
     if (currentSectionId === 'general_details') {
       return agreementDate && answers.agreement_city;
@@ -593,7 +679,7 @@ const DomesticServiceAgreementForm = () => {
       
       // 5. REMUNERATION AND BENEFITS
       addText("5. REMUNERATION AND BENEFITS", true, 12);
-      addText(`5.1 The Master shall pay the Servant a monthly compensation package of Pakistani Rupees ${answers.monthly_salary || '[AMOUNT]'} (Rs. ${answers.monthly_salary || '[AMOUNT]'}/- only).`, false, 11, 20);
+      addText(`5.1 The Master shall pay the Servant a monthly compensation package of ${answers.monthly_salary || '[AMOUNT]'} (${answers.monthly_salary || '[AMOUNT]'}/- only).`, false, 11, 20);
       addText("5.2 Payment shall be made on or before the 5th day of each calendar month for the preceding month's services.", false, 11, 20);
       addText("5.3 The compensation package includes:", false, 11, 20);
       addText("a) Monthly salary as specified above;", false, 11, 25);
@@ -648,8 +734,8 @@ const DomesticServiceAgreementForm = () => {
       addText("10.1 This Agreement constitutes the entire understanding between the parties and supersedes all prior agreements, understandings, or negotiations.", false, 11, 20);
       addText("10.2 Any modification or amendment to this Agreement must be in writing and signed by both parties.", false, 11, 20);
       addText("10.3 If any provision of this Agreement is held to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.", false, 11, 20);
-      addText("10.4 This Agreement shall be governed by and construed in accordance with the laws of Pakistan.", false, 11, 20);
-      addText("10.5 Any disputes arising from this Agreement shall be resolved through negotiation, mediation, or, if necessary, through the competent courts of Pakistan.", false, 11, 20);
+      addText(`10.4 This Agreement shall be governed by and construed in accordance with the laws of ${answers.country ? getCountryName(answers.country) : 'the applicable jurisdiction'}.`, false, 11, 20);
+      addText(`10.5 Any disputes arising from this Agreement shall be resolved through negotiation, mediation, or, if necessary, through the competent courts of ${answers.country ? getCountryName(answers.country) : 'the applicable jurisdiction'}.`, false, 11, 20);
       addText("10.6 Both parties acknowledge that they have read, understood, and voluntarily entered into this Agreement.", false, 11, 20);
       
       // 11. ACKNOWLEDGMENT
@@ -754,7 +840,8 @@ const DomesticServiceAgreementForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">General Details</h4>
-              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state && answers.country ? getStateName(answers.country, answers.state) : 'Not provided'}</p>
               <p><strong>Agreement Date:</strong> {agreementDate ? format(agreementDate, 'dd/MM/yyyy') : 'Not provided'}</p>
               <p><strong>City:</strong> {answers.agreement_city || 'Not provided'}</p>
             </div>
@@ -776,7 +863,7 @@ const DomesticServiceAgreementForm = () => {
             
             <div>
               <h4 className="font-medium text-sm">Employment Terms</h4>
-              <p><strong>Monthly Salary:</strong> Rs. {answers.monthly_salary || 'Not provided'}</p>
+              <p><strong>Monthly Salary:</strong> {answers.monthly_salary || 'Not provided'}</p>
               <p><strong>Payment Date:</strong> 5th of each month</p>
               <p><strong>Duration:</strong> 2 years from signing date</p>
               <p><strong>Notice Period:</strong> 30 days or payment in lieu</p>
@@ -807,7 +894,7 @@ const DomesticServiceAgreementForm = () => {
               <li>• Detailed code of conduct and prohibited activities</li>
               <li>• Health and safety provisions</li>
               <li>• Clear termination and notice procedures</li>
-              <li>• Legal compliance with Pakistani domestic service laws</li>
+              <li>• Legal compliance with applicable domestic service laws</li>
               <li>• Professional witness attestation</li>
             </ul>
           </div>
@@ -840,8 +927,8 @@ const DomesticServiceAgreementForm = () => {
             variant="outline"
             onClick={() => {
               setAnswers({});
-              setSectionHistory(['state_selection']);
-              setCurrentSectionId('state_selection');
+              setSectionHistory(['location_selection']);
+              setCurrentSectionId('location_selection');
               setIsComplete(false);
               setMaster({ name: '', address: '', cnic: '' });
               setServant({ name: '', relationshipField: '', address: '', cnic: '' });
@@ -869,8 +956,8 @@ const DomesticServiceAgreementForm = () => {
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
             onClick={() => {
-              setCurrentSectionId('state_selection');
-              setSectionHistory(['state_selection']);
+              setCurrentSectionId('location_selection');
+              setSectionHistory(['location_selection']);
             }}
             className="mt-4"
           >

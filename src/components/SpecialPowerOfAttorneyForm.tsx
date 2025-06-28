@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -32,6 +33,53 @@ interface Question {
   defaultNextId?: string;
 }
 
+// Define interfaces for the countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
+
 // Person interface (Executant, Attorney)
 interface Person {
   name: string;
@@ -48,11 +96,11 @@ interface Witness {
 
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
-  'state_selection': {
-    id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this power of attorney will be executed',
-    questions: ['state'],
+  'location_selection': {
+    id: 'location_selection',
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this power of attorney will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'executant_info'
   },
   'executant_info': {
@@ -100,17 +148,18 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select the country where this power of attorney will be executed:',
+    options: getAllCountries().map(country => `${country.id}|${country.name}`),
+    defaultNextId: 'state'
+  },
   'state': {
     id: 'state',
     type: 'select',
-    text: 'Select the state where this power of attorney will be executed:',
-    options: [
-      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-      'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-      'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-      'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-      'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-    ],
+    text: 'Select the state/province where this power of attorney will be executed:',
+    options: [], // Will be populated dynamically based on country selection
     defaultNextId: 'executant_info'
   },
   'executant_info': {
@@ -156,9 +205,10 @@ const questions: Record<string, Question> = {
   }
 };
 
-const SpecialPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
+const SpecialPowerOfAttorneyForm = () => {
+  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [executant, setExecutant] = useState<Person>({ name: '', address: '', signature: '' });
   const [attorney, setAttorney] = useState<Person>({ name: '', address: '', signature: '' });
@@ -363,6 +413,15 @@ const SpecialPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
           </div>
         );
       case 'select':
+        let options = question.options || [];
+        
+        // Handle dynamic state options based on country selection
+        if (questionId === 'state' && answers.country) {
+          const countryId = answers.country.split('|')[0];
+          const states = getStatesByCountry(parseInt(countryId));
+          options = states.map(state => `${state.id}|${state.name}`);
+        }
+        
         return (
           <div className="mb-4">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
@@ -370,17 +429,26 @@ const SpecialPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
             </Label>
             <Select
               value={answers[questionId] || ''}
-              onValueChange={(value) => handleAnswer(questionId, value)}
+              onValueChange={(value) => {
+                handleAnswer(questionId, value);
+                // Reset state when country changes
+                if (questionId === 'country' && answers.state) {
+                  handleAnswer('state', '');
+                }
+              }}
             >
               <SelectTrigger className="mt-1 text-black w-full">
                 <SelectValue placeholder="Select an option" />
               </SelectTrigger>
               <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
+                {options.map((option) => {
+                  const [id, name] = option.includes('|') ? option.split('|') : [option, option];
+                  return (
+                    <SelectItem key={id} value={option}>
+                      {name}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -406,8 +474,8 @@ const SpecialPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
     if (currentSectionId === 'confirmation') return true;
     
     // Special validation for different sections
-    if (currentSectionId === 'state_selection') {
-      return answers.state;
+    if (currentSectionId === 'location_selection') {
+      return answers.country && answers.state;
     }
     if (currentSectionId === 'executant_info') {
       return executant.name && executant.address;
@@ -439,11 +507,27 @@ const SpecialPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
       doc.setFontSize(16);
       doc.text("SPECIAL POWER OF ATTORNEY", 105, 20, { align: "center" });
       
+      // Jurisdiction line
+      const countryName = answers.country ? getCountryName(answers.country.split('|')[0]) : '';
+      const stateName = answers.state ? getStateName(answers.country?.split('|')[0] || '', answers.state.split('|')[0]) : '';
+      let jurisdictionText = '';
+      if (countryName && stateName) {
+        jurisdictionText = `(Under the laws of ${stateName}, ${countryName})`;
+      } else if (countryName) {
+        jurisdictionText = `(Under the laws of ${countryName})`;
+      }
+      
+      if (jurisdictionText) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(jurisdictionText, 105, 27, { align: "center" });
+      }
+      
       // Reset to normal font
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
       
-      let y = 35;
+      let y = jurisdictionText ? 40 : 35;
       const lineHeight = 6;
       const pageHeight = 280;
       
@@ -678,7 +762,8 @@ const SpecialPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">General Information</h4>
-              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country.split('|')[0]) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state ? getStateName(answers.country?.split('|')[0] || '', answers.state.split('|')[0]) : 'Not provided'}</p>
               <p><strong>Execution Date:</strong> {executionDate ? format(executionDate, 'dd/MM/yyyy') : 'Not provided'}</p>
             </div>
             
@@ -747,8 +832,8 @@ const SpecialPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
             variant="outline"
             onClick={() => {
               setAnswers({});
-              setSectionHistory(['executant_info']);
-              setCurrentSectionId('executant_info');
+              setSectionHistory(['location_selection']);
+              setCurrentSectionId('location_selection');
               setIsComplete(false);
               setExecutant({ name: '', address: '', signature: '' });
               setAttorney({ name: '', address: '', signature: '' });
@@ -776,8 +861,9 @@ const SpecialPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
-            onClick={() => {              setCurrentSectionId('state_selection');
-              setSectionHistory(['state_selection']);
+            onClick={() => {
+              setCurrentSectionId('location_selection');
+              setSectionHistory(['location_selection']);
             }}
             className="mt-4"
           >

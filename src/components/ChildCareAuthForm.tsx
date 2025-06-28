@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
 interface Section {
@@ -56,13 +57,60 @@ interface EmergencyContact {
   email: string;
 }
 
+// Define interfaces for the countries-states-cities data structure
+interface CountryData {
+  id: number;
+  name: string;
+  iso3: string;
+  iso2: string;
+  phone_code: string;
+  capital: string;
+  currency: string;
+  native: string;
+  region: string;
+  subregion: string;
+  emoji: string;
+}
+
+interface StateData {
+  id: number;
+  name: string;
+  country_id: number;
+  country_code: string;
+  state_code: string;
+}
+
+// Country to states/provinces mapping using comprehensive database with proper ID relationships
+const getAllCountries = (): CountryData[] => {
+  return CountryStateAPI.getAllCountries();
+};
+
+const getStatesByCountry = (countryId: number): StateData[] => {
+  return CountryStateAPI.getStatesOfCountry(countryId);
+};
+
+// Helper functions to get display names from IDs
+const getCountryName = (countryId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  return country?.name || `Country ID: ${countryId}`;
+};
+
+const getStateName = (countryId: string, stateId: string): string => {
+  const country = CountryStateAPI.getAllCountries().find(c => c.id.toString() === countryId);
+  if (!country) return `State ID: ${stateId}`;
+  
+  const states = CountryStateAPI.getStatesOfCountry(country.id);
+  const state = states.find(s => s.id.toString() === stateId);
+  return state?.name || `State ID: ${stateId}`;
+};
+
 // Sections definition - grouping questions by category
 const sections: Record<string, Section> = {
-  'state_selection': {
-    id: 'state_selection',
-    title: 'State Selection',
-    description: 'Select the state where this authorization will be executed',
-    questions: ['state'],
+  'location_selection': {
+    id: 'location_selection',
+    title: 'Location Selection',
+    description: 'Select the country and state/province where this authorization will be executed',
+    questions: ['country', 'state'],
     nextSectionId: 'parties'
   },
   'parties': {
@@ -124,17 +172,18 @@ const sections: Record<string, Section> = {
 
 // Define the question flow
 const questions: Record<string, Question> = {
+  'country': {
+    id: 'country',
+    type: 'select',
+    text: 'Select the country where this authorization will be executed:',
+    options: [], // Will be populated dynamically from the database
+    defaultNextId: 'state'
+  },
   'state': {
     id: 'state',
     type: 'select',
-    text: 'Select the state where this authorization will be executed:',
-    options: [
-      'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-      'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-      'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-      'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-      'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-    ],
+    text: 'Select the state/province where this authorization will be executed:',
+    options: [], // Will be populated dynamically based on country selection
     defaultNextId: 'parent_names'
   },
   'parent_names': {
@@ -218,14 +267,14 @@ const questions: Record<string, Question> = {
   'governing_state': {
     id: 'governing_state',
     type: 'select',
-    text: 'Governing State:',
-    options: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+    text: 'Governing State/Province:',
+    options: [], // Will be populated dynamically based on selected country
     defaultNextId: 'notary_state'
   },  'notary_state': {
     id: 'notary_state',
     type: 'select',
-    text: 'Notary State (Optional):',
-    options: ['None', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+    text: 'Notary State/Province (Optional):',
+    options: [], // Will be populated dynamically based on selected country
     defaultNextId: 'notary_county'
   },
   'notary_county': {
@@ -241,9 +290,9 @@ const questions: Record<string, Question> = {
   }
 };
 
-const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
+const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
+  const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [children, setChildren] = useState<Child[]>([{ fullName: '', dateOfBirth: '' }]);
   const [parents, setParents] = useState<Parent[]>([{ name: '' }]);
@@ -446,6 +495,51 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
           </div>
         );
       case 'select':
+        // Get options based on question type
+        let optionsToShow: Array<{value: string, label: string}> = [];
+        
+        if (questionId === 'country') {
+          // Get all countries from the database using the new API
+          const countries = getAllCountries();
+          optionsToShow = countries.map(country => ({
+            value: country.id.toString(),
+            label: country.name
+          }));
+        } else if (questionId === 'state' && answers.country) {
+          // Get states for the selected country using country ID
+          const countryId = parseInt(answers.country);
+          const states = getStatesByCountry(countryId);
+          optionsToShow = states.map(state => ({
+            value: state.id.toString(),
+            label: state.name
+          }));
+        } else if (questionId === 'governing_state' && answers.country) {
+          // Get states for the selected country using country ID
+          const countryId = parseInt(answers.country);
+          const states = getStatesByCountry(countryId);
+          optionsToShow = states.map(state => ({
+            value: state.id.toString(),
+            label: state.name
+          }));
+        } else if (questionId === 'notary_state' && answers.country) {
+          // Get states for the selected country using country ID
+          const countryId = parseInt(answers.country);
+          const states = getStatesByCountry(countryId);
+          optionsToShow = [
+            { value: 'None', label: 'None' },
+            ...states.map(state => ({
+              value: state.id.toString(),
+              label: state.name
+            }))
+          ];
+        } else if (question.options) {
+          // Use static options for other select questions
+          optionsToShow = question.options.map(option => ({
+            value: option,
+            label: option
+          }));
+        }
+        
         return (
           <div className="mb-4">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
@@ -453,15 +547,28 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
             </Label>
             <Select 
               value={answers[questionId] || ''} 
-              onValueChange={(value) => handleAnswer(questionId, value)}
+              onValueChange={(value) => {
+                handleAnswer(questionId, value);
+                // Clear dependent selections when country changes
+                if (questionId === 'country') {
+                  if (answers.state) handleAnswer('state', '');
+                  if (answers.governing_state) handleAnswer('governing_state', '');
+                  if (answers.notary_state) handleAnswer('notary_state', '');
+                }
+              }}
+              disabled={(questionId === 'state' || questionId === 'governing_state' || questionId === 'notary_state') && !answers.country}
             >
               <SelectTrigger className="mt-1 text-black w-full">
-                <SelectValue placeholder="Select an option" />
+                <SelectValue placeholder={
+                  (questionId === 'state' || questionId === 'governing_state' || questionId === 'notary_state') && !answers.country 
+                    ? "Please select a country first" 
+                    : "Select an option"
+                } />
               </SelectTrigger>
               <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option || 'None'}
+                {optionsToShow.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -716,9 +823,9 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
   };    const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
     
-    // Special validation for state selection
-    if (currentSectionId === 'state_selection') {
-      return answers.state;
+    // Special validation for location selection
+    if (currentSectionId === 'location_selection') {
+      return answers.country && answers.state;
     }
     // Special validation for dynamic sections
     if (currentSectionId === 'parties') {
@@ -907,7 +1014,10 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
       y += lineHeight;
       
       doc.setFont("helvetica", "normal");
-      const governingText = `This Agreement shall be governed by and construed in accordance with the laws of the State of ${answers.governing_state || '_______________'}.`;
+      const governingStateName = answers.governing_state && answers.country 
+        ? getStateName(answers.country, answers.governing_state) 
+        : '_______________';
+      const governingText = `This Agreement shall be governed by and construed in accordance with the laws of the State/Province of ${governingStateName}.`;
       
       const governingLines = doc.splitTextToSize(governingText, 170);
       governingLines.forEach((line: string) => {
@@ -971,8 +1081,10 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
         y += lineHeight + 2;
         
         doc.setFont("helvetica", "normal");
-        const notaryState = answers.notary_state && answers.notary_state !== 'None' ? answers.notary_state : '_____________________';
-        doc.text(`State of ${notaryState}`, 15, y);
+        const notaryStateName = (answers.notary_state && answers.notary_state !== 'None' && answers.country) 
+          ? getStateName(answers.country, answers.notary_state) 
+          : '_____________________';
+        doc.text(`State/Province of ${notaryStateName}`, 15, y);
         y += lineHeight;
         
         doc.text(`County of ${answers.notary_county || '___________________'}`, 15, y);
@@ -1022,7 +1134,8 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">General Information</h4>
-              <p><strong>State:</strong> {answers.state || 'Not provided'}</p>
+              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country) : 'Not provided'}</p>
+              <p><strong>State/Province:</strong> {answers.state && answers.country ? getStateName(answers.country, answers.state) : 'Not provided'}</p>
             </div>
             
             <div>
@@ -1062,10 +1175,12 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
               <p><strong>Primary:</strong> {primaryEmergency.name || 'Not provided'} - {primaryEmergency.phone || 'Not provided'}</p>
               <p><strong>Secondary:</strong> {secondaryEmergency.name || 'Not provided'} - {secondaryEmergency.phone || 'Not provided'}</p>
             </div>
-              <div>
+            <div>
               <h4 className="font-medium text-sm">Governing Law</h4>
-              <p><strong>State:</strong> {answers.governing_state || 'Not provided'}</p>
-              {answers.notary_state && answers.notary_state !== 'None' && <p><strong>Notary State:</strong> {answers.notary_state}</p>}
+              <p><strong>Governing State/Province:</strong> {answers.governing_state && answers.country ? getStateName(answers.country, answers.governing_state) : 'Not provided'}</p>
+              {answers.notary_state && answers.notary_state !== 'None' && (
+                <p><strong>Notary State/Province:</strong> {answers.notary_state && answers.country ? getStateName(answers.country, answers.notary_state) : 'Not provided'}</p>
+              )}
               {answers.notary_county && <p><strong>Notary County:</strong> {answers.notary_county}</p>}
             </div>
           </div>
@@ -1098,8 +1213,8 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
             variant="outline"
             onClick={() => {
               setAnswers({});
-              setSectionHistory(['parties']);
-              setCurrentSectionId('parties');
+              setSectionHistory(['location_selection']);
+              setCurrentSectionId('location_selection');
               setIsComplete(false);
               setChildren([{ fullName: '', dateOfBirth: '' }]);
               setParents([{ name: '' }]);
@@ -1126,8 +1241,8 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
-            onClick={() => {              setCurrentSectionId('state_selection');
-              setSectionHistory(['state_selection']);
+            onClick={() => {              setCurrentSectionId('location_selection');
+              setSectionHistory(['location_selection']);
             }}
             className="mt-4"
           >

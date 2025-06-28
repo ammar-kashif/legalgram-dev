@@ -82,7 +82,7 @@ const MakeDocument = () => {
       id: 'agreement-to-sell',
       title: 'Agreement to Sell',
       description: 'Real Estate & Property',
-      content: 'Create a comprehensive agreement to sell for property transactions with full global support - 250+ countries and their respective states/provinces.',
+      content: 'Create a comprehensive agreement to sell for property transactions.',
       icon: FileText,
       component: AgreementToSellForm
     },    {
