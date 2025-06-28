@@ -15,6 +15,7 @@ import GeneralPowerOfAttorneyForm from "@/components/GeneralPowerOfAttorneyForm"
 import SpecialPowerOfAttorneyForm from "@/components/SpecialPowerOfAttorneyForm";
 import SaleAgreementForm from "@/components/SaleAgreementForm";
 import BusinessAgreementForm from "@/components/BusinessAgreementForm";
+import LLCOperatingAgreementForm from "@/components/LLCOperatingAgreementForm";
 
 
 const MakeDocument = () => {
@@ -115,6 +116,14 @@ const MakeDocument = () => {
       content: 'Create a comprehensive business partnership agreement with marketing rights, financial terms, and construction timeline provisions.',
       icon: Building2,
       component: BusinessAgreementForm
+    },
+    {
+      id: 'llc-operating-agreement',
+      title: 'LLC Operating Agreement',
+      description: 'Corporate Formation',
+      content: 'Create a comprehensive Limited Liability Company Operating Agreement with member management, ownership structure, and governance provisions.',
+      icon: Building2,
+      component: LLCOperatingAgreementForm
     }
   ];
   

@@ -14,6 +14,7 @@ import AgreementToSellForm from "@/components/AgreementToSellForm";
 import GeneralPowerOfAttorneyForm from "@/components/GeneralPowerOfAttorneyForm";
 import SpecialPowerOfAttorneyForm from "@/components/SpecialPowerOfAttorneyForm";
 import SaleAgreementForm from "@/components/SaleAgreementForm";
+import LLCOperatingAgreementForm from "@/components/LLCOperatingAgreementForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale } from "lucide-react";
@@ -97,6 +98,13 @@ const Documents = () => {
       description: 'Create a comprehensive sale agreement for business transactions',
       icon: Briefcase,
       component: SaleAgreementForm
+    },
+    {
+      id: 'llc-operating-agreement',
+      title: 'LLC Operating Agreement',
+      description: 'Create a comprehensive Limited Liability Company Operating Agreement with member management and governance provisions',
+      icon: Building2,
+      component: LLCOperatingAgreementForm
     }
   ];
 
