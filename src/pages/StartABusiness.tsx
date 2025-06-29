@@ -199,7 +199,7 @@ const StartABusiness = () => {
                   size="lg"
                   asChild
                 >
-                  <Link to="/documents/llc-guide">What’s an LLC?</Link>
+                  <Link to="/whats-an-llc">What’s an LLC?</Link>
                 </Button>
               </div>
             </div>
