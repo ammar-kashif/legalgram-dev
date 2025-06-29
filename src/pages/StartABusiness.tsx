@@ -270,7 +270,7 @@ const StartABusiness = () => {
                   size="lg"
                   asChild
                 >
-                  <Link to="/documents/s-corp-guide">What’s an S-Corp?</Link>
+                  <Link to="/whats-an-s-corp">What’s an S-Corp?</Link>
                 </Button>
               </div>
             </div>

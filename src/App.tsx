@@ -13,6 +13,7 @@ import Documents from "./pages/Documents"; // Import Documents directly
 import UserDashboard from "./pages/UserDashboard"; // Import UserDashboard directly
 import WhatsAnLLC from "./pages/WhatsAnLLC"; // Import WhatsAnLLC directly
 import WhatsACorporation from "./pages/WhatsACorporation"; // Import WhatsACorporation directly
+import WhatsAnSCorp from "./pages/WhatsAnSCorp"; // Import WhatsAnSCorp directly
 
 // Lazy load other pages for better performance
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
@@ -90,6 +91,7 @@ const App = () => {
                 <Route path="/start-a-business" element={<StartABusiness />} />
                 <Route path="/whats-an-llc" element={<WhatsAnLLC />} />
                 <Route path="/whats-a-corporation" element={<WhatsACorporation />} />
+                <Route path="/whats-an-s-corp" element={<WhatsAnSCorp />} />
                 <Route path="/ask-legal-advice" element={<AskLegalAdvice />} />
                 <Route path="/ask-lawyer" element={<AskALawyer />} />
                 <Route path="/make-documents" element={<Documents />} />
