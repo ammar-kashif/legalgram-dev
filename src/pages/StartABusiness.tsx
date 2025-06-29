@@ -1,4 +1,3 @@
-
 import { 
   Building2, BriefcaseBusiness, FileLock, Star,
   Award, UserCheck, CheckCircle, ShieldCheck,
@@ -232,7 +231,7 @@ const StartABusiness = () => {
                   size="lg"
                   asChild
                 >
-                  <Link to="/documents/corporation-guide">What’s a Corporation?</Link>
+                  <Link to="/whats-a-corporation">What's a Corporation?</Link>
                 </Button>
               </div>
             </div>

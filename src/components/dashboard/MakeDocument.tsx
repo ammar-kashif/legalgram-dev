@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel } from "lucide-react";
 import ConditionalForm from "@/components/ConditionalForm";
 import ChildCareAuthForm from "@/components/ChildCareAuthForm";
 import GeneralContractForm from "@/components/GeneralContractForm";
@@ -16,6 +16,9 @@ import SpecialPowerOfAttorneyForm from "@/components/SpecialPowerOfAttorneyForm"
 import SaleAgreementForm from "@/components/SaleAgreementForm";
 import BusinessAgreementForm from "@/components/BusinessAgreementForm";
 import LLCOperatingAgreementForm from "@/components/LLCOperatingAgreementForm";
+import AffidavitOfMarriageForm from "@/components/AffidavitOfMarriageForm";
+import AffidavitOfResidenceForm from "@/components/AffidavitOfResidenceForm";
+import DivorceSettlementAgreementForm from "@/components/DivorceSettlementAgreementForm";
 
 
 const MakeDocument = () => {
@@ -124,6 +127,30 @@ const MakeDocument = () => {
       content: 'Create a comprehensive Limited Liability Company Operating Agreement with member management, ownership structure, and governance provisions.',
       icon: Building2,
       component: LLCOperatingAgreementForm
+    },
+    {
+      id: 'affidavit-of-marriage',
+      title: 'Affidavit of Marriage',
+      description: 'Family Law & Name Change',
+      content: 'Create an affidavit to verify a name change due to marriage, establishing the connection between former and current names.',
+      icon: UserCheck,
+      component: AffidavitOfMarriageForm
+    },
+    {
+      id: 'affidavit-of-residence',
+      title: 'Affidavit of Residence',
+      description: 'Residency Verification',
+      content: 'Create an affidavit to verify residence for living or deceased persons, establishing legal domicile and residence history.',
+      icon: MapPin,
+      component: AffidavitOfResidenceForm
+    },
+    {
+      id: 'divorce-settlement-agreement',
+      title: 'Divorce Settlement Agreement',
+      description: 'Family Law & Divorce',
+      content: 'Create a comprehensive divorce settlement agreement covering asset division, debts, spousal support, and all terms for dissolution of marriage.',
+      icon: Gavel,
+      component: DivorceSettlementAgreementForm
     }
   ];
   

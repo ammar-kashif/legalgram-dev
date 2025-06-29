@@ -1,4 +1,3 @@
-
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,6 +11,8 @@ import StartABusiness from "./pages/StartABusiness";
 import Index from "./pages/Index"; // Import Index component
 import Documents from "./pages/Documents"; // Import Documents directly
 import UserDashboard from "./pages/UserDashboard"; // Import UserDashboard directly
+import WhatsAnLLC from "./pages/WhatsAnLLC"; // Import WhatsAnLLC directly
+import WhatsACorporation from "./pages/WhatsACorporation"; // Import WhatsACorporation directly
 
 // Lazy load other pages for better performance
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
@@ -87,6 +88,8 @@ const App = () => {
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/start-a-business" element={<StartABusiness />} />
+                <Route path="/whats-an-llc" element={<WhatsAnLLC />} />
+                <Route path="/whats-a-corporation" element={<WhatsACorporation />} />
                 <Route path="/ask-legal-advice" element={<AskLegalAdvice />} />
                 <Route path="/ask-lawyer" element={<AskALawyer />} />
                 <Route path="/make-documents" element={<Documents />} />

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -15,9 +14,12 @@ import GeneralPowerOfAttorneyForm from "@/components/GeneralPowerOfAttorneyForm"
 import SpecialPowerOfAttorneyForm from "@/components/SpecialPowerOfAttorneyForm";
 import SaleAgreementForm from "@/components/SaleAgreementForm";
 import LLCOperatingAgreementForm from "@/components/LLCOperatingAgreementForm";
+import AffidavitOfMarriageForm from "@/components/AffidavitOfMarriageForm";
+import AffidavitOfResidenceForm from "@/components/AffidavitOfResidenceForm";
+import DivorceSettlementAgreementForm from "@/components/DivorceSettlementAgreementForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel } from "lucide-react";
 
 const Documents = () => {
   const { id } = useParams();
@@ -105,6 +107,27 @@ const Documents = () => {
       description: 'Create a comprehensive Limited Liability Company Operating Agreement with member management and governance provisions',
       icon: Building2,
       component: LLCOperatingAgreementForm
+    },
+    {
+      id: 'affidavit-of-marriage',
+      title: 'Affidavit of Marriage',
+      description: 'Create an affidavit to verify a name change due to marriage, establishing the connection between former and current names',
+      icon: UserCheck,
+      component: AffidavitOfMarriageForm
+    },
+    {
+      id: 'affidavit-of-residence',
+      title: 'Affidavit of Residence',
+      description: 'Create an affidavit to verify residence for living or deceased persons, establishing legal domicile and residence history',
+      icon: MapPin,
+      component: AffidavitOfResidenceForm
+    },
+    {
+      id: 'divorce-settlement-agreement',
+      title: 'Divorce Settlement Agreement',
+      description: 'Create a comprehensive divorce settlement agreement covering asset division, debts, spousal support, and terms for dissolution of marriage',
+      icon: Gavel,
+      component: DivorceSettlementAgreementForm
     }
   ];
 
