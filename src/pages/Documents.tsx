@@ -26,8 +26,8 @@ const Documents = () => {
   const [selectedDocument, setSelectedDocument] = useState<string | null>(id || null);  const documentTypes = [
     {
       id: 'lease-agreement',
-      title: 'Arkansas Lease Agreement',
-      description: 'Generate a comprehensive lease agreement for rental properties in Arkansas',
+      title: 'Lease Agreement',
+      description: 'Generate a comprehensive lease agreement for rental properties.',
       icon: FileText,
       component: ConditionalForm
     },
