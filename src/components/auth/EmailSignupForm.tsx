@@ -257,7 +257,7 @@ const EmailSignupForm = () => {
 
       <Button
         type="submit"
-        className="w-full bg-rocket-blue hover:bg-rocket-blue-600 mt-6 transition-all duration-300 animate-slide-in"
+        className="w-full bg-rocket-blue hover:bg-rocket-blue-600 mt-3 transition-all duration-300 animate-slide-in"
         style={{ animationDelay: "0.6s" }}
         disabled={isSubmitting}
       >

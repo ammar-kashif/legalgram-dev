@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -23,6 +24,11 @@ const Signup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+
+  // Get redirect parameters from URL
+  const urlParams = new URLSearchParams(location.search);
+  const redirectTo = urlParams.get('redirect');
+  const redirectStep = urlParams.get('step');
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +92,13 @@ const Signup = () => {
       console.log("Signup successful, redirecting to login...");
       // Redirect to login page
       toast.success("Account created successfully! Please log in.");
-      navigate("/login");
+      
+      // Redirect to login with the same redirect parameters
+      if (redirectTo && redirectStep) {
+        navigate(`/login?redirect=${redirectTo}&step=${redirectStep}`);
+      } else {
+        navigate("/login");
+      }
       
     } catch (error) {
       console.error("Signup exception:", error);

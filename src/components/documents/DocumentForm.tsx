@@ -758,7 +758,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
           <>
             <div className="space-y-6">
               {/* Section 1: Personal Information */}
-              <div className="border p-6 rounded-lg bg-white/50">
+              <div className="border p-3 rounded-lg bg-white rounded-lg shadow-sm/50">
                 <h3 className="text-lg font-semibold mb-4 border-b pb-2">1. Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
@@ -893,7 +893,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
               </div>
               
               {/* Section 2: Property Details */}
-              <div className="border p-6 rounded-lg bg-white/50">
+              <div className="border p-3 rounded-lg bg-white rounded-lg shadow-sm/50">
                 <h3 className="text-lg font-semibold mb-4 border-b pb-2">2. Property Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
@@ -981,7 +981,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
               </div>
               
               {/* Section 3: Lease Terms */}
-              <div className="border p-6 rounded-lg bg-white/50">
+              <div className="border p-3 rounded-lg bg-white rounded-lg shadow-sm/50">
                 <h3 className="text-lg font-semibold mb-4 border-b pb-2">3. Lease Terms</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
@@ -1115,7 +1115,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
               </div>
               
               {/* Section 4: Financials */}
-              <div className="border p-6 rounded-lg bg-white/50">
+              <div className="border p-3 rounded-lg bg-white rounded-lg shadow-sm/50">
                 <h3 className="text-lg font-semibold mb-4 border-b pb-2">4. Financials</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
@@ -1163,7 +1163,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
               </div>
               
               {/* Section 5: Utilities */}
-              <div className="border p-6 rounded-lg bg-white/50">
+              <div className="border p-3 rounded-lg bg-white rounded-lg shadow-sm/50">
                 <h3 className="text-lg font-semibold mb-4 border-b pb-2">5. Utilities</h3>
                 <div className="grid grid-cols-1 gap-4">
                   <FormField
@@ -1189,7 +1189,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
               </div>
               
               {/* Section 6: Access & Penalties */}
-              <div className="border p-6 rounded-lg bg-white/50">
+              <div className="border p-3 rounded-lg bg-white rounded-lg shadow-sm/50">
                 <h3 className="text-lg font-semibold mb-4 border-b pb-2">6. Access & Penalties</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
@@ -1251,7 +1251,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
               </div>
               
               {/* Section 7: Occupancy and Guests */}
-              <div className="border p-6 rounded-lg bg-white/50">
+              <div className="border p-3 rounded-lg bg-white rounded-lg shadow-sm/50">
                 <h3 className="text-lg font-semibold mb-4 border-b pb-2">7. Occupancy and Guests</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
@@ -1299,7 +1299,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
               </div>
               
               {/* Section 8: Early Termination */}
-              <div className="border p-6 rounded-lg bg-white/50">
+              <div className="border p-3 rounded-lg bg-white rounded-lg shadow-sm/50">
                 <h3 className="text-lg font-semibold mb-4 border-b pb-2">8. Early Termination / Military Clause</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
@@ -1333,7 +1333,7 @@ const DocumentForm = ({ documentTitle, onComplete }: DocumentFormProps) => {
               </div>
               
               {/* Section 10: Inspection Checklist */}
-              <div className="border p-6 rounded-lg bg-white/50">
+              <div className="border p-3 rounded-lg bg-white rounded-lg shadow-sm/50">
                 <h3 className="text-lg font-semibold mb-4 border-b pb-2">10. Inspection Checklist (Optional)</h3>
                 <p className="text-gray-600 mb-4">
                   Document the condition of the property at move-in. This can help avoid disputes at move-out.

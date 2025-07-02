@@ -380,7 +380,7 @@ const LivingWillForm = () => {
     switch (question.type) {
       case 'text':
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
               {question.text}
             </Label>
@@ -395,7 +395,7 @@ const LivingWillForm = () => {
         );
       case 'textarea':
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
               {question.text}
             </Label>
@@ -411,7 +411,7 @@ const LivingWillForm = () => {
       case 'select':
         if (questionId === 'country') {
           return (
-            <div className="mb-4">
+            <div className="mb-2">
               <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
                 {question.text}
               </Label>
@@ -443,7 +443,7 @@ const LivingWillForm = () => {
           const states = selectedCountryId ? getStatesByCountry(parseInt(selectedCountryId)) : [];
           
           return (
-            <div className="mb-4">
+            <div className="mb-2">
               <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
                 {question.text}
               </Label>
@@ -467,7 +467,7 @@ const LivingWillForm = () => {
           );
         } else {
           return (
-            <div className="mb-4">
+            <div className="mb-2">
               <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
                 {question.text}
               </Label>
@@ -491,7 +491,7 @@ const LivingWillForm = () => {
         }
       case 'radio':
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label className="block text-sm font-medium text-black mb-2">
               {question.text}
             </Label>
@@ -516,7 +516,7 @@ const LivingWillForm = () => {
         const agentType = isFirst ? 'first' : isSecond ? 'second' : 'primary';
         
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label className="block text-sm font-medium text-black mb-2">
               {question.text}
             </Label>
@@ -571,7 +571,7 @@ const LivingWillForm = () => {
         );
       case 'physician':
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label className="block text-sm font-medium text-black mb-2">
               {question.text}
             </Label>
@@ -613,7 +613,7 @@ const LivingWillForm = () => {
         const witnessType = isWitness2 ? 'witness2' : isAdditional ? 'additional' : 'witness1';
         
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label className="block text-sm font-medium text-black mb-2">
               {question.text}
               {isAdditional && <span className="text-sm text-gray-500"> (Leave blank if not applicable)</span>}
@@ -651,9 +651,9 @@ const LivingWillForm = () => {
         );
       case 'confirmation':
         return (
-          <div className="mt-4 text-center">
+          <div className="mt-2 text-center">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
-            <p className="mt-4 text-black">
+            <p className="mt-2 text-black">
               {question.text}
             </p>
           </div>
@@ -1119,9 +1119,9 @@ const LivingWillForm = () => {
 
   const renderFormSummary = () => {
     return (
-      <div className="space-y-4 text-black">
+      <div className="space-y-2 text-black">
         <div className="border rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4">Living Will Summary</h3>
+          <h3 className="text-lg font-semibold mb-2">Living Will Summary</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-sm">Declarant Information</h4>
@@ -1176,7 +1176,7 @@ const LivingWillForm = () => {
           </div>
           
           {answers.other_directions && (
-            <div className="mt-4">
+            <div className="mt-2">
               <h4 className="font-medium text-sm">Other Directions</h4>
               <p className="text-sm bg-gray-50 p-2 rounded">{answers.other_directions}</p>
             </div>
@@ -1195,15 +1195,15 @@ const LivingWillForm = () => {
 
   if (isComplete) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 py-2 min-h-0">
+      <Card className="max-w-4xl mx-auto bg-white px-4 my-2 rounded-lg shadow-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Living Will</CardTitle>
           <CardDescription>
             Review your Living Will details below before generating the final document.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-2">
           {renderFormSummary()}
         </CardContent>
         <CardFooter className="flex justify-between">
@@ -1238,15 +1238,15 @@ const LivingWillForm = () => {
   // Safety check for currentSection
   if (!currentSection) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
-        <CardContent className="text-center p-8">
+    <div className="bg-gray-50 py-2 min-h-0">
+      <Card className="max-w-4xl mx-auto bg-white px-4 my-2 rounded-lg shadow-sm">
+        <CardContent className="text-center p-4">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
             onClick={() => {
               setCurrentSectionId('location_selection');
               setSectionHistory(['location_selection']);
             }}
-            className="mt-4"
+            className="mt-2"
           >
             Start Over
           </Button>
@@ -1257,8 +1257,8 @@ const LivingWillForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 py-2 min-h-0">
+      <Card className="max-w-4xl mx-auto bg-white px-4 my-2 rounded-lg shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -1302,6 +1302,7 @@ const LivingWillForm = () => {
   };
 
 export default LivingWillForm;
+
 
 
 

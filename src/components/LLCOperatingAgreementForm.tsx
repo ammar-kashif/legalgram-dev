@@ -1,11 +1,11 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Send, CheckCircle, Plus, Minus } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, CheckCircle, Plus, Minus, FileText } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -250,7 +250,7 @@ const LLCOperatingAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter company name"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -265,7 +265,7 @@ const LLCOperatingAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Describe the primary business activities of the LLC"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
               rows={4}
             />
           </div>
@@ -299,7 +299,7 @@ const LLCOperatingAgreementForm = () => {
                         value={member.name}
                         onChange={(e) => updateMember(index, 'name', e.target.value)}
                         placeholder="Enter member's full name"
-                        className="text-black bg-white"
+                        className="text-black bg-white rounded-lg shadow-sm"
                       />
                     </div>
                     <div>
@@ -311,7 +311,7 @@ const LLCOperatingAgreementForm = () => {
                         value={member.percentage}
                         onChange={(e) => updateMember(index, 'percentage', e.target.value)}
                         placeholder="Enter percentage"
-                        className="text-black bg-white"
+                        className="text-black bg-white rounded-lg shadow-sm"
                       />
                     </div>
                   </div>
@@ -356,14 +356,14 @@ const LLCOperatingAgreementForm = () => {
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full bg-white">
+              <SelectTrigger className="mt-1 text-black w-full bg-white rounded-lg shadow-sm">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white rounded-lg shadow-sm">
                 {options.map((option) => {
                   const [id, name] = option.includes('|') ? option.split('|') : [option, option];
                   return (
@@ -738,8 +738,8 @@ const LLCOperatingAgreementForm = () => {
 
   if (isComplete) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">LLC Operating Agreement</CardTitle>
           <CardDescription>
@@ -775,9 +775,9 @@ const LLCOperatingAgreementForm = () => {
 
   if (!currentSection) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
-        <CardContent className="text-center p-8">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+        <CardContent className="text-center p-4">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
             onClick={() => {
@@ -795,8 +795,8 @@ const LLCOperatingAgreementForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -805,6 +805,19 @@ const LLCOperatingAgreementForm = () => {
             Step {sectionHistory.length} of {Object.keys(sections).length}
           </div>
         </CardDescription>
+        {/* Learn More button for first step only */}
+        {currentSectionId === 'location_selection' && (
+          <div className="mt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => window.open('/llc-operating-agreement-info', '_blank')}
+              className="text-bright-orange-600 border-bright-orange-600 hover:bg-bright-orange-50"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Learn More About LLC Operating Agreements
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="text-black">
         <div className="grid grid-cols-1 gap-y-2">

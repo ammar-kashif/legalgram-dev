@@ -14,6 +14,14 @@ import UserDashboard from "./pages/UserDashboard"; // Import UserDashboard direc
 import WhatsAnLLC from "./pages/WhatsAnLLC"; // Import WhatsAnLLC directly
 import WhatsACorporation from "./pages/WhatsACorporation"; // Import WhatsACorporation directly
 import WhatsAnSCorp from "./pages/WhatsAnSCorp"; // Import WhatsAnSCorp directly
+import AffidavitOfMarriageInfo from "./pages/AffidavitOfMarriageInfo"; // Import AffidavitOfMarriageInfo directly
+import AffidavitOfResidenceInfo from "./pages/AffidavitOfResidenceInfo"; // Import AffidavitOfResidenceInfo directly
+import LLCOperatingAgreementInfo from "./pages/LLCOperatingAgreementInfo"; // Import LLCOperatingAgreementInfo directly
+import SpecialPowerOfAttorneyInfo from "./pages/SpecialPowerOfAttorneyInfo"; // Import SpecialPowerOfAttorneyInfo directly
+import GeneralPowerOfAttorneyInfo from "./pages/GeneralPowerOfAttorneyInfo"; // Import GeneralPowerOfAttorneyInfo directly
+import LeaseAgreementInfo from "./pages/LeaseAgreementInfo"; // Import LeaseAgreementInfo directly
+import ChildCareAuthorizationInfo from "./pages/ChildCareAuthorizationInfo"; // Import ChildCareAuthorizationInfo directly
+import DivorceSettlementAgreementInfo from "./pages/DivorceSettlementAgreementInfo"; // Import DivorceSettlementAgreementInfo directly
 
 // Lazy load other pages for better performance
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
@@ -94,6 +102,14 @@ const App = () => {
                 <Route path="/whats-an-s-corp" element={<WhatsAnSCorp />} />
                 <Route path="/ask-legal-advice" element={<AskLegalAdvice />} />
                 <Route path="/ask-lawyer" element={<AskALawyer />} />
+                <Route path="/affidavit-of-marriage-info" element={<AffidavitOfMarriageInfo />} />
+                <Route path="/affidavit-of-residence-info" element={<AffidavitOfResidenceInfo />} />
+                <Route path="/llc-operating-agreement-info" element={<LLCOperatingAgreementInfo />} />
+                <Route path="/special-power-of-attorney-info" element={<SpecialPowerOfAttorneyInfo />} />
+                <Route path="/general-power-of-attorney-info" element={<GeneralPowerOfAttorneyInfo />} />
+                <Route path="/child-care-authorization-info" element={<ChildCareAuthorizationInfo />} />
+                <Route path="/divorce-settlement-agreement-info" element={<DivorceSettlementAgreementInfo />} />
+                <Route path="/lease-agreement-info" element={<LeaseAgreementInfo />} />
                 <Route path="/make-documents" element={<Documents />} />
                 <Route path="/make-documents/:id" element={<Documents />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

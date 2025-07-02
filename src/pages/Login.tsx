@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,6 +20,18 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Get redirect parameters from URL
+  const urlParams = new URLSearchParams(location.search);
+  const redirectTo = urlParams.get('redirect');
+  const redirectStep = urlParams.get('step');
+
+  const getRedirectPath = () => {
+    if (redirectTo === 'ask-legal-advice' && redirectStep) {
+      return `/ask-legal-advice?step=${redirectStep}`;
+    }
+    return "/user-dashboard";
+  };
+
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -26,7 +39,7 @@ const Login = () => {
         const { data, error } = await supabase.auth.getSession();
         console.log("Session check result:", { data, error });
         if (data.session) {
-          navigate("/user-dashboard");
+          navigate(getRedirectPath());
         }
       } catch (error) {
         console.error("Session check error:", error);
@@ -81,7 +94,7 @@ const Login = () => {
       
       console.log("Login successful, redirecting...");
       toast.success("Welcome back!");
-      navigate("/user-dashboard");
+      navigate(getRedirectPath());
     } catch (error) {
       console.error("Login exception:", error);
       console.error("Error details:", {
@@ -215,7 +228,7 @@ const Login = () => {
             <div className="mt-8 text-center animate-fade-in" style={{ animationDelay: "0.7s" }}>
               <p className="text-white">
                 Don't have an account? {" "}
-                <Link to="/signup" className="text-white hover:text-white/70 transition-colors hover:underline">
+                <Link to={`/signup${location.search}`} className="text-white hover:text-white/70 transition-colors hover:underline">
                   Sign up
                 </Link>
               </p>

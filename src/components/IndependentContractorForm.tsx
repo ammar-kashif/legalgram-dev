@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -361,7 +361,7 @@ const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSe
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -377,7 +377,7 @@ const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSe
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter a number"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -400,13 +400,13 @@ const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSe
                   {answers[questionId] ? answers[questionId] : <span>Select a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white">
+              <PopoverContent className="w-auto p-0 bg-white rounded-lg shadow-sm">
                 <Calendar
                   mode="single"
                   selected={answers[questionId] ? new Date(answers[questionId]) : undefined}
                   onSelect={(date) => handleAnswer(questionId, date ? format(date, 'yyyy-MM-dd') : '')}
                   initialFocus
-                  className="p-3 pointer-events-auto bg-white"
+                  className="p-3 pointer-events-auto bg-white rounded-lg shadow-sm"
                 />
               </PopoverContent>
             </Popover>
@@ -469,7 +469,7 @@ const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSe
                 (questionId === 'governing_state' && !answers.governing_country)
               }
             >
-              <SelectTrigger className="mt-1 text-black w-full bg-white">
+              <SelectTrigger className="mt-1 text-black w-full bg-white rounded-lg shadow-sm">
                 <SelectValue placeholder={
                   (questionId === 'state' && !answers.country) ||
                   (questionId === 'governing_state' && !answers.governing_country)
@@ -477,7 +477,7 @@ const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSe
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white rounded-lg shadow-sm">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -518,7 +518,7 @@ const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSe
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
               rows={4}
             />
           </div>
@@ -1099,8 +1099,8 @@ const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSe
 
   if (isComplete) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Independent Contractor Agreement</CardTitle>
           <CardDescription>
@@ -1137,9 +1137,9 @@ const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSe
   // Safety check for currentSection
   if (!currentSection) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
-        <CardContent className="text-center p-8">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+        <CardContent className="text-center p-4">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
             onClick={() => {
               setCurrentSectionId('location_selection');
@@ -1156,8 +1156,8 @@ const IndependentContractorForm = () => {  const [currentSectionId, setCurrentSe
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>

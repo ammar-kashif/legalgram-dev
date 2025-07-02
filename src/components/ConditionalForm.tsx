@@ -1,4 +1,4 @@
-﻿
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon, FileText } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { format, parse } from "date-fns";
 import { toast } from "sonner";
@@ -353,7 +353,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -369,7 +369,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter a number"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -385,7 +385,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter email address"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -401,7 +401,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter phone number"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -424,13 +424,13 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
                   {answers[questionId] ? answers[questionId] : <span>Select a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white">
+              <PopoverContent className="w-auto p-0 bg-white rounded-lg shadow-sm">
                 <Calendar
                   mode="single"
                   selected={answers[questionId] ? new Date(answers[questionId]) : undefined}
                   onSelect={(date) => handleAnswer(questionId, date ? format(date, 'yyyy-MM-dd') : '')}
                   initialFocus
-                  className="p-3 pointer-events-auto bg-white"
+                  className="p-3 pointer-events-auto bg-white rounded-lg shadow-sm"
                 />
               </PopoverContent>
             </Popover>
@@ -479,14 +479,14 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full bg-white">
+              <SelectTrigger className="mt-1 text-black w-full bg-white rounded-lg shadow-sm">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white rounded-lg shadow-sm">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -527,7 +527,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
               rows={3}
             />
           </div>
@@ -921,8 +921,8 @@ The Landlord is unaware of any asbestos-containing construction materials or any
 
   if (isComplete) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Lease Agreement</CardTitle>
           <CardDescription>
@@ -956,8 +956,8 @@ The Landlord is unaware of any asbestos-containing construction materials or any
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -966,6 +966,19 @@ The Landlord is unaware of any asbestos-containing construction materials or any
             Step {sectionHistory.length} of {Object.keys(sections).length}
           </div>
         </CardDescription>
+        {/* Learn More button for first step only */}
+        {currentSectionId === 'location_selection' && (
+          <div className="mt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => window.open('/lease-agreement-info', '_blank')}
+              className="text-bright-orange-600 border-bright-orange-600 hover:bg-bright-orange-50"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Learn More About Lease Agreements
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="text-black">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">

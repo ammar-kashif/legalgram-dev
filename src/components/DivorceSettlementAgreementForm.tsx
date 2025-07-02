@@ -1,11 +1,11 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon, FileText } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -308,7 +308,7 @@ const DivorceSettlementAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -325,7 +325,7 @@ const DivorceSettlementAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter number"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -340,7 +340,7 @@ const DivorceSettlementAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter details"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
               rows={3}
             />
           </div>
@@ -364,13 +364,13 @@ const DivorceSettlementAgreementForm = () => {
                   {answers[questionId] ? answers[questionId] : <span>Select a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white">
+              <PopoverContent className="w-auto p-0 bg-white rounded-lg shadow-sm">
                 <Calendar
                   mode="single"
                   selected={answers[questionId] ? new Date(answers[questionId]) : undefined}
                   onSelect={(date) => handleAnswer(questionId, date ? format(date, 'yyyy-MM-dd') : '')}
                   initialFocus
-                  className="p-3 pointer-events-auto bg-white"
+                  className="p-3 pointer-events-auto bg-white rounded-lg shadow-sm"
                 />
               </PopoverContent>
             </Popover>
@@ -429,14 +429,14 @@ const DivorceSettlementAgreementForm = () => {
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full bg-white">
+              <SelectTrigger className="mt-1 text-black w-full bg-white rounded-lg shadow-sm">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white rounded-lg shadow-sm">
                 {options.map((option) => {
                   const [id, name] = option.includes('|') ? option.split('|') : [option, option];
                   return (
@@ -847,8 +847,8 @@ const DivorceSettlementAgreementForm = () => {
 
   if (isComplete) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Divorce Settlement Agreement</CardTitle>
           <CardDescription>
@@ -883,9 +883,9 @@ const DivorceSettlementAgreementForm = () => {
 
   if (!currentSection) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
-        <CardContent className="text-center p-8">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+        <CardContent className="text-center p-4">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
             onClick={() => {
@@ -903,8 +903,8 @@ const DivorceSettlementAgreementForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -913,6 +913,18 @@ const DivorceSettlementAgreementForm = () => {
             Step {sectionHistory.length} of {Object.keys(sections).length}
           </div>
         </CardDescription>
+        {currentSectionId === 'location_selection' && (
+          <div className="mt-2">
+            <Button
+              variant="outline"
+              onClick={() => window.open('/divorce-settlement-agreement-info', '_blank')}
+              className="text-bright-orange-600 border-bright-orange-600 hover:bg-bright-orange-50"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Learn More About Divorce Settlement Agreement
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="text-black">
         <div className="grid grid-cols-1 gap-y-2">

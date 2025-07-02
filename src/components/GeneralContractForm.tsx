@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -467,7 +467,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -483,7 +483,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter a number"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -506,13 +506,13 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
                   {answers[questionId] ? answers[questionId] : <span>Select a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white">
+              <PopoverContent className="w-auto p-0 bg-white rounded-lg shadow-sm">
                 <Calendar
                   mode="single"
                   selected={answers[questionId] ? new Date(answers[questionId]) : undefined}
                   onSelect={(date) => handleAnswer(questionId, date ? format(date, 'yyyy-MM-dd') : '')}
                   initialFocus
-                  className="p-3 pointer-events-auto bg-white"
+                  className="p-3 pointer-events-auto bg-white rounded-lg shadow-sm"
                 />
               </PopoverContent>
             </Popover>
@@ -568,14 +568,14 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full bg-white">
+              <SelectTrigger className="mt-1 text-black w-full bg-white rounded-lg shadow-sm">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white rounded-lg shadow-sm">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -616,7 +616,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
               rows={3}
             />
           </div>
@@ -636,7 +636,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={party.name}
                   onChange={(e) => updateParty(isSellerInfo ? 'seller' : 'buyer', 'name', e.target.value)}
                   placeholder="Enter full legal name"
-                  className="text-black bg-white"
+                  className="text-black bg-white rounded-lg shadow-sm"
                 />
               </div>
               <div>
@@ -648,7 +648,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
                   <SelectTrigger className="text-black">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-white rounded-lg shadow-sm">
                     <SelectItem value="Corporation">Corporation</SelectItem>
                     <SelectItem value="Individual">Individual</SelectItem>
                     <SelectItem value="Partnership">Partnership</SelectItem>
@@ -980,7 +980,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.text(balanceText, 15, y);
       y += lineHeight;
       
-      const paymentMethodText = `Payments shall be made by ${answers.payment_method || '[Insert Method â€“ bank transfer, check, etc.]'}, to the account designated in writing by the Seller.`;
+      const paymentMethodText = `Payments shall be made by ${answers.payment_method || '[Insert Method – bank transfer, check, etc.]'}, to the account designated in writing by the Seller.`;
       const paymentMethodLines = doc.splitTextToSize(paymentMethodText, 170);
       paymentMethodLines.forEach((line: string) => {
         doc.text(line, 15, y);
@@ -1057,9 +1057,9 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.setFont("helvetica", "normal");
       doc.text("Title to and risk of loss for the Goods shall pass to the Buyer upon:", 15, y);
       y += lineHeight;
-      doc.text("â˜ Delivery to Buyer's specified address", 15, y);
+      doc.text("☐ Delivery to Buyer's specified address", 15, y);
       y += lineHeight;
-      doc.text("â˜ Transfer to the carrier (FOB Origin)", 15, y);
+      doc.text("☐ Transfer to the carrier (FOB Origin)", 15, y);
       y += lineHeight;
       doc.text("(Select appropriate option or define custom terms.)", 15, y);
       y += lineHeight + 3;      
@@ -1071,13 +1071,13 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.setFont("helvetica", "normal");
       doc.text("The Seller represents and warrants that:", 15, y);
       y += lineHeight;
-      doc.text("â€¢ Goods are free from material defects in design, material, and workmanship.", 15, y);
+      doc.text("• Goods are free from material defects in design, material, and workmanship.", 15, y);
       y += lineHeight;
-      doc.text("â€¢ Goods conform to the specifications, drawings, or samples provided.", 15, y);
+      doc.text("• Goods conform to the specifications, drawings, or samples provided.", 15, y);
       y += lineHeight;
-      doc.text("â€¢ Goods are merchantable and fit for their intended purpose.", 15, y);
+      doc.text("• Goods are merchantable and fit for their intended purpose.", 15, y);
       y += lineHeight;
-      doc.text("â€¢ Goods are free from any liens, claims, or encumbrances.", 15, y);
+      doc.text("• Goods are free from any liens, claims, or encumbrances.", 15, y);
       y += lineHeight;
       doc.text(`Warranty period: ${answers.warranty_period || '[Insert Number]'} months from the date of delivery.`, 15, y);
       y += lineHeight + 3;
@@ -1117,11 +1117,11 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
         y += lineHeight;
       });
       
-      doc.text("â€¢ Breach of this Contract", 15, y);
+      doc.text("• Breach of this Contract", 15, y);
       y += lineHeight;
-      doc.text("â€¢ Negligent or willful misconduct", 15, y);
+      doc.text("• Negligent or willful misconduct", 15, y);
       y += lineHeight;
-      doc.text("â€¢ Infringement of intellectual property rights", 15, y);
+      doc.text("• Infringement of intellectual property rights", 15, y);
       y += lineHeight + 3;
       
       // 9. Force Majeure
@@ -1175,17 +1175,17 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.setFont("helvetica", "normal");
       doc.text("This Contract may be terminated:", 15, y);
       y += lineHeight;
-      doc.text("â€¢ By mutual written consent of both Parties", 15, y);
+      doc.text("• By mutual written consent of both Parties", 15, y);
       y += lineHeight;
       
-      const terminationText1 = `â€¢ By either party, with ${answers.termination_notice_period || '[Insert Number]'} days' written notice, for any material breach not cured within ${answers.cure_period || '[Insert Number]'} days of written notice`;
+      const terminationText1 = `• By either party, with ${answers.termination_notice_period || '[Insert Number]'} days' written notice, for any material breach not cured within ${answers.cure_period || '[Insert Number]'} days of written notice`;
       const terminationLines1 = doc.splitTextToSize(terminationText1, 165);
       terminationLines1.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
       
-      const terminationText2 = `â€¢ If performance is prevented due to a force majeure event exceeding ${answers.force_majeure_period || '[Insert Number]'} days`;
+      const terminationText2 = `• If performance is prevented due to a force majeure event exceeding ${answers.force_majeure_period || '[Insert Number]'} days`;
       const terminationLines2 = doc.splitTextToSize(terminationText2, 165);
       terminationLines2.forEach((line: string) => {
         doc.text(line, 15, y);
@@ -1234,11 +1234,11 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.setFont("helvetica", "normal");
       doc.text("Before initiating any court action, the parties agree to attempt resolution through:", 15, y);
       y += lineHeight;
-      doc.text("â€¢ Negotiation: A good faith effort for at least 15 days", 15, y);
+      doc.text("• Negotiation: A good faith effort for at least 15 days", 15, y);
       y += lineHeight;
-      doc.text("â€¢ Mediation: If negotiation fails", 15, y);
+      doc.text("• Mediation: If negotiation fails", 15, y);
       y += lineHeight;
-      const disputeText = `â€¢ Arbitration (optional): Binding arbitration under ${answers.arbitration_rules || '[Insert Rules, e.g., AAA]'}`;
+      const disputeText = `• Arbitration (optional): Binding arbitration under ${answers.arbitration_rules || '[Insert Rules, e.g., AAA]'}`;
       const disputeLines = doc.splitTextToSize(disputeText, 165);
       disputeLines.forEach((line: string) => {
         doc.text(line, 15, y);
@@ -1467,8 +1467,8 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
 
   if (isComplete) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">General Contract for Products</CardTitle>
           <CardDescription>
@@ -1507,9 +1507,9 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
   // Safety check for currentSection
   if (!currentSection) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
-        <CardContent className="text-center p-8">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+        <CardContent className="text-center p-4">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
             onClick={() => {
@@ -1527,8 +1527,8 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>

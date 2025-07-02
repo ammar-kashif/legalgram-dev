@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon, FileText } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -313,7 +313,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
     switch (question.type) {
       case 'date':
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label className="block text-sm font-medium text-black mb-1">
               {question.text}
             </Label>
@@ -343,7 +343,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
         );
       case 'party':
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label className="block text-sm font-medium text-black mb-2">
               {question.text}
             </Label>
@@ -376,7 +376,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
         const agentType = isMainAgent ? 'agent' : 'alternate_agent';
         
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label className="block text-sm font-medium text-black mb-2">
               {question.text}
             </Label>
@@ -428,7 +428,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
         const witnessType = isWitness2 ? 'witness2' : 'witness1';
         
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label className="block text-sm font-medium text-black mb-2">
               {question.text}
             </Label>
@@ -457,7 +457,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
         );
       case 'notary':
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label className="block text-sm font-medium text-black mb-2">
               {question.text}
             </Label>
@@ -512,7 +512,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
         }
         
         return (
-          <div className="mb-4">
+          <div className="mb-2">
             <Label htmlFor={questionId} className="block text-sm font-medium text-black mb-1">
               {question.text}
             </Label>
@@ -546,9 +546,9 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
         );
       case 'confirmation':
         return (
-          <div className="mt-4 text-center">
+          <div className="mt-2 text-center">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
-            <p className="mt-4 text-black">
+            <p className="mt-2 text-black">
               {question.text}
             </p>
           </div>
@@ -801,9 +801,9 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
   };
   const renderFormSummary = () => {
     return (
-      <div className="space-y-4 text-black">
+      <div className="space-y-2 text-black">
         <div className="border rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4">General Power of Attorney Summary</h3>
+          <h3 className="text-lg font-semibold mb-2">General Power of Attorney Summary</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -866,7 +866,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
 
   if (isComplete) {
     return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-gray-50 min-h-0">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">General Power of Attorney</CardTitle>
@@ -874,7 +874,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
             Review your General Power of Attorney details below before generating the final document.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-2">
           {renderFormSummary()}
         </CardContent>
         <CardFooter className="flex justify-between">
@@ -910,15 +910,15 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
   // Safety check for currentSection
   if (!currentSection) {
     return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-gray-50 min-h-0">
       <Card className="max-w-4xl mx-auto bg-white">
-        <CardContent className="text-center p-8">
+        <CardContent className="text-center p-4">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
             onClick={() => {              setCurrentSectionId('location_selection');
               setSectionHistory(['location_selection']);
             }}
-            className="mt-4"
+            className="mt-2"
           >
             Start Over
           </Button>
@@ -929,7 +929,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-gray-50 min-h-0">
       <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
@@ -939,6 +939,18 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
             Step {sectionHistory.length} of {Object.keys(sections).length}
           </div>
         </CardDescription>
+        {currentSectionId === 'location_selection' && (
+          <div className="mt-2">
+            <Button
+              variant="outline"
+              onClick={() => window.open('/general-power-of-attorney-info', '_blank')}
+              className="text-bright-orange-600 border-bright-orange-600 hover:bg-bright-orange-50"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Learn More About General Power of Attorney
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="text-black">
         <div className="grid grid-cols-1 gap-y-2">
@@ -974,6 +986,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
   };
 
 export default GeneralPowerOfAttorneyForm;
+
 
 
 

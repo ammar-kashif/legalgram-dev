@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -356,7 +356,7 @@ const LoanAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
             />
           </div>
         );
@@ -377,7 +377,7 @@ const LoanAgreementForm = () => {
                 }
               }}
               placeholder="Enter the purpose of the loan"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
               rows={4}
             />
           </div>
@@ -399,10 +399,10 @@ const LoanAgreementForm = () => {
                   }
                 }}
               >
-                <SelectTrigger className="mt-1 text-black w-full bg-white">
+                <SelectTrigger className="mt-1 text-black w-full bg-white rounded-lg shadow-sm">
                   <SelectValue placeholder="Select a country" />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-white rounded-lg shadow-sm">
                   {getAllCountries().map((country) => (
                     <SelectItem key={country.id} value={`${country.id}`}>
                       {country.name}
@@ -426,10 +426,10 @@ const LoanAgreementForm = () => {
                 onValueChange={(value) => handleAnswer(questionId, value)}
                 disabled={!selectedCountryId}
               >
-                <SelectTrigger className="mt-1 text-black w-full bg-white">
+                <SelectTrigger className="mt-1 text-black w-full bg-white rounded-lg shadow-sm">
                   <SelectValue placeholder={selectedCountryId ? "Select a state/province" : "Select a country first"} />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-white rounded-lg shadow-sm">
                   {states.map((state) => (
                     <SelectItem key={state.id} value={`${state.id}`}>
                       {state.name}
@@ -455,10 +455,10 @@ const LoanAgreementForm = () => {
                   }
                 }}
               >
-                <SelectTrigger className="mt-1 text-black w-full bg-white">
+                <SelectTrigger className="mt-1 text-black w-full bg-white rounded-lg shadow-sm">
                   <SelectValue placeholder="Select an option" />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-white rounded-lg shadow-sm">
                   {question.options?.map((option) => (
                     <SelectItem key={option} value={option}>
                       {option}
@@ -502,7 +502,7 @@ const LoanAgreementForm = () => {
                   {dateValue ? format(dateValue, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white">
+              <PopoverContent className="w-auto p-0 bg-white rounded-lg shadow-sm">
                 <Calendar
                   mode="single"
                   selected={dateValue}
@@ -534,7 +534,7 @@ const LoanAgreementForm = () => {
                 }
               }}
               placeholder="Enter amount (e.g., 10000)"
-              className="mt-1 text-black w-full bg-white"
+              className="mt-1 text-black w-full bg-white rounded-lg shadow-sm"
               type="number"
               min="0"
               step="0.01"
@@ -743,13 +743,13 @@ const LoanAgreementForm = () => {
       addText("EVENTS OF DEFAULT", true, 12);
       
       addText("The Borrower shall be considered in default under this Agreement if:");
-      addText("â€¢ Fails to repay the Loan Amount or any installment by the Due Date;");
-      addText("â€¢ Uses the funds for purposes other than agreed;");
-      addText("â€¢ Becomes insolvent or is declared bankrupt.");
+      addText("• Fails to repay the Loan Amount or any installment by the Due Date;");
+      addText("• Uses the funds for purposes other than agreed;");
+      addText("• Becomes insolvent or is declared bankrupt.");
       
       addText("In the event of default:");
-      addText("â€¢ The entire outstanding amount shall become immediately due and payable;");
-      addText("â€¢ The Lender shall have the right to pursue legal remedies to recover the amount, including legal costs and damages.");
+      addText("• The entire outstanding amount shall become immediately due and payable;");
+      addText("• The Lender shall have the right to pursue legal remedies to recover the amount, including legal costs and damages.");
       
       // ENTIRE AGREEMENT
       addText("ENTIRE AGREEMENT.", true, 12);
@@ -888,8 +888,8 @@ const LoanAgreementForm = () => {
 
   if (isComplete) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Loan Agreement</CardTitle>
           <CardDescription>
@@ -933,9 +933,9 @@ const LoanAgreementForm = () => {
   // Safety check for currentSection
   if (!currentSection) {
     return (
-    <div className="min-h-screen bg-white">
-      <Card className="max-w-4xl mx-auto bg-white">
-        <CardContent className="text-center p-8">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+        <CardContent className="text-center p-4">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
             onClick={() => {
@@ -953,8 +953,8 @@ const LoanAgreementForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4">
-      <Card className="max-w-4xl mx-auto bg-white">
+    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
+      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
