@@ -356,7 +356,7 @@ const LoanAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -377,7 +377,7 @@ const LoanAgreementForm = () => {
                 }
               }}
               placeholder="Enter the purpose of the loan"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
               rows={4}
             />
           </div>
@@ -399,10 +399,10 @@ const LoanAgreementForm = () => {
                   }
                 }}
               >
-                <SelectTrigger className="mt-1 text-black w-full">
+                <SelectTrigger className="mt-1 text-black w-full bg-white">
                   <SelectValue placeholder="Select a country" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {getAllCountries().map((country) => (
                     <SelectItem key={country.id} value={`${country.id}`}>
                       {country.name}
@@ -426,10 +426,10 @@ const LoanAgreementForm = () => {
                 onValueChange={(value) => handleAnswer(questionId, value)}
                 disabled={!selectedCountryId}
               >
-                <SelectTrigger className="mt-1 text-black w-full">
+                <SelectTrigger className="mt-1 text-black w-full bg-white">
                   <SelectValue placeholder={selectedCountryId ? "Select a state/province" : "Select a country first"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {states.map((state) => (
                     <SelectItem key={state.id} value={`${state.id}`}>
                       {state.name}
@@ -455,10 +455,10 @@ const LoanAgreementForm = () => {
                   }
                 }}
               >
-                <SelectTrigger className="mt-1 text-black w-full">
+                <SelectTrigger className="mt-1 text-black w-full bg-white">
                   <SelectValue placeholder="Select an option" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {question.options?.map((option) => (
                     <SelectItem key={option} value={option}>
                       {option}
@@ -502,7 +502,7 @@ const LoanAgreementForm = () => {
                   {dateValue ? format(dateValue, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white">
                 <Calendar
                   mode="single"
                   selected={dateValue}
@@ -534,7 +534,7 @@ const LoanAgreementForm = () => {
                 }
               }}
               placeholder="Enter amount (e.g., 10000)"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
               type="number"
               min="0"
               step="0.01"
@@ -888,7 +888,7 @@ const LoanAgreementForm = () => {
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Loan Agreement</CardTitle>
           <CardDescription>
@@ -931,7 +931,7 @@ const LoanAgreementForm = () => {
   // Safety check for currentSection
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
@@ -949,7 +949,7 @@ const LoanAgreementForm = () => {
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -992,3 +992,6 @@ const LoanAgreementForm = () => {
 };
 
 export default LoanAgreementForm;
+
+
+

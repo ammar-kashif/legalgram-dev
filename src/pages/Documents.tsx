@@ -137,7 +137,7 @@ const Documents = () => {
     const DocumentComponent = selectedDocumentType.component;
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-12 bg-white min-h-screen">
           <div className="mb-8">
             <Button 
               variant="outline" 
@@ -160,7 +160,7 @@ const Documents = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 bg-white min-h-screen">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold mb-2">Legal Document Generator</h1>
           <p className="text-muted-foreground">
@@ -174,7 +174,7 @@ const Documents = () => {
             return (
               <Card 
                 key={docType.id}
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+                className="cursor-pointer hover:shadow-lg transition-shadow bg-white"
                 onClick={() => setSelectedDocument(docType.id)}
               >
                 <CardHeader className="text-center">

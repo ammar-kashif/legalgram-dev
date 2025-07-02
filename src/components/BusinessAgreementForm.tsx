@@ -316,7 +316,7 @@ const BusinessAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -339,7 +339,7 @@ const BusinessAgreementForm = () => {
                   {agreementDate ? format(agreementDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white">
                 <Calendar
                   mode="single"
                   selected={agreementDate}
@@ -367,7 +367,7 @@ const BusinessAgreementForm = () => {
                   value={party.name}
                   onChange={(e) => updateParty(partyType as 'first' | 'second', 'name', e.target.value)}
                   placeholder="Enter full name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -376,7 +376,7 @@ const BusinessAgreementForm = () => {
                   value={party.address}
                   onChange={(e) => updateParty(partyType as 'first' | 'second', 'address', e.target.value)}
                   placeholder="Enter complete address"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={3}
                 />
               </div>
@@ -396,7 +396,7 @@ const BusinessAgreementForm = () => {
                   value={businessDetails.projectName}
                   onChange={(e) => updateBusinessDetails('projectName', e.target.value)}
                   placeholder="Enter project name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -405,7 +405,7 @@ const BusinessAgreementForm = () => {
                   value={businessDetails.projectDescription}
                   onChange={(e) => updateBusinessDetails('projectDescription', e.target.value)}
                   placeholder="Detailed description of the project"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={4}
                 />
               </div>
@@ -415,7 +415,7 @@ const BusinessAgreementForm = () => {
                   value={businessDetails.salesCommissionRate}
                   onChange={(e) => updateBusinessDetails('salesCommissionRate', e.target.value)}
                   placeholder="Enter commission percentage"
-                  className="text-black"
+                  className="text-black bg-white"
                   type="number"
                 />
               </div>
@@ -425,7 +425,7 @@ const BusinessAgreementForm = () => {
                   value={businessDetails.constructionTimeframe}
                   onChange={(e) => updateBusinessDetails('constructionTimeframe', e.target.value)}
                   placeholder="e.g., 24 months"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -434,7 +434,7 @@ const BusinessAgreementForm = () => {
                   value={businessDetails.deductionAmount}
                   onChange={(e) => updateBusinessDetails('deductionAmount', e.target.value)}
                   placeholder="Enter amount"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -443,7 +443,7 @@ const BusinessAgreementForm = () => {
                   value={businessDetails.penaltyAmount}
                   onChange={(e) => updateBusinessDetails('penaltyAmount', e.target.value)}
                   placeholder="Enter penalty amount"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -452,7 +452,7 @@ const BusinessAgreementForm = () => {
                   value={businessDetails.companyName}
                   onChange={(e) => updateBusinessDetails('companyName', e.target.value)}
                   placeholder="Enter company name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
             </div>
@@ -475,7 +475,7 @@ const BusinessAgreementForm = () => {
                   value={noticeInfo.address}
                   onChange={(e) => updateNoticeInfo(noticeType as 'first' | 'second', 'address', e.target.value)}
                   placeholder="Enter complete address for notices"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={3}
                 />
               </div>
@@ -485,7 +485,7 @@ const BusinessAgreementForm = () => {
                   value={noticeInfo.phone}
                   onChange={(e) => updateNoticeInfo(noticeType as 'first' | 'second', 'phone', e.target.value)}
                   placeholder="Enter phone number"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -494,7 +494,7 @@ const BusinessAgreementForm = () => {
                   value={noticeInfo.email}
                   onChange={(e) => updateNoticeInfo(noticeType as 'first' | 'second', 'email', e.target.value)}
                   placeholder="Enter email address"
-                  className="text-black"
+                  className="text-black bg-white"
                   type="email"
                 />
               </div>
@@ -534,14 +534,14 @@ const BusinessAgreementForm = () => {
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full">
+              <SelectTrigger className="mt-1 text-black w-full bg-white">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -793,7 +793,7 @@ const BusinessAgreementForm = () => {
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Business Agreement</CardTitle>
           <CardDescription>
@@ -841,7 +841,7 @@ const BusinessAgreementForm = () => {
 
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
@@ -859,7 +859,7 @@ const BusinessAgreementForm = () => {
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -902,3 +902,6 @@ const BusinessAgreementForm = () => {
 };
 
 export default BusinessAgreementForm;
+
+
+

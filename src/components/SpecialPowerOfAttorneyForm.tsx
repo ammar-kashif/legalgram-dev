@@ -288,7 +288,7 @@ const SpecialPowerOfAttorneyForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -303,7 +303,7 @@ const SpecialPowerOfAttorneyForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter the legal matter, court case details, or specific purpose for this power of attorney"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
               rows={4}
             />
           </div>
@@ -327,7 +327,7 @@ const SpecialPowerOfAttorneyForm = () => {
                   {executionDate ? format(executionDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white">
                 <Calendar
                   mode="single"
                   selected={executionDate}
@@ -355,7 +355,7 @@ const SpecialPowerOfAttorneyForm = () => {
                   value={person.name}
                   onChange={(e) => updatePerson(personType as 'executant' | 'attorney', 'name', e.target.value)}
                   placeholder="Enter full name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -364,7 +364,7 @@ const SpecialPowerOfAttorneyForm = () => {
                   value={person.address}
                   onChange={(e) => updatePerson(personType as 'executant' | 'attorney', 'address', e.target.value)}
                   placeholder="Enter complete address"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={3}
                 />
               </div>
@@ -388,7 +388,7 @@ const SpecialPowerOfAttorneyForm = () => {
                   value={witness.name}
                   onChange={(e) => updateWitness(witnessType as 'witness1' | 'witness2', 'name', e.target.value)}
                   placeholder="Enter witness full name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -397,7 +397,7 @@ const SpecialPowerOfAttorneyForm = () => {
                   value={witness.address}
                   onChange={(e) => updateWitness(witnessType as 'witness1' | 'witness2', 'address', e.target.value)}
                   placeholder="Enter witness address"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={2}
                 />
               </div>
@@ -407,7 +407,7 @@ const SpecialPowerOfAttorneyForm = () => {
                   value={witness.nicNo}
                   onChange={(e) => updateWitness(witnessType as 'witness1' | 'witness2', 'nicNo', e.target.value)}
                   placeholder="Enter NIC number"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>            </div>
           </div>
@@ -437,10 +437,10 @@ const SpecialPowerOfAttorneyForm = () => {
                 }
               }}
             >
-              <SelectTrigger className="mt-1 text-black w-full">
+              <SelectTrigger className="mt-1 text-black w-full bg-white">
                 <SelectValue placeholder="Select an option" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {options.map((option) => {
                   const [id, name] = option.includes('|') ? option.split('|') : [option, option];
                   return (
@@ -817,7 +817,7 @@ const SpecialPowerOfAttorneyForm = () => {
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Special Power of Attorney</CardTitle>
           <CardDescription>
@@ -857,7 +857,7 @@ const SpecialPowerOfAttorneyForm = () => {
   // Safety check for currentSection
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
@@ -875,7 +875,7 @@ const SpecialPowerOfAttorneyForm = () => {
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -918,3 +918,6 @@ const SpecialPowerOfAttorneyForm = () => {
 };
 
 export default SpecialPowerOfAttorneyForm;
+
+
+

@@ -378,7 +378,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                 value={answers[questionId] || ''}
                 onChange={(e) => handleAnswer(questionId, e.target.value)}
                 placeholder="Enter location of signing (e.g., Islamabad)"
-                className="mt-1 text-black w-full"
+                className="mt-1 text-black w-full bg-white"
               />
             </div>
           );
@@ -397,7 +397,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                     value={arbitrationDetails.jurisdiction}
                     onChange={(e) => updateArbitrationDetails('jurisdiction', e.target.value)}
                     placeholder="Enter jurisdiction (e.g., Islamabad, Pakistan)"
-                    className="text-black"
+                    className="text-black bg-white"
                   />
                 </div>
                 <div>
@@ -406,7 +406,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                     value={arbitrationDetails.arbitratorName}
                     onChange={(e) => updateArbitrationDetails('arbitratorName', e.target.value)}
                     placeholder="Enter arbitrator name if agreed in advance"
-                    className="text-black"
+                    className="text-black bg-white"
                   />
                 </div>
                 <div>
@@ -415,7 +415,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                     value={arbitrationDetails.umpireName}
                     onChange={(e) => updateArbitrationDetails('umpireName', e.target.value)}
                     placeholder="Enter umpire name if agreed in advance"
-                    className="text-black"
+                    className="text-black bg-white"
                   />
                 </div>
               </div>
@@ -433,7 +433,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -472,7 +472,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   {dateValue ? format(dateValue, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white">
                 <Calendar
                   mode="single"
                   selected={dateValue}
@@ -500,7 +500,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={party.name}
                   onChange={(e) => updateParty(partyType as 'seller' | 'buyer', 'name', e.target.value)}
                   placeholder="Enter full name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -509,7 +509,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={party.address}
                   onChange={(e) => updateParty(partyType as 'seller' | 'buyer', 'address', e.target.value)}
                   placeholder="Enter complete residential address"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={3}
                 />
               </div>
@@ -529,7 +529,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={propertyDetails.description}
                   onChange={(e) => updatePropertyDetails('description', e.target.value)}
                   placeholder="Enter detailed description of the property"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={4}
                 />
               </div>
@@ -539,7 +539,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={propertyDetails.scheduleNumber}
                   onChange={(e) => updatePropertyDetails('scheduleNumber', e.target.value)}
                   placeholder="Enter schedule number"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
             </div>
@@ -558,7 +558,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={salePrice.numerical}
                   onChange={(e) => updateSalePrice('numerical', e.target.value)}
                   placeholder="Enter amount (e.g., 5000000)"
-                  className="text-black"
+                  className="text-black bg-white"
                   type="number"
                   min="0"
                   step="0.01"
@@ -570,7 +570,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={salePrice.worded}
                   onChange={(e) => updateSalePrice('worded', e.target.value)}
                   placeholder="Enter amount in words (e.g., Five Million Rupees)"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
             </div>
@@ -593,7 +593,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={noticeInfo.address}
                   onChange={(e) => updateNoticeInfo(noticeType as 'seller' | 'buyer', 'address', e.target.value)}
                   placeholder="Enter complete address for notices"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={3}
                 />
               </div>
@@ -603,7 +603,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={noticeInfo.phone}
                   onChange={(e) => updateNoticeInfo(noticeType as 'seller' | 'buyer', 'phone', e.target.value)}
                   placeholder="Enter phone number"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -612,7 +612,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={noticeInfo.email}
                   onChange={(e) => updateNoticeInfo(noticeType as 'seller' | 'buyer', 'email', e.target.value)}
                   placeholder="Enter email address"
-                  className="text-black"
+                  className="text-black bg-white"
                   type="email"
                 />
               </div>            </div>
@@ -655,14 +655,14 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full">
+              <SelectTrigger className="mt-1 text-black w-full bg-white">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -1066,7 +1066,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Agreement to Sell</CardTitle>
           <CardDescription>
@@ -1111,7 +1111,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
   // Safety check for currentSection
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
@@ -1128,7 +1128,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -1171,3 +1171,6 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
 };
 
 export default AgreementToSellForm;
+
+
+

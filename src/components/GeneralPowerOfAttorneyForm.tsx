@@ -330,7 +330,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   {executionDate ? format(executionDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white">
                 <Calendar
                   mode="single"
                   selected={executionDate}
@@ -354,7 +354,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={declarant.name}
                   onChange={(e) => updateParty('name', e.target.value)}
                   placeholder="Enter your full legal name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -363,7 +363,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={declarant.address}
                   onChange={(e) => updateParty('address', e.target.value)}
                   placeholder="Enter your complete residential address"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={3}
                 />
               </div>
@@ -387,7 +387,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={agentData.name}
                   onChange={(e) => updateAgent(agentType as 'agent' | 'alternate_agent', 'name', e.target.value)}
                   placeholder="Enter agent's full name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -396,7 +396,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={agentData.address}
                   onChange={(e) => updateAgent(agentType as 'agent' | 'alternate_agent', 'address', e.target.value)}
                   placeholder="Enter agent's complete address"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={3}
                 />
               </div>
@@ -406,7 +406,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={agentData.phone}
                   onChange={(e) => updateAgent(agentType as 'agent' | 'alternate_agent', 'phone', e.target.value)}
                   placeholder="Enter phone number"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -415,7 +415,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={agentData.email}
                   onChange={(e) => updateAgent(agentType as 'agent' | 'alternate_agent', 'email', e.target.value)}
                   placeholder="Enter email address"
-                  className="text-black"
+                  className="text-black bg-white"
                   type="email"
                 />
               </div>
@@ -439,7 +439,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={witness.name}
                   onChange={(e) => updateWitness(witnessType as 'witness1' | 'witness2', 'name', e.target.value)}
                   placeholder="Enter witness full legal name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -448,7 +448,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={witness.address}
                   onChange={(e) => updateWitness(witnessType as 'witness1' | 'witness2', 'address', e.target.value)}
                   placeholder="Enter witness address"
-                  className="text-black"
+                  className="text-black bg-white"
                   rows={3}
                 />
               </div>
@@ -468,7 +468,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={notaryInfo.acknowledgmentDate}
                   onChange={(e) => updateNotaryInfo('acknowledgmentDate', e.target.value)}
                   placeholder="YYYY-MM-DD"
-                  className="text-black"
+                  className="text-black bg-white"
                   type="date"
                 />
               </div>
@@ -478,7 +478,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
                   value={notaryInfo.expirationDate}
                   onChange={(e) => updateNotaryInfo('expirationDate', e.target.value)}
                   placeholder="YYYY-MM-DD"
-                  className="text-black"
+                  className="text-black bg-white"
                   type="date"
                 />
               </div>            </div>
@@ -527,14 +527,14 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full">
+              <SelectTrigger className="mt-1 text-black w-full bg-white">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -866,7 +866,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">General Power of Attorney</CardTitle>
           <CardDescription>
@@ -908,7 +908,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
   // Safety check for currentSection
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
@@ -925,7 +925,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -968,3 +968,6 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
 };
 
 export default GeneralPowerOfAttorneyForm;
+
+
+

@@ -353,7 +353,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -369,7 +369,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter a number"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -385,7 +385,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter email address"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -401,7 +401,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter phone number"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -424,13 +424,13 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
                   {answers[questionId] ? answers[questionId] : <span>Select a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white">
                 <Calendar
                   mode="single"
                   selected={answers[questionId] ? new Date(answers[questionId]) : undefined}
                   onSelect={(date) => handleAnswer(questionId, date ? format(date, 'yyyy-MM-dd') : '')}
                   initialFocus
-                  className="p-3 pointer-events-auto"
+                  className="p-3 pointer-events-auto bg-white"
                 />
               </PopoverContent>
             </Popover>
@@ -479,14 +479,14 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full">
+              <SelectTrigger className="mt-1 text-black w-full bg-white">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -527,7 +527,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
               rows={3}
             />
           </div>
@@ -921,7 +921,7 @@ The Landlord is unaware of any asbestos-containing construction materials or any
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Lease Agreement</CardTitle>
           <CardDescription>
@@ -954,7 +954,7 @@ The Landlord is unaware of any asbestos-containing construction materials or any
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -997,3 +997,4 @@ The Landlord is unaware of any asbestos-containing construction materials or any
 };
 
 export default ConditionalForm;
+

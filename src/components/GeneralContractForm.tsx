@@ -467,7 +467,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -483,7 +483,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter a number"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -506,13 +506,13 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
                   {answers[questionId] ? answers[questionId] : <span>Select a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white">
                 <Calendar
                   mode="single"
                   selected={answers[questionId] ? new Date(answers[questionId]) : undefined}
                   onSelect={(date) => handleAnswer(questionId, date ? format(date, 'yyyy-MM-dd') : '')}
                   initialFocus
-                  className="p-3 pointer-events-auto"
+                  className="p-3 pointer-events-auto bg-white"
                 />
               </PopoverContent>
             </Popover>
@@ -568,14 +568,14 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full">
+              <SelectTrigger className="mt-1 text-black w-full bg-white">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -616,7 +616,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
               rows={3}
             />
           </div>
@@ -636,7 +636,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
                   value={party.name}
                   onChange={(e) => updateParty(isSellerInfo ? 'seller' : 'buyer', 'name', e.target.value)}
                   placeholder="Enter full legal name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -648,7 +648,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
                   <SelectTrigger className="text-black">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     <SelectItem value="Corporation">Corporation</SelectItem>
                     <SelectItem value="Individual">Individual</SelectItem>
                     <SelectItem value="Partnership">Partnership</SelectItem>
@@ -1467,7 +1467,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">General Contract for Products</CardTitle>
           <CardDescription>
@@ -1505,7 +1505,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
   // Safety check for currentSection
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
@@ -1523,7 +1523,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -1566,3 +1566,6 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
 };
 
 export default GeneralContractForm;
+
+
+

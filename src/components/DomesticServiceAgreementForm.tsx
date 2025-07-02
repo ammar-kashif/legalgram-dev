@@ -301,7 +301,7 @@ const DomesticServiceAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -316,7 +316,7 @@ const DomesticServiceAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter amount (e.g., 25000)"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
               type="number"
               min="0"
               step="0.01"
@@ -342,7 +342,7 @@ const DomesticServiceAgreementForm = () => {
                   {agreementDate ? format(agreementDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white">
                 <Calendar
                   mode="single"
                   selected={agreementDate}
@@ -369,7 +369,7 @@ const DomesticServiceAgreementForm = () => {
                     value={master.name}
                     onChange={(e) => updateMaster('name', e.target.value)}
                     placeholder="Enter master's full name"
-                    className="text-black"
+                    className="text-black bg-white"
                   />
                 </div>
                 <div>
@@ -378,7 +378,7 @@ const DomesticServiceAgreementForm = () => {
                     value={master.address}
                     onChange={(e) => updateMaster('address', e.target.value)}
                     placeholder="Enter complete residential address"
-                    className="text-black"
+                    className="text-black bg-white"
                     rows={3}
                   />
                 </div>
@@ -388,7 +388,7 @@ const DomesticServiceAgreementForm = () => {
                     value={master.cnic}
                     onChange={(e) => updateMaster('cnic', e.target.value)}
                     placeholder="Enter CNIC number (e.g., 12345-6789012-3)"
-                    className="text-black"
+                    className="text-black bg-white"
                   />
                 </div>
               </div>
@@ -407,7 +407,7 @@ const DomesticServiceAgreementForm = () => {
                     value={servant.name}
                     onChange={(e) => updateServant('name', e.target.value)}
                     placeholder="Enter servant's full name"
-                    className="text-black"
+                    className="text-black bg-white"
                   />
                 </div>
                 <div>
@@ -416,7 +416,7 @@ const DomesticServiceAgreementForm = () => {
                     value={servant.relationshipField}
                     onChange={(e) => updateServant('relationshipField', e.target.value)}
                     placeholder="e.g., son of John Smith"
-                    className="text-black"
+                    className="text-black bg-white"
                   />
                 </div>
                 <div>
@@ -425,7 +425,7 @@ const DomesticServiceAgreementForm = () => {
                     value={servant.address}
                     onChange={(e) => updateServant('address', e.target.value)}
                     placeholder="Enter complete residential address"
-                    className="text-black"
+                    className="text-black bg-white"
                     rows={3}
                   />
                 </div>
@@ -435,7 +435,7 @@ const DomesticServiceAgreementForm = () => {
                     value={servant.cnic}
                     onChange={(e) => updateServant('cnic', e.target.value)}
                     placeholder="Enter CNIC number (e.g., 12345-6789012-3)"
-                    className="text-black"
+                    className="text-black bg-white"
                   />
                 </div>
               </div>
@@ -459,7 +459,7 @@ const DomesticServiceAgreementForm = () => {
                   value={witness.name}
                   onChange={(e) => updateWitness(witnessType as 'witness1' | 'witness2', 'name', e.target.value)}
                   placeholder="Enter witness name"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>
               <div>
@@ -468,7 +468,7 @@ const DomesticServiceAgreementForm = () => {
                   value={witness.cnic}
                   onChange={(e) => updateWitness(witnessType as 'witness1' | 'witness2', 'cnic', e.target.value)}
                   placeholder="Enter CNIC number (e.g., 12345-6789012-3)"
-                  className="text-black"
+                  className="text-black bg-white"
                 />
               </div>            </div>
           </div>
@@ -516,14 +516,14 @@ const DomesticServiceAgreementForm = () => {
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full">
+              <SelectTrigger className="mt-1 text-black w-full bg-white">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -913,7 +913,7 @@ const DomesticServiceAgreementForm = () => {
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Domestic Service Agreement</CardTitle>
           <CardDescription>
@@ -952,7 +952,7 @@ const DomesticServiceAgreementForm = () => {
   // Safety check for currentSection
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
             onClick={() => {
@@ -969,7 +969,7 @@ const DomesticServiceAgreementForm = () => {
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -1012,3 +1012,6 @@ const DomesticServiceAgreementForm = () => {
 };
 
 export default DomesticServiceAgreementForm;
+
+
+

@@ -411,7 +411,7 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -427,7 +427,7 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter a number"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -443,7 +443,7 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter email address"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -459,7 +459,7 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter phone number"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -482,13 +482,13 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
                   {answers[questionId] ? answers[questionId] : <span>Select a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white">
                 <Calendar
                   mode="single"
                   selected={answers[questionId] ? new Date(answers[questionId]) : undefined}
                   onSelect={(date) => handleAnswer(questionId, date ? format(date, 'yyyy-MM-dd') : '')}
                   initialFocus
-                  className="p-3 pointer-events-auto"
+                  className="p-3 pointer-events-auto bg-white"
                 />
               </PopoverContent>
             </Popover>
@@ -558,14 +558,14 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
               }}
               disabled={(questionId === 'state' || questionId === 'governing_state' || questionId === 'notary_state') && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full">
+              <SelectTrigger className="mt-1 text-black w-full bg-white">
                 <SelectValue placeholder={
                   (questionId === 'state' || questionId === 'governing_state' || questionId === 'notary_state') && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {optionsToShow.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -606,7 +606,7 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
               rows={3}
             />
           </div>
@@ -738,13 +738,13 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
                             {child.dateOfBirth ? child.dateOfBirth : <span>Select date</span>}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
+                        <PopoverContent className="w-auto p-0 bg-white">
                           <Calendar
                             mode="single"
                             selected={child.dateOfBirth ? new Date(child.dateOfBirth) : undefined}
                             onSelect={(date) => updateChild(index, 'dateOfBirth', date ? format(date, 'yyyy-MM-dd') : '')}
                             initialFocus
-                            className="p-3 pointer-events-auto"
+                            className="p-3 pointer-events-auto bg-white"
                           />
                         </PopoverContent>
                       </Popover>
@@ -1198,7 +1198,7 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Child Care Authorization Agreement</CardTitle>
           <CardDescription>
@@ -1237,7 +1237,7 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
   // Safety check for currentSection
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
@@ -1254,7 +1254,7 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -1297,3 +1297,6 @@ const ChildCareAuthForm = () => {  const [currentSectionId, setCurrentSectionId]
 };
 
 export default ChildCareAuthForm;
+
+
+

@@ -250,7 +250,7 @@ const LLCOperatingAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter company name"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -265,7 +265,7 @@ const LLCOperatingAgreementForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Describe the primary business activities of the LLC"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
               rows={4}
             />
           </div>
@@ -299,7 +299,7 @@ const LLCOperatingAgreementForm = () => {
                         value={member.name}
                         onChange={(e) => updateMember(index, 'name', e.target.value)}
                         placeholder="Enter member's full name"
-                        className="text-black"
+                        className="text-black bg-white"
                       />
                     </div>
                     <div>
@@ -311,7 +311,7 @@ const LLCOperatingAgreementForm = () => {
                         value={member.percentage}
                         onChange={(e) => updateMember(index, 'percentage', e.target.value)}
                         placeholder="Enter percentage"
-                        className="text-black"
+                        className="text-black bg-white"
                       />
                     </div>
                   </div>
@@ -356,14 +356,14 @@ const LLCOperatingAgreementForm = () => {
               }}
               disabled={questionId === 'state' && !answers.country}
             >
-              <SelectTrigger className="mt-1 text-black w-full">
+              <SelectTrigger className="mt-1 text-black w-full bg-white">
                 <SelectValue placeholder={
                   questionId === 'state' && !answers.country 
                     ? "Please select a country first" 
                     : "Select an option"
                 } />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {options.map((option) => {
                   const [id, name] = option.includes('|') ? option.split('|') : [option, option];
                   return (
@@ -738,7 +738,7 @@ const LLCOperatingAgreementForm = () => {
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">LLC Operating Agreement</CardTitle>
           <CardDescription>
@@ -773,7 +773,7 @@ const LLCOperatingAgreementForm = () => {
 
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
@@ -791,7 +791,7 @@ const LLCOperatingAgreementForm = () => {
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -834,3 +834,6 @@ const LLCOperatingAgreementForm = () => {
 };
 
 export default LLCOperatingAgreementForm;
+
+
+

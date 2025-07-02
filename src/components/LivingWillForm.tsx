@@ -389,7 +389,7 @@ const LivingWillForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Type your answer"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
             />
           </div>
         );
@@ -404,7 +404,7 @@ const LivingWillForm = () => {
               value={answers[questionId] || ''}
               onChange={(e) => handleAnswer(questionId, e.target.value)}
               placeholder="Enter additional directions, preferences, or instructions"
-              className="mt-1 text-black w-full"
+              className="mt-1 text-black w-full bg-white"
               rows={6}
             />
           </div>        );
@@ -425,10 +425,10 @@ const LivingWillForm = () => {
                   }
                 }}
               >
-                <SelectTrigger className="mt-1 text-black w-full">
+                <SelectTrigger className="mt-1 text-black w-full bg-white">
                   <SelectValue placeholder="Select a country" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {getAllCountries().map((country) => (
                     <SelectItem key={country.id} value={`${country.id}`}>
                       {country.name}
@@ -452,10 +452,10 @@ const LivingWillForm = () => {
                 onValueChange={(value) => handleAnswer(questionId, value)}
                 disabled={!selectedCountryId}
               >
-                <SelectTrigger className="mt-1 text-black w-full">
+                <SelectTrigger className="mt-1 text-black w-full bg-white">
                   <SelectValue placeholder={selectedCountryId ? "Select a state/province" : "Select a country first"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {states.map((state) => (
                     <SelectItem key={state.id} value={`${state.id}`}>
                       {state.name}
@@ -475,10 +475,10 @@ const LivingWillForm = () => {
                 value={answers[questionId] || ''}
                 onValueChange={(value) => handleAnswer(questionId, value)}
               >
-                <SelectTrigger className="mt-1 text-black w-full">
+                <SelectTrigger className="mt-1 text-black w-full bg-white">
                   <SelectValue placeholder="Select an option" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {question.options?.map((option) => (
                     <SelectItem key={option} value={option}>
                       {option}
@@ -1195,7 +1195,7 @@ const LivingWillForm = () => {
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Living Will</CardTitle>
           <CardDescription>
@@ -1236,7 +1236,7 @@ const LivingWillForm = () => {
   // Safety check for currentSection
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
             onClick={() => {
@@ -1253,7 +1253,7 @@ const LivingWillForm = () => {
   }
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -1296,3 +1296,6 @@ const LivingWillForm = () => {
 };
 
 export default LivingWillForm;
+
+
+
