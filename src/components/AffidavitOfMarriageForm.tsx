@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -693,7 +693,8 @@ const AffidavitOfMarriageForm = () => {
 
   if (isComplete) {
     return (
-      <Card className="max-w-4xl mx-auto bg-white">
+      <div className="min-h-screen bg-white p-4">
+        <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Affidavit of Marriage</CardTitle>
           <CardDescription>
@@ -722,30 +723,34 @@ const AffidavitOfMarriageForm = () => {
           </Button>
         </CardFooter>
       </Card>
+      </div>
     );
   }
 
   if (!currentSection) {
     return (
-      <Card className="max-w-4xl mx-auto bg-white">
-        <CardContent className="text-center p-8">
-          <p className="text-red-500">An error occurred. Please refresh the page.</p>
-          <Button 
-            onClick={() => {
-              setCurrentSectionId('location_selection');
-              setSectionHistory(['location_selection']);
-            }}
-            className="mt-4"
-          >
-            Start Over
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="min-h-screen bg-white p-4">
+        <Card className="max-w-4xl mx-auto bg-white">
+          <CardContent className="text-center p-8">
+            <p className="text-red-500">An error occurred. Please refresh the page.</p>
+            <Button 
+              onClick={() => {
+                setCurrentSectionId('location_selection');
+                setSectionHistory(['location_selection']);
+              }}
+              className="mt-4"
+            >
+              Start Over
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="max-w-4xl mx-auto bg-white">
+    <div className="min-h-screen bg-white p-4">
+      <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -784,7 +789,11 @@ const AffidavitOfMarriageForm = () => {
         </Button>
       </CardFooter>
     </Card>
+    </div>
   );
 };
 
 export default AffidavitOfMarriageForm;
+
+
+

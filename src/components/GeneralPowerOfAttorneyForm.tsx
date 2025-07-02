@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -866,6 +866,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
 
   if (isComplete) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">General Power of Attorney</CardTitle>
@@ -902,12 +903,14 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
           </Button>
         </CardFooter>
       </Card>
-    );
+    </div>
+  );
   }
 
   // Safety check for currentSection
   if (!currentSection) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
@@ -921,11 +924,13 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
           </Button>
         </CardContent>
       </Card>
-    );
+    </div>
+  );
   }
 
   return (
-    <Card className="max-w-4xl mx-auto bg-white">
+    <div className="min-h-screen bg-white">
+      <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -964,10 +969,15 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
         </Button>
       </CardFooter>
     </Card>
+  </div>
   );
-};
+  };
 
 export default GeneralPowerOfAttorneyForm;
+
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-
+﻿
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -921,6 +921,7 @@ The Landlord is unaware of any asbestos-containing construction materials or any
 
   if (isComplete) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Lease Agreement</CardTitle>
@@ -950,11 +951,13 @@ The Landlord is unaware of any asbestos-containing construction materials or any
           </Button>
         </CardFooter>
       </Card>
-    );
+    </div>
+  );
   }
 
   return (
-    <Card className="max-w-4xl mx-auto bg-white">
+    <div className="min-h-screen bg-white">
+      <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -993,8 +996,14 @@ The Landlord is unaware of any asbestos-containing construction materials or any
         </Button>
       </CardFooter>
     </Card>
+  </div>
   );
-};
+  };
 
 export default ConditionalForm;
+
+
+
+
+
 

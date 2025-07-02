@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -793,6 +793,7 @@ const BusinessAgreementForm = () => {
 
   if (isComplete) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Business Agreement</CardTitle>
@@ -836,11 +837,14 @@ const BusinessAgreementForm = () => {
           </Button>
         </CardFooter>
       </Card>
-    );
+    </div>
+  );
   }
+
 
   if (!currentSection) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
@@ -855,11 +859,13 @@ const BusinessAgreementForm = () => {
           </Button>
         </CardContent>
       </Card>
-    );
+    </div>
+  );
   }
 
   return (
-    <Card className="max-w-4xl mx-auto bg-white">
+    <div className="min-h-screen bg-white">
+      <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -898,10 +904,16 @@ const BusinessAgreementForm = () => {
         </Button>
       </CardFooter>
     </Card>
+  </div>
   );
-};
+}
+
 
 export default BusinessAgreementForm;
+
+
+
+
 
 
 

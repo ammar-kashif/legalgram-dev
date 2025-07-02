@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -743,13 +743,13 @@ const LoanAgreementForm = () => {
       addText("EVENTS OF DEFAULT", true, 12);
       
       addText("The Borrower shall be considered in default under this Agreement if:");
-      addText("• Fails to repay the Loan Amount or any installment by the Due Date;");
-      addText("• Uses the funds for purposes other than agreed;");
-      addText("• Becomes insolvent or is declared bankrupt.");
+      addText("â€¢ Fails to repay the Loan Amount or any installment by the Due Date;");
+      addText("â€¢ Uses the funds for purposes other than agreed;");
+      addText("â€¢ Becomes insolvent or is declared bankrupt.");
       
       addText("In the event of default:");
-      addText("• The entire outstanding amount shall become immediately due and payable;");
-      addText("• The Lender shall have the right to pursue legal remedies to recover the amount, including legal costs and damages.");
+      addText("â€¢ The entire outstanding amount shall become immediately due and payable;");
+      addText("â€¢ The Lender shall have the right to pursue legal remedies to recover the amount, including legal costs and damages.");
       
       // ENTIRE AGREEMENT
       addText("ENTIRE AGREEMENT.", true, 12);
@@ -888,6 +888,7 @@ const LoanAgreementForm = () => {
 
   if (isComplete) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Loan Agreement</CardTitle>
@@ -925,12 +926,14 @@ const LoanAgreementForm = () => {
           </Button>
         </CardFooter>
       </Card>
-    );
+    </div>
+  );
   }
 
   // Safety check for currentSection
   if (!currentSection) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
@@ -945,11 +948,13 @@ const LoanAgreementForm = () => {
           </Button>
         </CardContent>
       </Card>
-    );
+    </div>
+  );
   }
 
   return (
-    <Card className="max-w-4xl mx-auto bg-white">
+    <div className="min-h-screen bg-white p-4">
+      <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -988,10 +993,14 @@ const LoanAgreementForm = () => {
         </Button>
       </CardFooter>
     </Card>
+    </div>
   );
 };
 
 export default LoanAgreementForm;
+
+
+
 
 
 

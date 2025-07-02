@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -980,7 +980,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.text(balanceText, 15, y);
       y += lineHeight;
       
-      const paymentMethodText = `Payments shall be made by ${answers.payment_method || '[Insert Method – bank transfer, check, etc.]'}, to the account designated in writing by the Seller.`;
+      const paymentMethodText = `Payments shall be made by ${answers.payment_method || '[Insert Method â€“ bank transfer, check, etc.]'}, to the account designated in writing by the Seller.`;
       const paymentMethodLines = doc.splitTextToSize(paymentMethodText, 170);
       paymentMethodLines.forEach((line: string) => {
         doc.text(line, 15, y);
@@ -1057,9 +1057,9 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.setFont("helvetica", "normal");
       doc.text("Title to and risk of loss for the Goods shall pass to the Buyer upon:", 15, y);
       y += lineHeight;
-      doc.text("☐ Delivery to Buyer's specified address", 15, y);
+      doc.text("â˜ Delivery to Buyer's specified address", 15, y);
       y += lineHeight;
-      doc.text("☐ Transfer to the carrier (FOB Origin)", 15, y);
+      doc.text("â˜ Transfer to the carrier (FOB Origin)", 15, y);
       y += lineHeight;
       doc.text("(Select appropriate option or define custom terms.)", 15, y);
       y += lineHeight + 3;      
@@ -1071,13 +1071,13 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.setFont("helvetica", "normal");
       doc.text("The Seller represents and warrants that:", 15, y);
       y += lineHeight;
-      doc.text("• Goods are free from material defects in design, material, and workmanship.", 15, y);
+      doc.text("â€¢ Goods are free from material defects in design, material, and workmanship.", 15, y);
       y += lineHeight;
-      doc.text("• Goods conform to the specifications, drawings, or samples provided.", 15, y);
+      doc.text("â€¢ Goods conform to the specifications, drawings, or samples provided.", 15, y);
       y += lineHeight;
-      doc.text("• Goods are merchantable and fit for their intended purpose.", 15, y);
+      doc.text("â€¢ Goods are merchantable and fit for their intended purpose.", 15, y);
       y += lineHeight;
-      doc.text("• Goods are free from any liens, claims, or encumbrances.", 15, y);
+      doc.text("â€¢ Goods are free from any liens, claims, or encumbrances.", 15, y);
       y += lineHeight;
       doc.text(`Warranty period: ${answers.warranty_period || '[Insert Number]'} months from the date of delivery.`, 15, y);
       y += lineHeight + 3;
@@ -1117,11 +1117,11 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
         y += lineHeight;
       });
       
-      doc.text("• Breach of this Contract", 15, y);
+      doc.text("â€¢ Breach of this Contract", 15, y);
       y += lineHeight;
-      doc.text("• Negligent or willful misconduct", 15, y);
+      doc.text("â€¢ Negligent or willful misconduct", 15, y);
       y += lineHeight;
-      doc.text("• Infringement of intellectual property rights", 15, y);
+      doc.text("â€¢ Infringement of intellectual property rights", 15, y);
       y += lineHeight + 3;
       
       // 9. Force Majeure
@@ -1175,17 +1175,17 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.setFont("helvetica", "normal");
       doc.text("This Contract may be terminated:", 15, y);
       y += lineHeight;
-      doc.text("• By mutual written consent of both Parties", 15, y);
+      doc.text("â€¢ By mutual written consent of both Parties", 15, y);
       y += lineHeight;
       
-      const terminationText1 = `• By either party, with ${answers.termination_notice_period || '[Insert Number]'} days' written notice, for any material breach not cured within ${answers.cure_period || '[Insert Number]'} days of written notice`;
+      const terminationText1 = `â€¢ By either party, with ${answers.termination_notice_period || '[Insert Number]'} days' written notice, for any material breach not cured within ${answers.cure_period || '[Insert Number]'} days of written notice`;
       const terminationLines1 = doc.splitTextToSize(terminationText1, 165);
       terminationLines1.forEach((line: string) => {
         doc.text(line, 15, y);
         y += lineHeight;
       });
       
-      const terminationText2 = `• If performance is prevented due to a force majeure event exceeding ${answers.force_majeure_period || '[Insert Number]'} days`;
+      const terminationText2 = `â€¢ If performance is prevented due to a force majeure event exceeding ${answers.force_majeure_period || '[Insert Number]'} days`;
       const terminationLines2 = doc.splitTextToSize(terminationText2, 165);
       terminationLines2.forEach((line: string) => {
         doc.text(line, 15, y);
@@ -1234,11 +1234,11 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       doc.setFont("helvetica", "normal");
       doc.text("Before initiating any court action, the parties agree to attempt resolution through:", 15, y);
       y += lineHeight;
-      doc.text("• Negotiation: A good faith effort for at least 15 days", 15, y);
+      doc.text("â€¢ Negotiation: A good faith effort for at least 15 days", 15, y);
       y += lineHeight;
-      doc.text("• Mediation: If negotiation fails", 15, y);
+      doc.text("â€¢ Mediation: If negotiation fails", 15, y);
       y += lineHeight;
-      const disputeText = `• Arbitration (optional): Binding arbitration under ${answers.arbitration_rules || '[Insert Rules, e.g., AAA]'}`;
+      const disputeText = `â€¢ Arbitration (optional): Binding arbitration under ${answers.arbitration_rules || '[Insert Rules, e.g., AAA]'}`;
       const disputeLines = doc.splitTextToSize(disputeText, 165);
       disputeLines.forEach((line: string) => {
         doc.text(line, 15, y);
@@ -1467,6 +1467,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
 
   if (isComplete) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">General Contract for Products</CardTitle>
@@ -1499,12 +1500,14 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
           </Button>
         </CardFooter>
       </Card>
-    );
+    </div>
+  );
   }
 
   // Safety check for currentSection
   if (!currentSection) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
@@ -1519,11 +1522,13 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
           </Button>
         </CardContent>
       </Card>
-    );
+    </div>
+  );
   }
 
   return (
-    <Card className="max-w-4xl mx-auto bg-white">
+    <div className="min-h-screen bg-white">
+      <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -1562,10 +1567,15 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
         </Button>
       </CardFooter>
     </Card>
+  </div>
   );
-};
+  };
 
 export default GeneralContractForm;
+
+
+
+
 
 
 

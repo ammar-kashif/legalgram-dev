@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -1043,13 +1043,13 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
           <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <h4 className="font-medium text-sm mb-2">Comprehensive Agreement Features:</h4>
             <ul className="text-sm space-y-1">
-              <li>• Complete 9-article legal structure with detailed terms</li>
-              <li>• Comprehensive representations and warranties for both parties</li>
-              <li>• Detailed construction and project completion provisions</li>
-              <li>• Confidentiality and non-disclosure clauses</li>
-              <li>• Force majeure and dispute resolution mechanisms</li>
-              <li>• Full legal compliance with property transfer laws</li>
-              <li>• Professional stamp duty and registration requirements</li>
+              <li>â€¢ Complete 9-article legal structure with detailed terms</li>
+              <li>â€¢ Comprehensive representations and warranties for both parties</li>
+              <li>â€¢ Detailed construction and project completion provisions</li>
+              <li>â€¢ Confidentiality and non-disclosure clauses</li>
+              <li>â€¢ Force majeure and dispute resolution mechanisms</li>
+              <li>â€¢ Full legal compliance with property transfer laws</li>
+              <li>â€¢ Professional stamp duty and registration requirements</li>
             </ul>
           </div>
         </div>
@@ -1066,6 +1066,7 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
 
   if (isComplete) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Agreement to Sell</CardTitle>
@@ -1105,12 +1106,14 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
           </Button>
         </CardFooter>
       </Card>
-    );
-  }
+    </div>
+  );
+}
 
   // Safety check for currentSection
   if (!currentSection) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
@@ -1124,11 +1127,14 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
           </Button>
         </CardContent>
       </Card>
-    );
+    </div>
+  );
   }
 
+
   return (
-    <Card className="max-w-4xl mx-auto bg-white">
+    <div className="min-h-screen bg-white">
+      <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -1167,10 +1173,16 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
         </Button>
       </CardFooter>
     </Card>
+  </div>
   );
-};
+}
+
 
 export default AgreementToSellForm;
+
+
+
+
 
 
 

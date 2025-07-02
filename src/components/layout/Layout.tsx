@@ -31,9 +31,8 @@ const Layout = memo(({ children }: LayoutProps) => {
 
   return (
     <div className={cn(
-      `flex flex-col min-h-screen w-full transition-colors duration-500`,
-      mounted ? 'animate-fade-in' : 'opacity-0',
-      isDocumentsPage ? 'bg-gray-50' : 'bg-clean-white'
+      `flex flex-col min-h-screen w-full transition-colors duration-500 bg-white`,
+      mounted ? 'animate-fade-in' : 'opacity-0'
     )}>
       {!isDashboard && <Header />}
       <main className="flex-grow w-full transition-all duration-300 text-deep-blue">

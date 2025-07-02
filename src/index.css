@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --background: 120 100% 98%; /* #FBFEFB */
+    --background: 0 0% 100%; /* Pure white #FFFFFF */
     --foreground: 240 89% 7%; /* #020122 */
-    --card: 120 100% 98%;
+    --card: 0 0% 100%; /* Pure white #FFFFFF */
     --card-foreground: 240 89% 7%;
-    --popover: 120 100% 98%;
+    --popover: 0 0% 100%; /* Pure white #FFFFFF */
     --popover-foreground: 240 89% 7%;
     --primary: 36 99% 47%; /* #F18F01 */
     --primary-foreground: 120 100% 98%;
@@ -56,10 +56,10 @@
 /* Form elements specifics */
 @layer base {
   input::placeholder, textarea::placeholder { @apply text-muted-foreground; }
-  input, textarea, select { @apply bg-background border-input text-foreground; }
+  input, textarea, select { @apply bg-white border-input text-foreground; }
   
   /* For dropdowns and select boxes */
-  [data-radix-select-content] { @apply bg-background border-border; }
+  [data-radix-select-content] { @apply bg-white border-border; }
   [data-radix-select-item] { @apply text-foreground hover:bg-muted; }
 }
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -889,13 +889,13 @@ const DomesticServiceAgreementForm = () => {
           <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <h4 className="font-medium text-sm mb-2">Key Agreement Features:</h4>
             <ul className="text-sm space-y-1">
-              <li>• Comprehensive 11-section legal agreement with detailed terms</li>
-              <li>• Complete duties and responsibilities specification</li>
-              <li>• Detailed code of conduct and prohibited activities</li>
-              <li>• Health and safety provisions</li>
-              <li>• Clear termination and notice procedures</li>
-              <li>• Legal compliance with applicable domestic service laws</li>
-              <li>• Professional witness attestation</li>
+              <li>â€¢ Comprehensive 11-section legal agreement with detailed terms</li>
+              <li>â€¢ Complete duties and responsibilities specification</li>
+              <li>â€¢ Detailed code of conduct and prohibited activities</li>
+              <li>â€¢ Health and safety provisions</li>
+              <li>â€¢ Clear termination and notice procedures</li>
+              <li>â€¢ Legal compliance with applicable domestic service laws</li>
+              <li>â€¢ Professional witness attestation</li>
             </ul>
           </div>
         </div>
@@ -913,6 +913,7 @@ const DomesticServiceAgreementForm = () => {
 
   if (isComplete) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-green-600">Domestic Service Agreement</CardTitle>
@@ -946,12 +947,14 @@ const DomesticServiceAgreementForm = () => {
           </Button>
         </CardFooter>
       </Card>
-    );
+    </div>
+  );
   }
 
   // Safety check for currentSection
   if (!currentSection) {
     return (
+    <div className="min-h-screen bg-white">
       <Card className="max-w-4xl mx-auto bg-white">
         <CardContent className="text-center p-8">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>          <Button 
@@ -965,11 +968,13 @@ const DomesticServiceAgreementForm = () => {
           </Button>
         </CardContent>
       </Card>
-    );
+    </div>
+  );
   }
 
   return (
-    <Card className="max-w-4xl mx-auto bg-white">
+    <div className="min-h-screen bg-white">
+      <Card className="max-w-4xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
@@ -1008,10 +1013,15 @@ const DomesticServiceAgreementForm = () => {
         </Button>
       </CardFooter>
     </Card>
+  </div>
   );
-};
+  };
 
 export default DomesticServiceAgreementForm;
+
+
+
+
 
 
 
