@@ -5,13 +5,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon, FileText } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 import CountryStateAPI from 'countries-states-cities';
 
 // Define section structure
@@ -274,7 +275,9 @@ const questions: Record<string, Question> = {
   }
 };
 
-const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
+const AgreementToSellForm = () => {
+  const navigate = useNavigate();
+  const [currentSectionId, setCurrentSectionId] = useState<string>('state_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['state_selection']);
   const [isComplete, setIsComplete] = useState(false);
@@ -1143,6 +1146,19 @@ const AgreementToSellForm = () => {  const [currentSectionId, setCurrentSectionI
             Step {sectionHistory.length} of {Object.keys(sections).length}
           </div>
         </CardDescription>
+        {currentSectionId === 'state_selection' && (
+          <div className="mt-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/agreement-to-sell-info')}
+              className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Learn More About Agreement to Sell
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="text-black">
         <div className="grid grid-cols-1 gap-y-2">

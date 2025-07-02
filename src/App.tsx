@@ -33,6 +33,10 @@ import ServicesContractInfo from "./pages/ServicesContractInfo"; // Import Servi
 import BusinessAgreementInfo from "./pages/BusinessAgreementInfo"; // Import BusinessAgreementInfo directly
 import EvictionNoticeInfo from "./pages/EvictionNoticeInfo"; // Import EvictionNoticeInfo directly
 import TranscriptRequestInfo from "./pages/TranscriptRequestInfo"; // Import TranscriptRequestInfo directly
+import NDAInfo from "./pages/NDAInfo"; // Import NDAInfo directly
+import CopyrightAssignmentInfo from "./pages/CopyrightAssignmentInfo"; // Import CopyrightAssignmentInfo directly
+import AgreementToSellInfo from "./pages/AgreementToSellInfo"; // Import AgreementToSellInfo directly
+import CopyrightLicenseInfo from "./pages/CopyrightLicenseInfo"; // Import CopyrightLicenseInfo directly
 
 // Lazy load other pages for better performance
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
@@ -131,6 +135,11 @@ const App = () => {
                 <Route path="/business-agreement-info" element={<BusinessAgreementInfo />} />
                 <Route path="/eviction-notice-info" element={<EvictionNoticeInfo />} />
                 <Route path="/transcript-request-info" element={<TranscriptRequestInfo />} />
+                <Route path="/nda-info" element={<NDAInfo />} />
+                <Route path="/copyright-assignment-info" element={<CopyrightAssignmentInfo />} />
+                <Route path="/agreement-to-sell-info" element={<AgreementToSellInfo />} />
+                <Route path="/copyright-license-info" element={<CopyrightLicenseInfo />} />
+                <Route path="/nda-form" element={<Documents />} />
                 <Route path="/make-documents" element={<Documents />} />
                 <Route path="/make-documents/:id" element={<Documents />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

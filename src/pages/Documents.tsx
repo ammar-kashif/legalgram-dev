@@ -23,9 +23,12 @@ import AffidavitOfResidenceForm from "@/components/AffidavitOfResidenceForm";
 import DivorceSettlementAgreementForm from "@/components/DivorceSettlementAgreementForm";
 import EvictionNoticeForm from "@/components/EvictionNoticeForm";
 import TranscriptRequestForm from "@/components/TranscriptRequestForm";
+import NDAForm from "@/components/NDAForm";
+import CopyrightAssignmentForm from "@/components/CopyrightAssignmentForm";
+import CopyrightLicenseForm from "@/components/CopyrightLicenseForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield } from "lucide-react";
 
 const Documents = () => {
   const { id } = useParams();
@@ -176,6 +179,27 @@ const Documents = () => {
       description: 'Create a formal request for academic transcripts and degree documents from educational institutions',
       icon: GraduationCap,
       component: TranscriptRequestForm
+    },
+    {
+      id: 'nda',
+      title: 'Non-Disclosure Agreement',
+      description: 'Create a legally binding confidentiality agreement to protect sensitive information',
+      icon: Shield,
+      component: NDAForm
+    },
+    {
+      id: 'copyright-assignment',
+      title: 'Copyright Assignment',
+      description: 'Create a comprehensive copyright assignment agreement to transfer intellectual property rights',
+      icon: FileText,
+      component: CopyrightAssignmentForm
+    },
+    {
+      id: 'copyright-license',
+      title: 'Copyright License Agreement',
+      description: 'Grant or obtain rights to use copyrighted material while maintaining ownership',
+      icon: Shield,
+      component: CopyrightLicenseForm
     }
   ];
 

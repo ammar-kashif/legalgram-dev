@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield } from "lucide-react";
 import ConditionalForm from "@/components/ConditionalForm";
 import ChildCareAuthForm from "@/components/ChildCareAuthForm";
 import GeneralContractForm from "@/components/GeneralContractForm";
@@ -24,6 +24,9 @@ import AffidavitOfResidenceForm from "@/components/AffidavitOfResidenceForm";
 import DivorceSettlementAgreementForm from "@/components/DivorceSettlementAgreementForm";
 import EvictionNoticeForm from "@/components/EvictionNoticeForm";
 import TranscriptRequestForm from "@/components/TranscriptRequestForm";
+import NDAForm from "@/components/NDAForm";
+import CopyrightAssignmentForm from "@/components/CopyrightAssignmentForm";
+import CopyrightLicenseForm from "@/components/CopyrightLicenseForm";
 
 
 const MakeDocument = () => {
@@ -196,6 +199,30 @@ const MakeDocument = () => {
       content: 'Create a formal request for academic transcripts, degree certificates, and educational documents from institutions.',
       icon: GraduationCap,
       component: TranscriptRequestForm
+    },
+    {
+      id: 'nda',
+      title: 'Non-Disclosure Agreement',
+      description: 'Business & Professional Services',
+      content: 'Create a legally binding confidentiality agreement to protect sensitive information and trade secrets.',
+      icon: Shield,
+      component: NDAForm
+    },
+    {
+      id: 'copyright-assignment',
+      title: 'Copyright Assignment',
+      description: 'Intellectual Property & Rights Transfer',
+      content: 'Create a comprehensive copyright assignment agreement to transfer all intellectual property rights from assignor to assignee.',
+      icon: FileText,
+      component: CopyrightAssignmentForm
+    },
+    {
+      id: 'copyright-license',
+      title: 'Copyright License Agreement',
+      description: 'Intellectual Property & Licensing',
+      content: 'Grant or obtain rights to use copyrighted material while maintaining ownership with professional licensing agreements.',
+      icon: Shield,
+      component: CopyrightLicenseForm
     }
   ];
   
