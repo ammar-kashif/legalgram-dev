@@ -944,7 +944,7 @@ const GeneralPowerOfAttorneyForm = () => {  const [currentSectionId, setCurrentS
             <Button
               variant="outline"
               onClick={() => window.open('/general-power-of-attorney-info', '_blank')}
-              className="text-bright-orange-600 border-bright-orange-600 hover:bg-bright-orange-50"
+              className="text-orange-600 border-orange-600 hover:bg-orange-50"
             >
               <FileText className="w-4 h-4 mr-2" />
               Learn More About General Power of Attorney

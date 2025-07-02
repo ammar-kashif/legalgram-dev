@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon, Plus, Trash2, FileText } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { format, parse } from "date-fns";
 import { toast } from "sonner";
@@ -1537,6 +1537,18 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
             Step {sectionHistory.length} of {Object.keys(sections).length}
           </div>
         </CardDescription>
+        {currentSectionId === 'location_selection' && (
+          <div className="mt-2">
+            <Button
+              variant="outline"
+              onClick={() => window.open('/general-contract-info', '_blank')}
+              className="text-bright-orange-600 border-bright-orange-600 hover:bg-bright-orange-50"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Learn More About General Contract for Products
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="text-black">
         <div className="grid grid-cols-1 gap-y-2">

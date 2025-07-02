@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap } from "lucide-react";
 import ConditionalForm from "@/components/ConditionalForm";
 import ChildCareAuthForm from "@/components/ChildCareAuthForm";
 import GeneralContractForm from "@/components/GeneralContractForm";
@@ -9,6 +9,9 @@ import IndependentContractorForm from "@/components/IndependentContractorForm";
 import LivingWillForm from "@/components/LivingWillForm";
 import SharePurchaseAgreementForm from "@/components/SharePurchaseAgreementForm";
 import LoanAgreementForm from "@/components/LoanAgreementForm";
+import GiftAffidavitForm from "@/components/GiftAffidavitForm";
+import FinancialSupportAffidavitForm from "@/components/FinancialSupportAffidavitForm";
+import ServicesContractForm from "@/components/ServicesContractForm";
 import DomesticServiceAgreementForm from "@/components/DomesticServiceAgreementForm";
 import AgreementToSellForm from "@/components/AgreementToSellForm";
 import GeneralPowerOfAttorneyForm from "@/components/GeneralPowerOfAttorneyForm";
@@ -19,6 +22,8 @@ import LLCOperatingAgreementForm from "@/components/LLCOperatingAgreementForm";
 import AffidavitOfMarriageForm from "@/components/AffidavitOfMarriageForm";
 import AffidavitOfResidenceForm from "@/components/AffidavitOfResidenceForm";
 import DivorceSettlementAgreementForm from "@/components/DivorceSettlementAgreementForm";
+import EvictionNoticeForm from "@/components/EvictionNoticeForm";
+import TranscriptRequestForm from "@/components/TranscriptRequestForm";
 
 
 const MakeDocument = () => {
@@ -113,14 +118,6 @@ const MakeDocument = () => {
       component: SaleAgreementForm
     },
     {
-      id: 'business-agreement',
-      title: 'Business Agreement',
-      description: 'Partnership & Joint Ventures',
-      content: 'Create a comprehensive business partnership agreement with marketing rights, financial terms, and construction timeline provisions.',
-      icon: Building2,
-      component: BusinessAgreementForm
-    },
-    {
       id: 'llc-operating-agreement',
       title: 'LLC Operating Agreement',
       description: 'Corporate Formation',
@@ -151,6 +148,54 @@ const MakeDocument = () => {
       content: 'Create a comprehensive divorce settlement agreement covering asset division, debts, spousal support, and all terms for dissolution of marriage.',
       icon: Gavel,
       component: DivorceSettlementAgreementForm
+    },
+    {
+      id: 'gift-affidavit',
+      title: 'Gift Affidavit',
+      description: 'Financial & Tax Documentation',
+      content: 'Create a sworn affidavit declaring that a transfer of money or property is a gift with no expectation of repayment.',
+      icon: DollarSign,
+      component: GiftAffidavitForm
+    },
+    {
+      id: 'financial-support-affidavit',
+      title: 'Affidavit of Financial Support',
+      description: 'Financial & Legal Documentation',
+      content: 'Create a sworn statement of your financial condition and ability to provide financial support to another party.',
+      icon: DollarSign,
+      component: FinancialSupportAffidavitForm
+    },
+    {
+      id: 'services-contract',
+      title: 'Services Contract',
+      description: 'Business & Professional Services',
+      content: 'Create a comprehensive services contract for professional service arrangements, software development, and staff augmentation.',
+      icon: Briefcase,
+      component: ServicesContractForm
+    },
+    {
+      id: 'business-agreement',
+      title: 'Business Agreement',
+      description: 'Business Partnerships & Joint Ventures',
+      content: 'Create a comprehensive business agreement between two parties for joint ventures, partnerships, and collaborative business arrangements.',
+      icon: Briefcase,
+      component: BusinessAgreementForm
+    },
+    {
+      id: 'eviction-notice',
+      title: 'Eviction Notice',
+      description: 'Real Estate & Property Management',
+      content: 'Create a formal eviction notice for lease violations with legal compliance and tenant notification requirements.',
+      icon: Home,
+      component: EvictionNoticeForm
+    },
+    {
+      id: 'transcript-request',
+      title: 'Transcript Request',
+      description: 'Education & Academic Records',
+      content: 'Create a formal request for academic transcripts, degree certificates, and educational documents from institutions.',
+      icon: GraduationCap,
+      component: TranscriptRequestForm
     }
   ];
   

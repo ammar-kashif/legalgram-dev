@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, CheckCircle, Calendar as CalendarIcon, FileText } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -204,6 +205,7 @@ const questions: Record<string, Question> = {
 };
 
 const SaleAgreementForm = () => {
+  const navigate = useNavigate();
   const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
@@ -989,6 +991,19 @@ const SaleAgreementForm = () => {
         <CardTitle className="text-xl">{currentSection.title}</CardTitle>
         <CardDescription>
           {currentSection.description}
+          {currentSectionId === 'location_selection' && (
+            <div className="mt-3 flex left-0">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/sale-agreement-info')}
+                className="text-orange-600 border-orange-600 hover:bg-orange-50"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Learn More About Sale Agreement
+              </Button>
+            </div>
+          )}
           <div className="mt-2 text-sm">
             Step {sectionHistory.length} of {Object.keys(sections).length}
           </div>

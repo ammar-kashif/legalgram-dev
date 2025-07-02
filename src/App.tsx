@@ -22,6 +22,17 @@ import GeneralPowerOfAttorneyInfo from "./pages/GeneralPowerOfAttorneyInfo"; // 
 import LeaseAgreementInfo from "./pages/LeaseAgreementInfo"; // Import LeaseAgreementInfo directly
 import ChildCareAuthorizationInfo from "./pages/ChildCareAuthorizationInfo"; // Import ChildCareAuthorizationInfo directly
 import DivorceSettlementAgreementInfo from "./pages/DivorceSettlementAgreementInfo"; // Import DivorceSettlementAgreementInfo directly
+import GeneralContractInfo from "./pages/GeneralContractInfo"; // Import GeneralContractInfo directly
+import LivingWillInfo from "./pages/LivingWillInfo"; // Import LivingWillInfo directly
+import SaleAgreementInfo from "./pages/SaleAgreementInfo"; // Import SaleAgreementInfo directly
+import IndependentContractorInfo from "./pages/IndependentContractorInfo"; // Import IndependentContractorInfo directly
+import LoanAgreementInfo from "./pages/LoanAgreementInfo"; // Import LoanAgreementInfo directly
+import GiftAffidavitInfo from "./pages/GiftAffidavitInfo"; // Import GiftAffidavitInfo directly
+import FinancialSupportAffidavitInfo from "./pages/FinancialSupportAffidavitInfo"; // Import FinancialSupportAffidavitInfo directly
+import ServicesContractInfo from "./pages/ServicesContractInfo"; // Import ServicesContractInfo directly
+import BusinessAgreementInfo from "./pages/BusinessAgreementInfo"; // Import BusinessAgreementInfo directly
+import EvictionNoticeInfo from "./pages/EvictionNoticeInfo"; // Import EvictionNoticeInfo directly
+import TranscriptRequestInfo from "./pages/TranscriptRequestInfo"; // Import TranscriptRequestInfo directly
 
 // Lazy load other pages for better performance
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
@@ -109,7 +120,17 @@ const App = () => {
                 <Route path="/general-power-of-attorney-info" element={<GeneralPowerOfAttorneyInfo />} />
                 <Route path="/child-care-authorization-info" element={<ChildCareAuthorizationInfo />} />
                 <Route path="/divorce-settlement-agreement-info" element={<DivorceSettlementAgreementInfo />} />
-                <Route path="/lease-agreement-info" element={<LeaseAgreementInfo />} />
+                <Route path="/general-contract-info" element={<GeneralContractInfo />} />
+                <Route path="/living-will-info" element={<LivingWillInfo />} />
+                <Route path="/sale-agreement-info" element={<SaleAgreementInfo />} />
+                <Route path="/independent-contractor-info" element={<IndependentContractorInfo />} />
+                <Route path="/loan-agreement-info" element={<LoanAgreementInfo />} />
+                <Route path="/gift-affidavit-info" element={<GiftAffidavitInfo />} />
+                <Route path="/financial-support-affidavit-info" element={<FinancialSupportAffidavitInfo />} />
+                <Route path="/services-contract-info" element={<ServicesContractInfo />} />
+                <Route path="/business-agreement-info" element={<BusinessAgreementInfo />} />
+                <Route path="/eviction-notice-info" element={<EvictionNoticeInfo />} />
+                <Route path="/transcript-request-info" element={<TranscriptRequestInfo />} />
                 <Route path="/make-documents" element={<Documents />} />
                 <Route path="/make-documents/:id" element={<Documents />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

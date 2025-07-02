@@ -8,6 +8,10 @@ import IndependentContractorForm from "@/components/IndependentContractorForm";
 import LivingWillForm from "@/components/LivingWillForm";
 import SharePurchaseAgreementForm from "@/components/SharePurchaseAgreementForm";
 import LoanAgreementForm from "@/components/LoanAgreementForm";
+import GiftAffidavitForm from "@/components/GiftAffidavitForm";
+import FinancialSupportAffidavitForm from "@/components/FinancialSupportAffidavitForm";
+import ServicesContractForm from "@/components/ServicesContractForm";
+import BusinessAgreementForm from "@/components/BusinessAgreementForm";
 import DomesticServiceAgreementForm from "@/components/DomesticServiceAgreementForm";
 import AgreementToSellForm from "@/components/AgreementToSellForm";
 import GeneralPowerOfAttorneyForm from "@/components/GeneralPowerOfAttorneyForm";
@@ -17,9 +21,11 @@ import LLCOperatingAgreementForm from "@/components/LLCOperatingAgreementForm";
 import AffidavitOfMarriageForm from "@/components/AffidavitOfMarriageForm";
 import AffidavitOfResidenceForm from "@/components/AffidavitOfResidenceForm";
 import DivorceSettlementAgreementForm from "@/components/DivorceSettlementAgreementForm";
+import EvictionNoticeForm from "@/components/EvictionNoticeForm";
+import TranscriptRequestForm from "@/components/TranscriptRequestForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap } from "lucide-react";
 
 const Documents = () => {
   const { id } = useParams();
@@ -30,6 +36,34 @@ const Documents = () => {
       description: 'Generate a comprehensive lease agreement for rental properties.',
       icon: FileText,
       component: ConditionalForm
+    },
+    {
+      id: 'gift-affidavit',
+      title: 'Gift Affidavit',
+      description: 'Create a sworn affidavit declaring that a transfer of money or property is a gift with no expectation of repayment',
+      icon: DollarSign,
+      component: GiftAffidavitForm
+    },
+    {
+      id: 'financial-support-affidavit',
+      title: 'Affidavit of Financial Support',
+      description: 'Create a sworn statement of your financial condition and ability to provide financial support',
+      icon: DollarSign,
+      component: FinancialSupportAffidavitForm
+    },
+    {
+      id: 'services-contract',
+      title: 'Services Contract',
+      description: 'Create a comprehensive services contract for professional service arrangements and staff augmentation',
+      icon: Briefcase,
+      component: ServicesContractForm
+    },
+    {
+      id: 'business-agreement',
+      title: 'Business Agreement',
+      description: 'Create a comprehensive business agreement between two parties for joint ventures and partnerships',
+      icon: Briefcase,
+      component: BusinessAgreementForm
     },
     {
       id: 'child-care-auth',
@@ -128,6 +162,20 @@ const Documents = () => {
       description: 'Create a comprehensive divorce settlement agreement covering asset division, debts, spousal support, and terms for dissolution of marriage',
       icon: Gavel,
       component: DivorceSettlementAgreementForm
+    },
+    {
+      id: 'eviction-notice',
+      title: 'Eviction Notice',
+      description: 'Create a formal notice to terminate a tenancy and initiate eviction proceedings',
+      icon: FileText,
+      component: EvictionNoticeForm
+    },
+    {
+      id: 'transcript-request',
+      title: 'Transcript Request',
+      description: 'Create a formal request for academic transcripts and degree documents from educational institutions',
+      icon: GraduationCap,
+      component: TranscriptRequestForm
     }
   ];
 
