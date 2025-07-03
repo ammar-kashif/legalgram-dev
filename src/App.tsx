@@ -125,6 +125,7 @@ const App = () => {
                 <Route path="/child-care-authorization-info" element={<ChildCareAuthorizationInfo />} />
                 <Route path="/divorce-settlement-agreement-info" element={<DivorceSettlementAgreementInfo />} />
                 <Route path="/general-contract-info" element={<GeneralContractInfo />} />
+                <Route path="/lease-agreement-info" element={<LeaseAgreementInfo />} />
                 <Route path="/living-will-info" element={<LivingWillInfo />} />
                 <Route path="/sale-agreement-info" element={<SaleAgreementInfo />} />
                 <Route path="/independent-contractor-info" element={<IndependentContractorInfo />} />

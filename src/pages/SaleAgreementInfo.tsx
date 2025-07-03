@@ -9,6 +9,15 @@ const SaleAgreementInfo = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
  
 
         <Card className="mb-8">
@@ -248,7 +257,13 @@ const SaleAgreementInfo = () => {
               <p className="text-blue-700 mb-6">
                 Legal Gram offers a simple way to draft a Sales Agreement for US businesses or individuals. Our intuitive builder creates a legally sound document customized for your needs—without the hassle of hiring a lawyer for basic terms.
               </p>
-=
+              <Button 
+                onClick={() => navigate('/documents/sale-agreement')}
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
+              >
+                Create Now
+              </Button>
               <p className="text-blue-600 mt-3 text-sm">
                 Protect your next transaction with confidence
               </p>

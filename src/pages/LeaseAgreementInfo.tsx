@@ -11,14 +11,7 @@ const LeaseAgreementInfo = () => {
     <Layout>
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-4xl">
         <div className="mb-8">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate(-1)}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          
+      
           <div className="text-center mb-8">
             <Home className="w-16 h-16 text-bright-orange-500 mx-auto mb-4" />
             <h1 className="text-4xl font-bold mb-4">Lease Agreement Guide</h1>
@@ -433,7 +426,7 @@ const LeaseAgreementInfo = () => {
 
             <div className="text-center">
               <Button 
-                onClick={() => navigate(-1)}
+                onClick={() => navigate('/documents/lease-agreement')}
                 className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white px-8 py-3 text-lg"
               >
                 Start Creating Your Lease Agreement
