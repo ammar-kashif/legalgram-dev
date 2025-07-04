@@ -27,9 +27,31 @@ import TranscriptRequestForm from "@/components/TranscriptRequestForm";
 import NDAForm from "@/components/NDAForm";
 import CopyrightAssignmentForm from "@/components/CopyrightAssignmentForm";
 import CopyrightLicenseForm from "@/components/CopyrightLicenseForm";
+import LeaseRenewalForm from "@/components/LeaseRenewalForm";
+import LeaseTerminationForm from "@/components/LeaseTerminationForm";
+import CondominiumLeaseForm from "@/components/CondominiumLeaseForm";
+import RentIncreaseForm from "@/components/RentIncreaseForm";
+import SubleaseForm from "@/components/SubleaseForm";
+import LeaseAmendmentForm from "@/components/LeaseAmendmentForm";
+import CommercialLeaseForm from "@/components/CommercialLeaseForm";
+import TripleNetLeaseForm from "@/components/TripleNetLeaseForm";
+import CorporateBylawsForm from "@/components/CorporateBylawsForm";
+import BuySellAgreementForm from "@/components/BuySellAgreementForm";
+import MutualNDAForm from "@/components/MutualNDAForm";
+import BusinessPlanForm from "@/components/BusinessPlanForm";
+import ConfidentialInformationForm from "@/components/ConfidentialInformationForm";
+import NonCircumventionForm from "@/components/NonCircumventionForm";
+import CopyrightPermissionForm from "@/components/CopyrightPermissionForm";
+import LicenseAgreementForm from "@/components/LicenseAgreementForm";
+import ManufacturingLicenseForm from "@/components/ManufacturingLicenseForm";
+import MusicLicenseForm from "@/components/MusicLicenseForm";
+import PatentAssignmentForm from "@/components/PatentAssignmentForm";
+import RoyaltyAgreementForm from "@/components/RoyaltyAgreementForm";
+import SoftwareLicenseForm from "@/components/SoftwareLicenseForm";
+import MerchandisingAgreementForm from "@/components/MerchandisingAgreementForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, TrendingUp, Handshake, ShoppingBag } from "lucide-react";
 
 const Documents = () => {
   const { id } = useParams();
@@ -127,6 +149,13 @@ const Documents = () => {
       component: NDAForm
     },
     {
+      id: 'mutual-nda',
+      title: 'Mutual Non-Disclosure Agreement',
+      description: 'Create a bilateral confidentiality agreement where both parties protect each other\'s sensitive information',
+      icon: Handshake,
+      component: MutualNDAForm
+    },
+    {
       id: 'llc-operating-agreement',
       title: 'LLC Operating Agreement',
       description: 'Create a comprehensive Limited Liability Company Operating Agreement with member management and governance provisions',
@@ -181,6 +210,97 @@ const Documents = () => {
       description: 'Create a comprehensive domestic service agreement for household employment arrangements',
       icon: Home,
       component: DomesticServiceAgreementForm
+    },
+    {
+      id: 'corporate-bylaws',
+      title: 'Corporate Bylaws',
+      description: 'Create comprehensive corporate bylaws to establish governance structure and operational procedures',
+      icon: Scale,
+      component: CorporateBylawsForm
+    },
+    {
+      id: 'buy-sell-agreement',
+      title: 'Buy-Sell Agreement',
+      description: 'Create a comprehensive buy-sell agreement to manage ownership transfers and protect business interests',
+      icon: TrendingUp,
+      component: BuySellAgreementForm
+    },
+    {
+      id: 'business-plan',
+      title: 'Business Plan',
+      description: 'Create a comprehensive business plan for launching and growing your venture',
+      icon: Briefcase,
+      component: BusinessPlanForm
+    },
+    {
+      id: 'confidential-information',
+      title: 'Confidential Information Agreement',
+      description: 'Protect sensitive business information with legally binding confidentiality terms',
+      icon: Shield,
+      component: ConfidentialInformationForm
+    },
+    {
+      id: 'non-circumvention',
+      title: 'Non-Circumvention Agreement',
+      description: 'Protect your business relationships and prevent contact circumvention',
+      icon: Handshake,
+      component: NonCircumventionForm
+    },
+    {
+      id: 'copyright-permission',
+      title: 'Copyright Permission Request',
+      description: 'Formally request permission to use copyrighted material in your projects',
+      icon: FileText,
+      component: CopyrightPermissionForm
+    },
+    {
+      id: 'license-agreement',
+      title: 'License Agreement',
+      description: 'Create a comprehensive license agreement for intellectual property rights and royalty management',
+      icon: Scale,
+      component: LicenseAgreementForm
+    },
+    {
+      id: 'manufacturing-license',
+      title: 'Manufacturing License Agreement',
+      description: 'Create a manufacturing license agreement with quality control and legal protection',
+      icon: Scale,
+      component: ManufacturingLicenseForm
+    },
+    {
+      id: 'music-license',
+      title: 'Music License Agreement',
+      description: 'Create a music licensing agreement for copyright protection and royalty management',
+      icon: Scale,
+      component: MusicLicenseForm
+    },
+    {
+      id: 'patent-assignment',
+      title: 'Patent Assignment Agreement',
+      description: 'Create a comprehensive patent assignment agreement to transfer patent rights and ownership',
+      icon: Shield,
+      component: PatentAssignmentForm
+    },
+    {
+      id: 'royalty-agreement',
+      title: 'Royalty Agreement',
+      description: 'Create a professional royalty agreement for intellectual property licensing and compensation',
+      icon: TrendingUp,
+      component: RoyaltyAgreementForm
+    },
+    {
+      id: 'software-license',
+      title: 'Software License Agreement',
+      description: 'Create a comprehensive software licensing agreement with usage rights and legal protections',
+      icon: Shield,
+      component: SoftwareLicenseForm
+    },
+    {
+      id: 'merchandising-agreement',
+      title: 'Merchandising Agreement',
+      description: 'Create a merchandising licensing agreement for intellectual property use on products and merchandise',
+      icon: ShoppingBag,
+      component: MerchandisingAgreementForm
     }
   ];
 
@@ -192,6 +312,62 @@ const Documents = () => {
       description: 'Generate a comprehensive lease agreement for rental properties.',
       icon: FileText,
       component: ConditionalForm
+    },
+    {
+      id: 'condominium-lease',
+      title: 'Condominium Lease Agreement',
+      description: 'Create a comprehensive lease agreement specifically for condominium units',
+      icon: Building2,
+      component: CondominiumLeaseForm
+    },
+    {
+      id: 'lease-renewal',
+      title: 'Lease Renewal Agreement',
+      description: 'Create a comprehensive lease renewal agreement to extend existing rental terms',
+      icon: FileText,
+      component: LeaseRenewalForm
+    },
+    {
+      id: 'lease-termination',
+      title: 'Agreement to Terminate Lease',
+      description: 'Create a mutual agreement to terminate a lease before its expiration date',
+      icon: FileText,
+      component: LeaseTerminationForm
+    },
+    {
+      id: 'rent-increase',
+      title: 'Rent Increase Agreement',
+      description: 'Create a formal agreement to increase rent between landlord and tenant',
+      icon: DollarSign,
+      component: RentIncreaseForm
+    },
+    {
+      id: 'sublease',
+      title: 'Sublease Agreement',
+      description: 'Create a comprehensive sublease agreement with property inspection checklist',
+      icon: Building2,
+      component: SubleaseForm
+    },
+    {
+      id: 'lease-amendment',
+      title: 'Lease Amendment',
+      description: 'Create a formal amendment to modify existing lease terms and conditions',
+      icon: FileText,
+      component: LeaseAmendmentForm
+    },
+    {
+      id: 'commercial-lease',
+      title: 'Commercial Lease Agreement',
+      description: 'Create a comprehensive commercial lease agreement for business properties',
+      icon: Building2,
+      component: CommercialLeaseForm
+    },
+    {
+      id: 'triple-net-lease',
+      title: 'Triple Net Lease Agreement',
+      description: 'Create a triple net lease where tenant pays all property expenses beyond base rent',
+      icon: TrendingUp,
+      component: TripleNetLeaseForm
     },
     {
       id: 'agreement-to-sell',
