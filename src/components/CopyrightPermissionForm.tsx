@@ -652,15 +652,6 @@ const CopyrightPermissionForm = () => {
 
   return (
     <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
-      <Button
-        variant="outline"
-        onClick={() => navigate('/documents')}
-        className="mb-4"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Documents
-      </Button>
-      
       <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
         <CardHeader>
           <CardTitle className="text-xl">{getStepTitle()}</CardTitle>

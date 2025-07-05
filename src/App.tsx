@@ -35,7 +35,6 @@ import BusinessPlanInfo from "./pages/BusinessPlanInfo"; // Import BusinessPlanI
 import ConfidentialInformationInfo from "./pages/ConfidentialInformationInfo"; // Import ConfidentialInformationInfo directly
 import NonCircumventionInfo from "./pages/NonCircumventionInfo"; // Import NonCircumventionInfo directly
 import CopyrightPermissionInfo from "./pages/CopyrightPermissionInfo"; // Import CopyrightPermissionInfo directly
-import MerchandisingAgreementInfo from "./pages/MerchandisingAgreementInfo"; // Import MerchandisingAgreementInfo directly
 import LicenseAgreementInfo from "./pages/LicenseAgreementInfo"; // Import LicenseAgreementInfo directly
 import ManufacturingLicenseInfo from "./pages/ManufacturingLicenseInfo"; // Import ManufacturingLicenseInfo directly
 import MusicLicenseInfo from "./pages/MusicLicenseInfo"; // Import MusicLicenseInfo directly
@@ -49,17 +48,14 @@ import LoanAgreementInfo from "./pages/LoanAgreementInfo"; // Import LoanAgreeme
 import GiftAffidavitInfo from "./pages/GiftAffidavitInfo"; // Import GiftAffidavitInfo directly
 import FinancialSupportAffidavitInfo from "./pages/FinancialSupportAffidavitInfo"; // Import FinancialSupportAffidavitInfo directly
 import ServicesContractInfo from "./pages/ServicesContractInfo"; // Import ServicesContractInfo directly
-import BusinessAgreementInfo from "./pages/BusinessAgreementInfo"; // Import BusinessAgreementInfo directly
-import EvictionNoticeInfo from "./pages/EvictionNoticeInfo"; // Import EvictionNoticeInfo directly
-import TranscriptRequestInfo from "./pages/TranscriptRequestInfo"; // Import TranscriptRequestInfo directly
-import NDAInfo from "./pages/NDAInfo"; // Import NDAInfo directly
-import CopyrightAssignmentInfo from "./pages/CopyrightAssignmentInfo"; // Import CopyrightAssignmentInfo directly
-import AgreementToSellInfo from "./pages/AgreementToSellInfo"; // Import AgreementToSellInfo directly
-import CopyrightLicenseInfo from "./pages/CopyrightLicenseInfo"; // Import CopyrightLicenseInfo directly
+import OfficeSpaceLeaseInfo from "./pages/OfficeSpaceLeaseInfo"; // Import OfficeSpaceLeaseInfo directly
+import StorageSpaceLeaseInfo from "./pages/StorageSpaceLeaseInfo"; // Import StorageSpaceLeaseInfo directly
 import PatentAssignmentInfo from "./pages/PatentAssignmentInfo"; // Import PatentAssignmentInfo directly
 import RoyaltyAgreementInfo from "./pages/RoyaltyAgreementInfo"; // Import RoyaltyAgreementInfo directly
-import SoftwareLicenseInfo from "./pages/SoftwareLicenseInfo"; // Import SoftwareLicenseInfo directly
-import CopyrightRequestInfo from "./pages/CopyrightRequestInfo"; // Import CopyrightRequestInfo directly
+import BillboardLeaseInfo from "./pages/BillboardLeaseInfo"; // Import BillboardLeaseInfo directly
+import RestaurantLeaseInfo from "./pages/RestaurantLeaseInfo"; // Import RestaurantLeaseInfo directly
+import WarehouseLeaseInfo from "./pages/WarehouseLeaseInfo"; // Import WarehouseLeaseInfo directly
+import GasLeaseInfo from "./pages/GasLeaseInfo"; // Import GasLeaseInfo directly
 
 // Lazy load other pages for better performance
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
@@ -89,8 +85,16 @@ const ManufacturingLicenseForm = lazy(() => import("./components/ManufacturingLi
 const MusicLicenseForm = lazy(() => import("./components/MusicLicenseForm"));
 const PatentAssignmentForm = lazy(() => import("./components/PatentAssignmentForm"));
 const RoyaltyAgreementForm = lazy(() => import("./components/RoyaltyAgreementForm"));
-const SoftwareLicenseForm = lazy(() => import("./components/SoftwareLicenseForm"));
-const MerchandisingAgreementForm = lazy(() => import("./components/MerchandisingAgreementForm"));
+const BillboardLeaseForm = lazy(() => import("./components/BillboardLeaseForm"));
+const OfficeSpaceLeaseForm = lazy(() => import("./components/OfficeSpaceLeaseForm"));
+const StorageSpaceLeaseForm = lazy(() => import("./components/StorageSpaceLeaseForm"));
+const RestaurantLeaseForm = lazy(() => import("./components/RestaurantLeaseForm"));
+const WarehouseLeaseForm = lazy(() => import("./components/WarehouseLeaseForm"));
+const GasLeaseForm = lazy(() => import("./components/GasLeaseForm"));
+const SecurityDepositReturnLetter = lazy(() => import("./components/SecurityDepositReturnLetter"));
+const LeaseTerminationLetter = lazy(() => import("./components/LeaseTerminationLetter"));
+const LateRentPaymentAgreement = lazy(() => import("./components/LateRentPaymentAgreement"));
+const NonDisturbanceAgreement = lazy(() => import("./components/NonDisturbanceAgreement"));
 
 // Loading component for suspense fallback
 const PageLoader = () => (
@@ -194,10 +198,6 @@ const App = () => {
                 <Route path="/patent-assignment-form" element={<PatentAssignmentForm />} />
                 <Route path="/royalty-agreement-info" element={<RoyaltyAgreementInfo />} />
                 <Route path="/royalty-agreement-form" element={<RoyaltyAgreementForm />} />
-                <Route path="/software-license-info" element={<SoftwareLicenseInfo />} />
-                <Route path="/software-license-form" element={<SoftwareLicenseForm />} />
-                <Route path="/merchandising-agreement-info" element={<MerchandisingAgreementInfo />} />
-                <Route path="/merchandising-agreement-form" element={<MerchandisingAgreementForm />} />
                 <Route path="/living-will-info" element={<LivingWillInfo />} />
                 <Route path="/sale-agreement-info" element={<SaleAgreementInfo />} />
                 <Route path="/independent-contractor-info" element={<IndependentContractorInfo />} />
@@ -205,13 +205,23 @@ const App = () => {
                 <Route path="/gift-affidavit-info" element={<GiftAffidavitInfo />} />
                 <Route path="/financial-support-affidavit-info" element={<FinancialSupportAffidavitInfo />} />
                 <Route path="/services-contract-info" element={<ServicesContractInfo />} />
-                <Route path="/business-agreement-info" element={<BusinessAgreementInfo />} />
-                <Route path="/eviction-notice-info" element={<EvictionNoticeInfo />} />
-                <Route path="/transcript-request-info" element={<TranscriptRequestInfo />} />
-                <Route path="/nda-info" element={<NDAInfo />} />
-                <Route path="/copyright-assignment-info" element={<CopyrightAssignmentInfo />} />
-                <Route path="/agreement-to-sell-info" element={<AgreementToSellInfo />} />
-                <Route path="/copyright-license-info" element={<CopyrightLicenseInfo />} />
+                <Route path="/billboard-lease-info" element={<BillboardLeaseInfo />} />
+                <Route path="/billboard-lease-form" element={<BillboardLeaseForm />} />
+                <Route path="/office-space-lease-info" element={<OfficeSpaceLeaseInfo />} />
+                <Route path="/office-space-lease-form" element={<OfficeSpaceLeaseForm />} />
+                <Route path="/storage-space-lease-info" element={<StorageSpaceLeaseInfo />} />
+                <Route path="/storage-space-lease-form" element={<StorageSpaceLeaseForm />} />
+                <Route path="/restaurant-lease-info" element={<RestaurantLeaseInfo />} />
+                <Route path="/restaurant-lease-form" element={<RestaurantLeaseForm />} />
+                <Route path="/warehouse-lease-form" element={<WarehouseLeaseForm />} />
+                <Route path="/gas-lease-info" element={<GasLeaseInfo />} />
+                <Route path="/gas-lease-form" element={<GasLeaseForm />} />
+                <Route path="/security-deposit-return-letter" element={<SecurityDepositReturnLetter />} />
+                <Route path="/lease-termination-letter" element={<LeaseTerminationLetter />} />
+                <Route path="/late-rent-payment-agreement" element={<LateRentPaymentAgreement />} />
+                <Route path="/non-disturbance-agreement" element={<NonDisturbanceAgreement />} />
+                <Route path="/business-agreement-info" element={<BuySellAgreementInfo />} />
+                <Route path="/nda-info" element={<MutualNDAInfo />} />
                 <Route path="/nda-form" element={<Documents />} />
                 <Route path="/make-documents" element={<Documents />} />
                 <Route path="/make-documents/:id" element={<Documents />} />

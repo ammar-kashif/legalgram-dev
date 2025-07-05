@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, ArrowLeft, TrendingUp, Handshake, Factory, ShoppingBag } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, ArrowLeft, TrendingUp, Handshake, Factory, UtensilsCrossed, Fuel, Search } from "lucide-react";
 import LegalConcernsSection from "@/components/LegalConcernsSection";
 import ConditionalForm from "@/components/ConditionalForm";
 import ChildCareAuthForm from "@/components/ChildCareAuthForm";
@@ -46,15 +47,26 @@ import CopyrightPermissionForm from "@/components/CopyrightPermissionForm";
 import LicenseAgreementForm from "@/components/LicenseAgreementForm";
 import ManufacturingLicenseForm from "@/components/ManufacturingLicenseForm";
 import MusicLicenseForm from "@/components/MusicLicenseForm";
+import BillboardLeaseForm from "@/components/BillboardLeaseForm";
+import OfficeSpaceLeaseForm from "@/components/OfficeSpaceLeaseForm";
+import StorageSpaceLeaseForm from "@/components/StorageSpaceLeaseForm";
+import RestaurantLeaseForm from "@/components/RestaurantLeaseForm";
 import PatentAssignmentForm from "@/components/PatentAssignmentForm";
 import RoyaltyAgreementForm from "@/components/RoyaltyAgreementForm";
-import SoftwareLicenseForm from "@/components/SoftwareLicenseForm";
-import MerchandisingAgreementForm from "@/components/MerchandisingAgreementForm";
+import WarehouseLeaseForm from "@/components/WarehouseLeaseForm";
+import OilLeaseForm from "@/components/OilLeaseForm";
+import GasLeaseForm from "@/components/GasLeaseForm";
+import SecurityDepositReturnLetter from "@/components/SecurityDepositReturnLetter";
+import LeaseTerminationLetter from "@/components/LeaseTerminationLetter";
+import LateRentPaymentAgreement from "@/components/LateRentPaymentAgreement";
+import NonDisturbanceAgreement from "@/components/NonDisturbanceAgreement";
 
 
 const MakeDocument = () => {
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [showSearchResults, setShowSearchResults] = useState<boolean>(false);
 
   // Family Protection documents
   const familyProtectionDocs = [
@@ -279,6 +291,22 @@ const MakeDocument = () => {
       component: CopyrightPermissionForm
     },
     {
+      id: 'patent-assignment',
+      title: 'Patent Assignment Agreement',
+      description: 'Patent Transfer',
+      content: 'Create a comprehensive patent assignment agreement to transfer patent rights and ownership',
+      icon: Shield,
+      component: PatentAssignmentForm
+    },
+    {
+      id: 'royalty-agreement',
+      title: 'Royalty Agreement',
+      description: 'IP Royalties',
+      content: 'Create a professional royalty agreement for intellectual property licensing and compensation',
+      icon: TrendingUp,
+      component: RoyaltyAgreementForm
+    },
+    {
       id: 'license-agreement',
       title: 'License Agreement',
       description: 'IP Licensing',
@@ -303,37 +331,14 @@ const MakeDocument = () => {
       component: MusicLicenseForm
     },
     {
-      id: 'patent-assignment',
-      title: 'Patent Assignment Agreement',
-      description: 'Intellectual Property',
-      content: 'Create a comprehensive patent assignment agreement to transfer patent rights and ownership',
-      icon: Shield,
-      component: PatentAssignmentForm
+      id: 'office-space-lease',
+      title: 'Office Space Lease Agreement',
+      description: 'Commercial Real Estate',
+      content: 'Create a comprehensive lease agreement for renting office space in a commercial building',
+      icon: Building2,
+      component: OfficeSpaceLeaseForm
     },
-    {
-      id: 'royalty-agreement',
-      title: 'Royalty Agreement',
-      description: 'IP Licensing & Royalties',
-      content: 'Create a royalty agreement for intellectual property licensing with payment terms and territorial rights',
-      icon: TrendingUp,
-      component: RoyaltyAgreementForm
-    },
-    {
-      id: 'software-license',
-      title: 'Software License Agreement',
-      description: 'Software Licensing',
-      content: 'Create a comprehensive software licensing agreement with usage rights, restrictions, and legal protections',
-      icon: Shield,
-      component: SoftwareLicenseForm
-    },
-    {
-      id: 'merchandising-agreement',
-      title: 'Merchandising Agreement',
-      description: 'Merchandise Licensing',
-      content: 'Create a merchandising licensing agreement for intellectual property use on products and merchandise',
-      icon: ShoppingBag,
-      component: MerchandisingAgreementForm
-    }
+  
   ];
 
   // Property Matters documents
@@ -403,12 +408,12 @@ const MakeDocument = () => {
       component: CommercialLeaseForm
     },
     {
-      id: 'triple-net-lease',
-      title: 'Triple Net Lease Agreement',
-      description: 'Business & Commercial',
-      content: 'Create a triple net lease where tenant pays all property expenses beyond base rent',
-      icon: TrendingUp,
-      component: TripleNetLeaseForm
+      id: 'billboard-lease',
+      title: 'Billboard Lease Agreement',
+      description: 'Property & Advertising',
+      content: 'Create a comprehensive lease agreement for billboard advertising space on private property',
+      icon: Building2,
+      component: BillboardLeaseForm
     },
     {
       id: 'agreement-to-sell',
@@ -441,11 +446,125 @@ const MakeDocument = () => {
       content: 'Create a formal request for academic transcripts and degree documents from educational institutions',
       icon: GraduationCap,
       component: TranscriptRequestForm
+    },
+    {
+      id: 'storage-space-lease',
+      title: 'Storage Space Lease Agreement',
+      description: 'Storage Rental',
+      content: 'Create a comprehensive month-to-month lease agreement for personal storage space',
+      icon: Building2,
+      component: StorageSpaceLeaseForm
+    },
+    {
+      id: 'restaurant-lease',
+      title: 'Restaurant Lease Agreement',
+      description: 'Food Service',
+      content: 'Create a comprehensive lease agreement for restaurant and food service operations',
+      icon: UtensilsCrossed,
+      component: RestaurantLeaseForm
+    },
+    {
+      id: 'warehouse-lease',
+      title: 'Warehouse Lease Agreement',
+      description: 'Industrial Real Estate',
+      content: 'Create a comprehensive lease agreement for warehouse, storage, and distribution facilities',
+      icon: Building2,
+      component: WarehouseLeaseForm
+    },
+    {
+      id: 'oil-lease',
+      title: 'Oil Lease Agreement',
+      description: 'Mineral Rights',
+      content: 'Create a comprehensive oil and gas lease agreement for mineral rights and hydrocarbon extraction',
+      icon: Fuel,
+      component: OilLeaseForm
+    },
+    {
+      id: 'gas-lease',
+      title: 'Gas Lease Agreement',
+      description: 'Gas & Energy Rights',
+      content: 'Create a comprehensive gas lease agreement for natural gas exploration and energy development',
+      icon: Fuel,
+      component: GasLeaseForm
+    },
+    {
+      id: 'security-deposit-return',
+      title: 'Security Deposit Return Letter',
+      description: 'Tenant Relations',
+      content: 'Create a professional letter for returning security deposits with deduction details',
+      icon: FileText,
+      component: SecurityDepositReturnLetter
+    },
+    {
+      id: 'lease-termination-letter',
+      title: 'Lease Termination Letter',
+      description: 'Tenant Notice',
+      content: 'Create a professional letter to notify tenants of lease termination',
+      icon: FileText,
+      component: LeaseTerminationLetter
+    },
+    {
+      id: 'late-rent-payment-agreement',
+      title: 'Late Rent Payment Agreement',
+      description: 'Payment Plans',
+      content: 'Create a professional agreement for tenants with past due rent to establish payment plans',
+      icon: DollarSign,
+      component: LateRentPaymentAgreement
+    },
+    {
+      id: 'non-disturbance-agreement',
+      title: 'Non-Disturbance Agreement',
+      description: 'Tenant Protection',
+      content: 'Create a professional non-disturbance agreement between mortgagee and tenant',
+      icon: Shield,
+      component: NonDisturbanceAgreement
     }
   ];
 
   // Combine all documents for direct access
   const allDocumentTypes = [...familyProtectionDocs, ...businessSecurityDocs, ...propertyMattersDocs];
+
+  // Filter documents based on search query
+  const filteredDocuments = (docs: any[]) => {
+    if (!searchQuery.trim()) return docs;
+    return docs.filter(doc => 
+      doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
+  // Handle search from main page
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      setShowSearchResults(true);
+      setSelectedCategory(null);
+    } else {
+      setShowSearchResults(false);
+    }
+  };
+
+  // Handle back to search results
+  const handleBackToSearch = () => {
+    setShowSearchResults(false);
+    setSearchQuery("");
+  };
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    setSelectedDocument(null);
+    setShowSearchResults(false);
+  };
+
+  const handleBackToCategories = () => {
+    setSelectedCategory(null);
+    setSelectedDocument(null);
+    setShowSearchResults(false);
+  };
+
+  const handleBackToDocuments = () => {
+    setSelectedDocument(null);
+  };
 
   // Get documents for selected category
   const getCategoryDocuments = (category: string) => {
@@ -463,40 +582,73 @@ const MakeDocument = () => {
 
   const selectedDocumentType = allDocumentTypes.find(doc => doc.id === selectedDocument);
 
-  const handleCategorySelect = (category: string) => {
-    setSelectedCategory(category);
-    setSelectedDocument(null);
-  };
-
-  const handleBackToCategories = () => {
-    setSelectedCategory(null);
-    setSelectedDocument(null);
-  };
-
-  const handleBackToDocuments = () => {
-    setSelectedDocument(null);
-  };
-
-  // Render specific document form
-  if (selectedDocument && selectedDocumentType) {
-    const DocumentComponent = selectedDocumentType.component;
+  // Render search results
+  if (showSearchResults) {
+    const searchResults = filteredDocuments(allDocumentTypes);
+    
     return (
       <div>
         <div className="mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={handleBackToDocuments}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Document Selection
-          </Button>
-          <h1 className="text-3xl font-bold mb-2">{selectedDocumentType.title}</h1>
-          <p className="text-muted-foreground">
-            {selectedDocumentType.content}
+          <h1 className="text-3xl font-bold mb-2">Search Results</h1>
+          <p className="text-muted-foreground mb-4">
+            Found {searchResults.length} documents matching "{searchQuery}"
           </p>
         </div>
-        <DocumentComponent />
+
+        {/* Search Bar */}
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search documents..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        <Button 
+          variant="outline" 
+          onClick={handleBackToSearch}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Categories
+        </Button>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {searchResults.map((docType) => {
+            const IconComponent = docType.icon;
+            return (
+              <Card key={docType.id} className="hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <IconComponent className="h-5 w-5 text-primary" />
+                    {docType.title}
+                  </CardTitle>
+                  <CardDescription>{docType.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="text-sm">
+                  {docType.content}
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setSelectedDocument(docType.id)}
+                  >
+                    Select Template
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          })}
+        </div>
+        
+        {searchResults.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No documents found matching "{searchQuery}"</p>
+          </div>
+        )}
       </div>
     );
   }
@@ -525,6 +677,28 @@ const MakeDocument = () => {
           <p className="text-muted-foreground">
             Choose a document type to begin generating your legal documents
           </p>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search documents..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        
+        {/* Search Bar */}
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search documents..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="pl-10"
+          />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -568,6 +742,18 @@ const MakeDocument = () => {
           Create legal documents from our professionally-drafted templates.
         </p>
       </div>
+      
+      {/* Search Bar */}
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Input
+          placeholder="Search documents..."
+          value={searchQuery}
+          onChange={(e) => handleSearch(e.target.value)}
+          className="pl-10"
+        />
+      </div>
+      
       <LegalConcernsSection onCategorySelect={handleCategorySelect} />
     </div>
   );

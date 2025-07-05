@@ -2,12 +2,14 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, Scale, Building2, ArrowRight } from "lucide-react";
+import LegalDisclaimer from "@/components/LegalDisclaimer";
 
 interface LegalConcernsSectionProps {
   onCategorySelect: (category: string) => void;
 }
 
 const LegalConcernsSection: React.FC<LegalConcernsSectionProps> = ({ onCategorySelect }) => {
+  
   const categories = [
     {
       id: 'family-protection',
@@ -42,9 +44,14 @@ const LegalConcernsSection: React.FC<LegalConcernsSectionProps> = ({ onCategoryS
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Common Legal Concerns We Address
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             We provide comprehensive legal solutions for your most important concerns
           </p>
+          
+          {/* Professional Legal Services Disclaimer */}
+          <div className="max-w-4xl mx-auto mb-8">
+            <LegalDisclaimer />
+          </div>
         </div>
         
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
