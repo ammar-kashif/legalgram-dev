@@ -54,7 +54,6 @@ import PatentAssignmentInfo from "./pages/PatentAssignmentInfo"; // Import Paten
 import RoyaltyAgreementInfo from "./pages/RoyaltyAgreementInfo"; // Import RoyaltyAgreementInfo directly
 import BillboardLeaseInfo from "./pages/BillboardLeaseInfo"; // Import BillboardLeaseInfo directly
 import RestaurantLeaseInfo from "./pages/RestaurantLeaseInfo"; // Import RestaurantLeaseInfo directly
-import WarehouseLeaseInfo from "./pages/WarehouseLeaseInfo"; // Import WarehouseLeaseInfo directly
 import GasLeaseInfo from "./pages/GasLeaseInfo"; // Import GasLeaseInfo directly
 
 // Lazy load other pages for better performance
