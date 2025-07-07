@@ -60,17 +60,14 @@ import LateRentPaymentAgreement from "@/components/LateRentPaymentAgreement";
 import NonDisturbanceAgreement from "@/components/NonDisturbanceAgreement";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, TrendingUp, Handshake, UtensilsCrossed, Fuel, Search, Phone } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, TrendingUp, Handshake, UtensilsCrossed, Fuel, Phone } from "lucide-react";
 
 const Documents = () => {
   const { id } = useParams();
   const [selectedDocument, setSelectedDocument] = useState<string | null>(id || null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [showSearchResults, setShowSearchResults] = useState<boolean>(false);
 
   // Family Protection documents
   const familyProtectionDocs = [
@@ -472,25 +469,6 @@ const Documents = () => {
   // Combine all documents for direct access
   const allDocumentTypes = [...familyProtectionDocs, ...businessSecurityDocs, ...propertyMattersDocs];
 
-  // Filter documents based on search query
-  const filteredDocuments = (docs: any[]) => {
-    if (!searchQuery.trim()) return docs;
-    return docs.filter(doc => 
-      doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  };
-
-  // Handle search from main page
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (query.trim()) {
-      setShowSearchResults(true);
-      setSelectedCategory(null);
-    }
-    // Don't go back when query is empty - stay on search results page
-  };
-
   // Get documents for selected category
   const getCategoryDocuments = (category: string) => {
     switch (category) {
@@ -520,84 +498,6 @@ const Documents = () => {
   const handleBackToDocuments = () => {
     setSelectedDocument(null);
   };
-
-  const handleBackToSearch = () => {
-    setShowSearchResults(false);
-    setSearchQuery("");
-  };
-
-  // Render search results
-  if (showSearchResults) {
-    const searchResults = filteredDocuments(allDocumentTypes);
-    
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-12 bg-white min-h-screen pt-16">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Search Results</h1>
-            <p className="text-muted-foreground mb-4">
-              Found {searchResults.length} documents matching "{searchQuery}"
-            </p>
-            
-            {/* Professional Legal Services Disclaimer */}
-            <LegalDisclaimer className="mb-6" />
-          </div>
-
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search documents..."
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          <Button 
-            variant="outline" 
-            onClick={handleBackToSearch}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Categories
-          </Button>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {searchResults.map((docType) => {
-              const IconComponent = docType.icon;
-              return (
-                <Card 
-                  key={docType.id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow bg-white"
-                  onClick={() => setSelectedDocument(docType.id)}
-                >
-                  <CardHeader className="text-center">
-                    <IconComponent className="w-12 h-12 mx-auto mb-4 text-primary" />
-                    <CardTitle className="text-xl">{docType.title}</CardTitle>
-                    <CardDescription className="h-20 flex items-center">
-                      {docType.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <Button className="w-full">
-                      Start Creating Document
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-          
-          {searchResults.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No documents found matching "{searchQuery}"</p>
-            </div>
-          )}
-        </div>
-      </Layout>
-    );
-  }
 
   // Render specific document form
   if (selectedDocument && selectedDocumentType) {
@@ -646,17 +546,6 @@ const Documents = () => {
             </p>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search documents..."
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
           <Button 
             variant="outline" 
             onClick={handleBackToCategories}
@@ -683,7 +572,13 @@ const Documents = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="text-center">
-                    <Button className="w-full">
+                    <Button 
+                      className="w-full"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedDocument(docType.id);
+                      }}
+                    >
                       Start Creating Document
                     </Button>
                   </CardContent>
@@ -704,19 +599,8 @@ const Documents = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Legal Documents</h1>
             <p className="text-muted-foreground mb-6">
-              Search and create professional legal documents from our comprehensive library
+              Create professional legal documents from our comprehensive library
             </p>
-            
-            {/* Search Bar */}
-            <div className="relative max-w-md mx-auto mb-8">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search documents..."
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
           </div>
         </div>
         <LegalConcernsSection onCategorySelect={handleCategorySelect} />
