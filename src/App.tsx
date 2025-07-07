@@ -74,27 +74,6 @@ const AskALawyer = lazy(() => import("./pages/AskALawyer"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
-// Form components
-const BusinessPlanForm = lazy(() => import("./components/BusinessPlanForm"));
-const ConfidentialInformationForm = lazy(() => import("./components/ConfidentialInformationForm"));
-const NonCircumventionForm = lazy(() => import("./components/NonCircumventionForm"));
-const CopyrightPermissionForm = lazy(() => import("./components/CopyrightPermissionForm"));
-const LicenseAgreementForm = lazy(() => import("./components/LicenseAgreementForm"));
-const ManufacturingLicenseForm = lazy(() => import("./components/ManufacturingLicenseForm"));
-const MusicLicenseForm = lazy(() => import("./components/MusicLicenseForm"));
-const PatentAssignmentForm = lazy(() => import("./components/PatentAssignmentForm"));
-const RoyaltyAgreementForm = lazy(() => import("./components/RoyaltyAgreementForm"));
-const BillboardLeaseForm = lazy(() => import("./components/BillboardLeaseForm"));
-const OfficeSpaceLeaseForm = lazy(() => import("./components/OfficeSpaceLeaseForm"));
-const StorageSpaceLeaseForm = lazy(() => import("./components/StorageSpaceLeaseForm"));
-const RestaurantLeaseForm = lazy(() => import("./components/RestaurantLeaseForm"));
-const WarehouseLeaseForm = lazy(() => import("./components/WarehouseLeaseForm"));
-const GasLeaseForm = lazy(() => import("./components/GasLeaseForm"));
-const SecurityDepositReturnLetter = lazy(() => import("./components/SecurityDepositReturnLetter"));
-const LeaseTerminationLetter = lazy(() => import("./components/LeaseTerminationLetter"));
-const LateRentPaymentAgreement = lazy(() => import("./components/LateRentPaymentAgreement"));
-const NonDisturbanceAgreement = lazy(() => import("./components/NonDisturbanceAgreement"));
-
 // Loading component for suspense fallback
 const PageLoader = () => (
   <div className="flex h-screen w-full items-center justify-center">
@@ -180,23 +159,23 @@ const App = () => {
                 <Route path="/mutual-nda-info" element={<MutualNDAInfo />} />
                 <Route path="/mutual-nda-form" element={<Documents />} />
                 <Route path="/business-plan-info" element={<BusinessPlanInfo />} />
-                <Route path="/business-plan-form" element={<BusinessPlanForm />} />
+                <Route path="/business-plan-form" element={<Documents />} />
                 <Route path="/confidential-information-info" element={<ConfidentialInformationInfo />} />
-                <Route path="/confidential-information-form" element={<ConfidentialInformationForm />} />
+                <Route path="/confidential-information-form" element={<Documents />} />
                 <Route path="/non-circumvention-info" element={<NonCircumventionInfo />} />
-                <Route path="/non-circumvention-form" element={<NonCircumventionForm />} />
+                <Route path="/non-circumvention-form" element={<Documents />} />
                 <Route path="/copyright-permission-info" element={<CopyrightPermissionInfo />} />
-                <Route path="/copyright-permission-form" element={<CopyrightPermissionForm />} />
+                <Route path="/copyright-permission-form" element={<Documents />} />
                 <Route path="/license-agreement-info" element={<LicenseAgreementInfo />} />
-                <Route path="/license-agreement-form" element={<LicenseAgreementForm />} />
+                <Route path="/license-agreement-form" element={<Documents />} />
                 <Route path="/manufacturing-license-info" element={<ManufacturingLicenseInfo />} />
-                <Route path="/manufacturing-license-form" element={<ManufacturingLicenseForm />} />
+                <Route path="/manufacturing-license-form" element={<Documents />} />
                 <Route path="/music-license-info" element={<MusicLicenseInfo />} />
-                <Route path="/music-license-form" element={<MusicLicenseForm />} />
+                <Route path="/music-license-form" element={<Documents />} />
                 <Route path="/patent-assignment-info" element={<PatentAssignmentInfo />} />
-                <Route path="/patent-assignment-form" element={<PatentAssignmentForm />} />
+                <Route path="/patent-assignment-form" element={<Documents />} />
                 <Route path="/royalty-agreement-info" element={<RoyaltyAgreementInfo />} />
-                <Route path="/royalty-agreement-form" element={<RoyaltyAgreementForm />} />
+                <Route path="/royalty-agreement-form" element={<Documents />} />
                 <Route path="/living-will-info" element={<LivingWillInfo />} />
                 <Route path="/sale-agreement-info" element={<SaleAgreementInfo />} />
                 <Route path="/independent-contractor-info" element={<IndependentContractorInfo />} />
@@ -205,20 +184,20 @@ const App = () => {
                 <Route path="/financial-support-affidavit-info" element={<FinancialSupportAffidavitInfo />} />
                 <Route path="/services-contract-info" element={<ServicesContractInfo />} />
                 <Route path="/billboard-lease-info" element={<BillboardLeaseInfo />} />
-                <Route path="/billboard-lease-form" element={<BillboardLeaseForm />} />
+                <Route path="/billboard-lease-form" element={<Documents />} />
                 <Route path="/office-space-lease-info" element={<OfficeSpaceLeaseInfo />} />
-                <Route path="/office-space-lease-form" element={<OfficeSpaceLeaseForm />} />
+                <Route path="/office-space-lease-form" element={<Documents />} />
                 <Route path="/storage-space-lease-info" element={<StorageSpaceLeaseInfo />} />
-                <Route path="/storage-space-lease-form" element={<StorageSpaceLeaseForm />} />
+                <Route path="/storage-space-lease-form" element={<Documents />} />
                 <Route path="/restaurant-lease-info" element={<RestaurantLeaseInfo />} />
-                <Route path="/restaurant-lease-form" element={<RestaurantLeaseForm />} />
-                <Route path="/warehouse-lease-form" element={<WarehouseLeaseForm />} />
+                <Route path="/restaurant-lease-form" element={<Documents />} />
+                <Route path="/warehouse-lease-form" element={<Documents />} />
                 <Route path="/gas-lease-info" element={<GasLeaseInfo />} />
-                <Route path="/gas-lease-form" element={<GasLeaseForm />} />
-                <Route path="/security-deposit-return-letter" element={<SecurityDepositReturnLetter />} />
-                <Route path="/lease-termination-letter" element={<LeaseTerminationLetter />} />
-                <Route path="/late-rent-payment-agreement" element={<LateRentPaymentAgreement />} />
-                <Route path="/non-disturbance-agreement" element={<NonDisturbanceAgreement />} />
+                <Route path="/gas-lease-form" element={<Documents />} />
+                <Route path="/security-deposit-return-letter" element={<Documents />} />
+                <Route path="/lease-termination-letter" element={<Documents />} />
+                <Route path="/late-rent-payment-agreement" element={<Documents />} />
+                <Route path="/non-disturbance-agreement" element={<Documents />} />
                 <Route path="/business-agreement-info" element={<BuySellAgreementInfo />} />
                 <Route path="/nda-info" element={<MutualNDAInfo />} />
                 <Route path="/nda-form" element={<Documents />} />
