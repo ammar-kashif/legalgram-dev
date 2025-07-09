@@ -6,14 +6,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { useEffect } from "react";
-import LandingPage from "./pages/LandingPage"; // Static import
-import StartABusiness from "./pages/StartABusiness"; 
-import Index from "./pages/Index"; // Import Index component
-import Documents from "./pages/Documents"; // Import Documents directly
-import UserDashboard from "./pages/UserDashboard"; // Import UserDashboard directly
-import WhatsAnLLC from "./pages/WhatsAnLLC"; // Import WhatsAnLLC directly
-import WhatsACorporation from "./pages/WhatsACorporation"; // Import WhatsACorporation directly
-import WhatsAnSCorp from "./pages/WhatsAnSCorp"; // Import WhatsAnSCorp directly
+import Index from "./pages/Index"; // Keep Index as static import for main route
+
+// Lazy load more components to reduce initial bundle size
+const LandingPage = lazy(() => import("./pages/LandingPage"));
+const StartABusiness = lazy(() => import("./pages/StartABusiness"));
+const Documents = lazy(() => import("./pages/Documents"));
+const UserDashboard = lazy(() => import("./pages/UserDashboard"));
+const WhatsAnLLC = lazy(() => import("./pages/WhatsAnLLC"));
+const WhatsACorporation = lazy(() => import("./pages/WhatsACorporation"));
+const WhatsAnSCorp = lazy(() => import("./pages/WhatsAnSCorp"));
 import AffidavitOfMarriageInfo from "./pages/AffidavitOfMarriageInfo"; // Import AffidavitOfMarriageInfo directly
 import AffidavitOfResidenceInfo from "./pages/AffidavitOfResidenceInfo"; // Import AffidavitOfResidenceInfo directly
 import LLCOperatingAgreementInfo from "./pages/LLCOperatingAgreementInfo"; // Import LLCOperatingAgreementInfo directly
@@ -86,6 +88,7 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
 });
