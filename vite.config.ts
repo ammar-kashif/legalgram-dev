@@ -23,23 +23,15 @@ export default defineConfig(({ mode }) => ({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
+    // Simplify chunk splitting to avoid deployment sync issues
     rollupOptions: {
       output: {
-        // Make chunk names more stable by using consistent naming
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId
-            ? chunkInfo.facadeModuleId.split('/').pop()?.replace(/\.[^/.]+$/, '') || 'chunk'
-            : 'chunk';
-          return `${facadeModuleId}-[hash].js`;
-        },
-        entryFileNames: 'index-[hash].js',
-        assetFileNames: '[name]-[hash].[ext]',
-        manualChunks: {
-          // Split vendor libraries into separate chunks
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-toast', '@radix-ui/react-tooltip', '@radix-ui/react-select'],
-          utils: ['date-fns', 'clsx', 'tailwind-merge'],
-        },
+        // Use simpler, more predictable naming
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+        // Reduce chunk splitting for better deployment reliability
+        manualChunks: undefined,
       },
     },
   },
