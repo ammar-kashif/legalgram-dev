@@ -1,65 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, ArrowLeft, TrendingUp, Handshake, Factory, UtensilsCrossed, Fuel } from "lucide-react";
 import LegalConcernsSection from "@/components/LegalConcernsSection";
-import ConditionalForm from "@/components/ConditionalForm";
-import ChildCareAuthForm from "@/components/ChildCareAuthForm";
-import GeneralContractForm from "@/components/GeneralContractForm";
-import IndependentContractorForm from "@/components/IndependentContractorForm";
-import LivingWillForm from "@/components/LivingWillForm";
-import SharePurchaseAgreementForm from "@/components/SharePurchaseAgreementForm";
-import LoanAgreementForm from "@/components/LoanAgreementForm";
-import GiftAffidavitForm from "@/components/GiftAffidavitForm";
-import FinancialSupportAffidavitForm from "@/components/FinancialSupportAffidavitForm";
-import ServicesContractForm from "@/components/ServicesContractForm";
-import DomesticServiceAgreementForm from "@/components/DomesticServiceAgreementForm";
-import AgreementToSellForm from "@/components/AgreementToSellForm";
-import GeneralPowerOfAttorneyForm from "@/components/GeneralPowerOfAttorneyForm";
-import SpecialPowerOfAttorneyForm from "@/components/SpecialPowerOfAttorneyForm";
-import SaleAgreementForm from "@/components/SaleAgreementForm";
-import BusinessAgreementForm from "@/components/BusinessAgreementForm";
-import LLCOperatingAgreementForm from "@/components/LLCOperatingAgreementForm";
-import AffidavitOfMarriageForm from "@/components/AffidavitOfMarriageForm";
-import AffidavitOfResidenceForm from "@/components/AffidavitOfResidenceForm";
-import DivorceSettlementAgreementForm from "@/components/DivorceSettlementAgreementForm";
-import EvictionNoticeForm from "@/components/EvictionNoticeForm";
-import TranscriptRequestForm from "@/components/TranscriptRequestForm";
-import NDAForm from "@/components/NDAForm";
-import CopyrightAssignmentForm from "@/components/CopyrightAssignmentForm";
-import CopyrightLicenseForm from "@/components/CopyrightLicenseForm";
-import LeaseRenewalForm from "@/components/LeaseRenewalForm";
-import LeaseTerminationForm from "@/components/LeaseTerminationForm";
-import CondominiumLeaseForm from "@/components/CondominiumLeaseForm";
-import RentIncreaseForm from "@/components/RentIncreaseForm";
-import SubleaseForm from "@/components/SubleaseForm";
-import LeaseAmendmentForm from "@/components/LeaseAmendmentForm";
-import CommercialLeaseForm from "@/components/CommercialLeaseForm";
-import TripleNetLeaseForm from "@/components/TripleNetLeaseForm";
-import CorporateBylawsForm from "@/components/CorporateBylawsForm";
-import BuySellAgreementForm from "@/components/BuySellAgreementForm";
-import MutualNDAForm from "@/components/MutualNDAForm";
-import BusinessPlanForm from "@/components/BusinessPlanForm";
-import ConfidentialInformationForm from "@/components/ConfidentialInformationForm";
-import NonCircumventionForm from "@/components/NonCircumventionForm";
-import CopyrightPermissionForm from "@/components/CopyrightPermissionForm";
-import LicenseAgreementForm from "@/components/LicenseAgreementForm";
-import ManufacturingLicenseForm from "@/components/ManufacturingLicenseForm";
-import MusicLicenseForm from "@/components/MusicLicenseForm";
-import BillboardLeaseForm from "@/components/BillboardLeaseForm";
-import OfficeSpaceLeaseForm from "@/components/OfficeSpaceLeaseForm";
-import StorageSpaceLeaseForm from "@/components/StorageSpaceLeaseForm";
-import RestaurantLeaseForm from "@/components/RestaurantLeaseForm";
-import PatentAssignmentForm from "@/components/PatentAssignmentForm";
-import RoyaltyAgreementForm from "@/components/RoyaltyAgreementForm";
-import WarehouseLeaseForm from "@/components/WarehouseLeaseForm";
-import OilLeaseForm from "@/components/OilLeaseForm";
-import GasLeaseForm from "@/components/GasLeaseForm";
-import SecurityDepositReturnLetter from "@/components/SecurityDepositReturnLetter";
-import LeaseTerminationLetter from "@/components/LeaseTerminationLetter";
-import LateRentPaymentAgreement from "@/components/LateRentPaymentAgreement";
-import NonDisturbanceAgreement from "@/components/NonDisturbanceAgreement";
-
+// Convert all form imports to lazy loading to prevent build conflicts
+const ConditionalForm = lazy(() => import("@/components/ConditionalForm"));
+const ChildCareAuthForm = lazy(() => import("@/components/ChildCareAuthForm"));
+const GeneralContractForm = lazy(() => import("@/components/GeneralContractForm"));
+const IndependentContractorForm = lazy(() => import("@/components/IndependentContractorForm"));
+const LivingWillForm = lazy(() => import("@/components/LivingWillForm"));
+const SharePurchaseAgreementForm = lazy(() => import("@/components/SharePurchaseAgreementForm"));
+const LoanAgreementForm = lazy(() => import("@/components/LoanAgreementForm"));
+const GiftAffidavitForm = lazy(() => import("@/components/GiftAffidavitForm"));
+const FinancialSupportAffidavitForm = lazy(() => import("@/components/FinancialSupportAffidavitForm"));
+const ServicesContractForm = lazy(() => import("@/components/ServicesContractForm"));
+const DomesticServiceAgreementForm = lazy(() => import("@/components/DomesticServiceAgreementForm"));
+const AgreementToSellForm = lazy(() => import("@/components/AgreementToSellForm"));
+const GeneralPowerOfAttorneyForm = lazy(() => import("@/components/GeneralPowerOfAttorneyForm"));
+const SpecialPowerOfAttorneyForm = lazy(() => import("@/components/SpecialPowerOfAttorneyForm"));
+const SaleAgreementForm = lazy(() => import("@/components/SaleAgreementForm"));
+const BusinessAgreementForm = lazy(() => import("@/components/BusinessAgreementForm"));
+const LLCOperatingAgreementForm = lazy(() => import("@/components/LLCOperatingAgreementForm"));
+const AffidavitOfMarriageForm = lazy(() => import("@/components/AffidavitOfMarriageForm"));
+const AffidavitOfResidenceForm = lazy(() => import("@/components/AffidavitOfResidenceForm"));
+const DivorceSettlementAgreementForm = lazy(() => import("@/components/DivorceSettlementAgreementForm"));
+const EvictionNoticeForm = lazy(() => import("@/components/EvictionNoticeForm"));
+const TranscriptRequestForm = lazy(() => import("@/components/TranscriptRequestForm"));
+const NDAForm = lazy(() => import("@/components/NDAForm"));
+const CopyrightAssignmentForm = lazy(() => import("@/components/CopyrightAssignmentForm"));
+const CopyrightLicenseForm = lazy(() => import("@/components/CopyrightLicenseForm"));
+const LeaseRenewalForm = lazy(() => import("@/components/LeaseRenewalForm"));
+const LeaseTerminationForm = lazy(() => import("@/components/LeaseTerminationForm"));
+const CondominiumLeaseForm = lazy(() => import("@/components/CondominiumLeaseForm"));
+const RentIncreaseForm = lazy(() => import("@/components/RentIncreaseForm"));
+const SubleaseForm = lazy(() => import("@/components/SubleaseForm"));
+const LeaseAmendmentForm = lazy(() => import("@/components/LeaseAmendmentForm"));
+const CommercialLeaseForm = lazy(() => import("@/components/CommercialLeaseForm"));
+const TripleNetLeaseForm = lazy(() => import("@/components/TripleNetLeaseForm"));
+const CorporateBylawsForm = lazy(() => import("@/components/CorporateBylawsForm"));
+const BuySellAgreementForm = lazy(() => import("@/components/BuySellAgreementForm"));
+const MutualNDAForm = lazy(() => import("@/components/MutualNDAForm"));
+const BusinessPlanForm = lazy(() => import("@/components/BusinessPlanForm"));
+const ConfidentialInformationForm = lazy(() => import("@/components/ConfidentialInformationForm"));
+const NonCircumventionForm = lazy(() => import("@/components/NonCircumventionForm"));
+const CopyrightPermissionForm = lazy(() => import("@/components/CopyrightPermissionForm"));
+const LicenseAgreementForm = lazy(() => import("@/components/LicenseAgreementForm"));
+const ManufacturingLicenseForm = lazy(() => import("@/components/ManufacturingLicenseForm"));
+const MusicLicenseForm = lazy(() => import("@/components/MusicLicenseForm"));
+const BillboardLeaseForm = lazy(() => import("@/components/BillboardLeaseForm"));
+const OfficeSpaceLeaseForm = lazy(() => import("@/components/OfficeSpaceLeaseForm"));
+const StorageSpaceLeaseForm = lazy(() => import("@/components/StorageSpaceLeaseForm"));
+const RestaurantLeaseForm = lazy(() => import("@/components/RestaurantLeaseForm"));
+const PatentAssignmentForm = lazy(() => import("@/components/PatentAssignmentForm"));
+const RoyaltyAgreementForm = lazy(() => import("@/components/RoyaltyAgreementForm"));
+const WarehouseLeaseForm = lazy(() => import("@/components/WarehouseLeaseForm"));
+const OilLeaseForm = lazy(() => import("@/components/OilLeaseForm"));
+const GasLeaseForm = lazy(() => import("@/components/GasLeaseForm"));
+const SecurityDepositReturnLetter = lazy(() => import("@/components/SecurityDepositReturnLetter"));
+const LeaseTerminationLetter = lazy(() => import("@/components/LeaseTerminationLetter"));
+const LateRentPaymentAgreement = lazy(() => import("@/components/LateRentPaymentAgreement"));
+const NonDisturbanceAgreement = lazy(() => import("@/components/NonDisturbanceAgreement"));
 
 const MakeDocument = () => {
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
@@ -570,7 +570,13 @@ const MakeDocument = () => {
             {selectedDocumentType.description}
           </p>
         </div>
-        <DocumentComponent />
+        <Suspense fallback={
+          <div className="flex h-64 w-full items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
+        }>
+          <DocumentComponent />
+        </Suspense>
       </div>
     );
   }
