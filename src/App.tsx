@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { useEffect } from "react";
-import Index from "./pages/Index"; // Keep Index as static import for main route
 
 // Lazy load more components to reduce initial bundle size
 const LandingPage = lazy(() => import("./pages/LandingPage"));
@@ -118,7 +117,7 @@ const App = () => {
             <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<LandingPage />} />
                 <Route path="/home" element={<LandingPage />} />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/documents/:id" element={<Documents />} />

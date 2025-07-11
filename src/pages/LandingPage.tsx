@@ -1,5 +1,7 @@
 
 import { useEffect, useState, lazy, Suspense } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import ConfidenceSlider from "@/components/home/ConfidenceSlider";
 
@@ -28,15 +30,37 @@ const Testimonials = lazy(() => import("@/components/home/Testimonials"));
 const CTASection = lazy(() => import("@/components/home/CTASection"));
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
+    // Check if there's a hash in the URL (potential auth callback)
+    if (window.location.hash || window.location.search.includes('code=')) {
+      navigate("/sso-callback");
+      return;
+    }
+    
+    // Check authenticated status
+    const checkAuth = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          // User is logged in, redirect to user dashboard
+          navigate("/user-dashboard");
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+      }
+    };
+    
+    checkAuth();
+    
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 100);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigate]);
 
   return (
     <Layout>

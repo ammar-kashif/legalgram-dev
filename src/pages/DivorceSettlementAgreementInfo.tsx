@@ -11,13 +11,6 @@ const DivorceSettlementAgreementInfo = () => {
     <Layout>
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-4xl">
         <div className="mb-8">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate(-1)}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
           
           <div className="text-center mb-8">
             <Scale className="w-16 h-16 text-bright-orange-500 mx-auto mb-4" />
@@ -245,14 +238,7 @@ const DivorceSettlementAgreementInfo = () => {
               </ul>
             </div>
             
-            <div className="text-center">
-              <Button 
-                onClick={() => navigate('/divorce-settlement-agreement')}
-                className="bg-bright-orange-500 hover:bg-bright-orange-600 text-white px-8 py-3 text-lg"
-              >
-                Create Your Divorce Settlement Agreement Now
-              </Button>
-            </div>
+    
             
             <p className="text-center text-lg font-semibold text-gray-800 mt-4">
               Start your Divorce Settlement Agreement now and take control of the divorce process with confidence, clarity, and legal protection.
