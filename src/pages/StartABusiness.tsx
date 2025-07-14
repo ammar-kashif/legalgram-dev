@@ -7,11 +7,13 @@ import {
   BookOpen, HelpCircle, FileText, XCircle, Table
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import Layout from "@/components/layout/Layout";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import BusinessBackgroundSlideshow from "@/components/business/BusinessBackgroundSlideshow";
 import FAQSection from "@/components/business/FAQSection";
-import ComparisonCard from "@/components/business/ComparisonCard";
+import BusinessFormationFlow from "@/components/LLCFormationFlow";
 import {
   Table as UITable,
   TableBody,
@@ -22,6 +24,8 @@ import {
 } from "@/components/ui/table";
 
 const StartABusiness = () => {
+  const [isLLCFlowOpen, setIsLLCFlowOpen] = useState(false);
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -184,22 +188,28 @@ const StartABusiness = () => {
                Launch Your LLC Now
               </h2>
               <p className="text-lg text-gray-600">
-               Setting up a Limited Liability Company (LLC) helps shield your personal assets from business-related debts or legal issues. It also gives you more options when it comes to managing taxes. That’s why it’s a go-to structure for solo business owners and entrepreneurs.
+               Setting up a Limited Liability Company (LLC) helps shield your personal assets from business-related debts or legal issues. It also gives you more options when it comes to managing taxes. That's why it's a go-to structure for solo business owners and entrepreneurs.
               </p>
               <div className="flex gap-4">
-                <Button 
-                  size="lg"
-                  className="bg-bright-orange-500 hover:bg-bright-orange-600"
-                  asChild
-                >
-                  <Link to="/documents/llc">Get Started</Link>
-                </Button>
+                <Dialog open={isLLCFlowOpen} onOpenChange={setIsLLCFlowOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      size="lg"
+                      className="bg-bright-orange-500 hover:bg-bright-orange-600"
+                    >
+                      Get Started
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+                    <BusinessFormationFlow onClose={() => setIsLLCFlowOpen(false)} />
+                  </DialogContent>
+                </Dialog>
                 <Button 
                   variant="outline" 
                   size="lg"
                   asChild
                 >
-                  <Link to="/whats-an-llc">What’s an LLC?</Link>
+                  <Link to="/whats-an-llc">What's an LLC?</Link>
                 </Button>
               </div>
             </div>
@@ -250,12 +260,19 @@ const StartABusiness = () => {
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="md:order-2 space-y-6">
+            <div>
+              <img 
+                src="/lovable-uploads/697f8a63-6e9a-41a0-9995-812ce5ce9381.png"
+                alt="S-Corp Election" 
+                className="rounded-lg w-full h-auto"
+              />
+            </div>
+            <div className="space-y-6">
               <h2 className="text-4xl font-bold text-gray-900">
-                Make Your S-Corp Election
+                S-Corp Election
               </h2>
               <p className="text-lg text-gray-600">
-                Looking to save on taxes? Choosing S-Corp status can help your business cut down on tax costs. You can easily add this option when setting up your Corporation with Legal Gram.
+                Save money on self-employment taxes while keeping things simple. An S-Corp election combines the flexibility of an LLC with potential tax savings. It's perfect for profitable businesses looking to reduce their tax burden.
               </p>
               <div className="flex gap-4">
                 <Button 
@@ -263,45 +280,31 @@ const StartABusiness = () => {
                   className="bg-bright-orange-500 hover:bg-bright-orange-600"
                   asChild
                 >
-                  <Link to="/documents/s-corp">Begin S-Corp Setup</Link>
+                  <Link to="/documents/s-corp">Get Started</Link>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg"
                   asChild
                 >
-                  <Link to="/whats-an-s-corp">What’s an S-Corp?</Link>
+                  <Link to="/whats-an-s-corp">What's an S-Corp?</Link>
                 </Button>
               </div>
-            </div>
-            <div className="md:order-1">
-              <img 
-                src="/lovable-uploads/fd2c0a0d-9fe5-4ee0-84ed-6ec727130975.png"
-                alt="Start your S-Corp" 
-                className="rounded-lg w-full h-auto"
-              />
             </div>
           </div>
         </div>
       </section>
 
       {/* Partnership Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="md:order-2">
-              <img 
-                src="/lovable-uploads/d2c6f56f-0d2b-483e-bd39-89789cf2dccc.png"
-                alt="Form a Partnership" 
-                className="rounded-lg w-full h-auto"
-              />
-            </div>
-            <div className="md:order-1 space-y-6">
+            <div className="space-y-6">
               <h2 className="text-4xl font-bold text-gray-900">
-                Start Your Business Partnership
+                Partnership Formation
               </h2>
               <p className="text-lg text-gray-600">
-               Teaming up to launch a business? A partnership setup lets you divide tasks, pool your resources, and share the earnings. You can go with a General, Limited, or Limited Liability Partnership—whatever fits your vision best.
+                Starting a business with partners? A Partnership might be your best bet. It's straightforward to set up and gives you flexibility in how you split profits and responsibilities. Plus, you'll avoid the formalities that come with corporations.
               </p>
               <div className="flex gap-4">
                 <Button 
@@ -316,211 +319,113 @@ const StartABusiness = () => {
                   size="lg"
                   asChild
                 >
-                  <Link to="/documents/partnership-guide">Explore Partnership Types</Link>
+                  <Link to="/whats-a-partnership">What's a Partnership?</Link>
                 </Button>
               </div>
+            </div>
+            <div>
+              <img 
+                src="/lovable-uploads/609d30f6-95e3-406f-810f-a8f6a462c3f1.png"
+                alt="Partnership Formation" 
+                className="rounded-lg w-full h-auto"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <FAQSection />
-
-      {/* Comparison Section */}
+      {/* Business Structure Comparison */}
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-4">Compare Business Structures</h2>
-          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-            Choose the right business structure for your needs. Compare features and benefits to make an informed decision.
-          </p>
+          <h2 className="text-3xl font-bold text-black text-center mb-12">
+            Compare Business Structures
+          </h2>
           
-          {/* Detailed Comparison Table */}
-        
-          <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm mb-12">
-            <UITable>
+          <div className="overflow-x-auto">
+            <UITable className="w-full bg-white rounded-lg shadow-lg">
               <TableHeader>
-                <TableRow className="bg-gray-100">
-                  <TableHead className="w-1/4 font-bold">Key Feature</TableHead>
-                  <TableHead className="w-1/4 font-bold">LLC</TableHead>
-                  <TableHead className="w-1/4 font-bold">Corporation</TableHead>
-                  <TableHead className="w-1/4 font-bold">S Corporation</TableHead>
+                <TableRow>
+                  <TableHead className="font-bold text-black">Feature</TableHead>
+                  <TableHead className="font-bold text-black text-center">LLC</TableHead>
+                  <TableHead className="font-bold text-black text-center">Corporation</TableHead>
+                  <TableHead className="font-bold text-black text-center">Partnership</TableHead>
+                  <TableHead className="font-bold text-black text-center">Sole Proprietorship</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium">Limited Liability Protection</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Protects owners' assets</span>
-                    </div>
+                  <TableCell className="font-medium">Personal Asset Protection</TableCell>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Protects shareholders</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Protects shareholders</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <XCircle className="h-5 w-5 text-red-500 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <XCircle className="h-5 w-5 text-red-500 mx-auto" />
                   </TableCell>
                 </TableRow>
-
                 <TableRow>
-                  <TableCell className="font-medium">Tax Treatment</TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>Pass through or corporate</span>
-                    </div>
+                  <TableCell className="font-medium">Tax Flexibility</TableCell>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
-                      <span>Double taxation</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <XCircle className="h-5 w-5 text-red-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>Pass through only</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
                 </TableRow>
-
                 <TableRow>
-                  <TableCell className="font-medium">Management Structure</TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>Member managed or manager managed</span>
-                    </div>
+                  <TableCell className="font-medium">Easy Setup</TableCell>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>Board of directors & officers</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <XCircle className="h-5 w-5 text-red-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>Board of directors & officers</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
                 </TableRow>
-
                 <TableRow>
-                  <TableCell className="font-medium">Investor Flexibility (Stock Options)</TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
-                      <span>Limited options</span>
-                    </div>
+                  <TableCell className="font-medium">Investor Friendly</TableCell>
+                  <TableCell className="text-center">
+                    <XCircle className="h-5 w-5 text-red-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>Can issue multiple stock classes</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
-                      <span>Limited stock options</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <XCircle className="h-5 w-5 text-red-500 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <XCircle className="h-5 w-5 text-red-500 mx-auto" />
                   </TableCell>
                 </TableRow>
-
                 <TableRow>
-                  <TableCell className="font-medium">Ownership Restrictions</TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>No limit on owners</span>
-                    </div>
+                  <TableCell className="font-medium">Management Flexibility</TableCell>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>No restriction</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <XCircle className="h-5 w-5 text-red-500 mx-auto" />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
-                      <span>Limited (100 max, no foreign/entity/non-resident)</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium">Raising Capital</TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
-                      <span>Moderate (harder to attract funds)</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>Easy (attracts investors)</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
-                      <span>Limited (due to ownership restrictions)</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium">Ongoing Formalities</TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>Fewer formal requirements</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
-                      <span>Strict formalities</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
-                      <span>Strict formalities</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium">Self-Employment Taxes</TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <HelpCircle className="h-5 w-5 text-amber-500 mt-0.5" />
-                      <span>May apply in full</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>W-2 salary + dividends</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-                      <span>W-2 salary + dividends</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -529,169 +434,273 @@ const StartABusiness = () => {
         </div>
       </section>
 
-      {/* Expert Guidance Section */}
+      {/* Why Choose Us Section */}
       <section className="py-16 bg-white">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">Expert Guidance Every Step of the Way</h2>
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { icon: MessageCircle, title: "Business Consultations", desc: "Get expert advice on choosing the right business structure" },
-              { icon: FileSearch, title: "Document Review", desc: "Professional review of all your business documents" },
-              { icon: Calendar, title: "Compliance Calendar", desc: "Stay on top of important deadlines and filings" },
-              { icon: HelpCircle, title: "24/7 Support", desc: "Access to our knowledge base and support team" }
-            ].map((item, index) => (
-              <div key={index} className="p-6 rounded-xl bg-white shadow-lg hover:shadow-xl transition-shadow">
-                <item.icon className="h-10 w-10 text-bright-orange-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.desc}</p>
-              </div>
-            ))}
+          <h2 className="text-3xl font-bold text-black text-center mb-12">
+            Why Choose Legal Gram?
+          </h2>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="p-6 rounded-xl border border-black/10 hover:shadow-lg transition-shadow">
+              <ShieldCheck className="h-10 w-10 text-bright-orange-500 mb-4" />
+              <h3 className="text-xl font-semibold text-black mb-3">Expert Legal Review</h3>
+              <p className="text-gray-600 mb-4">All documents reviewed by licensed attorneys</p>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Attorney-reviewed documents</li>
+                <li>• State-specific compliance</li>
+                <li>• Legal accuracy guaranteed</li>
+              </ul>
+            </div>
+            
+            <div className="p-6 rounded-xl border border-black/10 hover:shadow-lg transition-shadow">
+              <Clock className="h-10 w-10 text-bright-orange-500 mb-4" />
+              <h3 className="text-xl font-semibold text-black mb-3">Fast & Efficient</h3>
+              <p className="text-gray-600 mb-4">Get your business documents in minutes, not days</p>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Instant document generation</li>
+                <li>• Same-day processing</li>
+                <li>• Quick turnaround time</li>
+              </ul>
+            </div>
+            
+            <div className="p-6 rounded-xl border border-black/10 hover:shadow-lg transition-shadow">
+              <DollarSign className="h-10 w-10 text-bright-orange-500 mb-4" />
+              <h3 className="text-xl font-semibold text-black mb-3">Affordable Pricing</h3>
+              <p className="text-gray-600 mb-4">Professional legal services at a fraction of the cost</p>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Transparent pricing</li>
+                <li>• No hidden fees</li>
+                <li>• Money-back guarantee</li>
+              </ul>
+            </div>
+            
+            <div className="p-6 rounded-xl border border-black/10 hover:shadow-lg transition-shadow">
+              <Users className="h-10 w-10 text-bright-orange-500 mb-4" />
+              <h3 className="text-xl font-semibold text-black mb-3">Dedicated Support</h3>
+              <p className="text-gray-600 mb-4">Expert guidance every step of the way</p>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• 24/7 customer support</li>
+                <li>• Legal experts available</li>
+                <li>• Personalized assistance</li>
+              </ul>
+            </div>
+            
+            <div className="p-6 rounded-xl border border-black/10 hover:shadow-lg transition-shadow">
+              <CheckCircle className="h-10 w-10 text-bright-orange-500 mb-4" />
+              <h3 className="text-xl font-semibold text-black mb-3">Compliance Guaranteed</h3>
+              <p className="text-gray-600 mb-4">Stay compliant with all state and federal requirements</p>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• State-specific forms</li>
+                <li>• Updated regulations</li>
+                <li>• Compliance monitoring</li>
+              </ul>
+            </div>
+            
+            <div className="p-6 rounded-xl border border-black/10 hover:shadow-lg transition-shadow">
+              <Rocket className="h-10 w-10 text-bright-orange-500 mb-4" />
+              <h3 className="text-xl font-semibold text-black mb-3">All-in-One Platform</h3>
+              <p className="text-gray-600 mb-4">Everything you need to start and run your business</p>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Business formation</li>
+                <li>• Legal documents</li>
+                <li>• Ongoing compliance</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Resources Section */}
+      {/* Process Section */}
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">Business Resources</h2>
+          <h2 className="text-3xl font-bold text-black text-center mb-12">
+            How It Works
+          </h2>
+          
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: BookOpen,
-                title: "Business Guide Library",
-                desc: "Access comprehensive guides on starting and running your business",
-                link: "/resources/guides"
-              },
-              {
-                icon: FileText,
-                title: "Document Templates",
-                desc: "Download free templates for common business documents",
-                link: "/resources/templates"
-              },
-              {
-                icon: ChartBar,
-                title: "Market Research Tools",
-                desc: "Access industry reports and market analysis tools",
-                link: "/resources/research"
-              }
-            ].map((item, index) => (
-              <div key={index} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-                <div className="flex items-center mb-6">
-                  <item.icon className="h-8 w-8 text-bright-orange-500 mr-3" />
-                  <h3 className="text-xl font-semibold">{item.title}</h3>
-                </div>
-                <p className="text-gray-600 mb-6">{item.desc}</p>
-                <Button variant="outline" size="lg" className="w-full" asChild>
-                  <Link to={item.link}>Learn More</Link>
-                </Button>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-bright-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <FileText className="h-8 w-8 text-white" />
               </div>
-            ))}
+              <h3 className="text-xl font-semibold text-black mb-4">1. Choose Your Structure</h3>
+              <p className="text-gray-600">
+                Select the business structure that best fits your needs. Our experts will guide you through the options.
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-bright-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <ClipboardCheck className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-black mb-4">2. Complete the Forms</h3>
+              <p className="text-gray-600">
+                Fill out our simple questionnaire. We'll handle all the paperwork and legal requirements for you.
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-bright-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <BadgeCheck className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-black mb-4">3. Get Your Documents</h3>
+              <p className="text-gray-600">
+                Receive your completed legal documents and business registration. You're ready to start operating!
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
+      {/* Pricing Section */}
       <section className="py-16 bg-white">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose Our Business Formation Services?</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { icon: Clock, title: "Fast Processing", desc: "Get your business formed in as little as 24 hours" },
-              { icon: ShieldCheck, title: "100% Accuracy", desc: "Guaranteed accurate filing with state authorities" },
-              { icon: UserCheck, title: "Expert Support", desc: "Access to business formation specialists" },
-              { icon: DollarSign, title: "Competitive Pricing", desc: "Transparent pricing with no hidden fees" },
-              { icon: ClipboardCheck, title: "Compliance", desc: "Stay compliant with state regulations" },
-              { icon: Handshake, title: "Dedicated Service", desc: "Personal attention to your business needs" }
-            ].map((item, index) => (
-              <div key={index} className="p-6 rounded-xl border border-gray-200 hover:border-bright-orange-300 transition-all hover:shadow-lg">
-                <item.icon className="h-10 w-10 text-bright-orange-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.desc}</p>
+          <h2 className="text-3xl font-bold text-black text-center mb-12">
+            Simple, Transparent Pricing
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-black mb-2">Basic</h3>
+                <div className="text-4xl font-bold text-bright-orange-500 mb-2">$99</div>
+                <p className="text-gray-600">Perfect for simple businesses</p>
               </div>
-            ))}
+              
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Business formation documents</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>State filing included</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Email support</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Digital document delivery</span>
+                </li>
+              </ul>
+              
+              <Button className="w-full bg-bright-orange-500 hover:bg-bright-orange-600" asChild>
+                <Link to="/signup">Get Started</Link>
+              </Button>
+            </div>
+            
+            <div className="p-8 rounded-xl border-2 border-bright-orange-500 hover:shadow-lg transition-shadow relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="bg-bright-orange-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                  MOST POPULAR
+                </span>
+              </div>
+              
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-black mb-2">Professional</h3>
+                <div className="text-4xl font-bold text-bright-orange-500 mb-2">$199</div>
+                <p className="text-gray-600">Everything you need to get started</p>
+              </div>
+              
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Everything in Basic</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Operating Agreement</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>EIN registration</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Phone support</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Registered agent (1 year)</span>
+                </li>
+              </ul>
+              
+              <Button className="w-full bg-bright-orange-500 hover:bg-bright-orange-600" asChild>
+                <Link to="/signup">Get Started</Link>
+              </Button>
+            </div>
+            
+            <div className="p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-black mb-2">Premium</h3>
+                <div className="text-4xl font-bold text-bright-orange-500 mb-2">$399</div>
+                <p className="text-gray-600">Complete business package</p>
+              </div>
+              
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Everything in Professional</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Business license research</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Trademark search</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Priority support</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <span>Ongoing compliance alerts</span>
+                </li>
+              </ul>
+              
+              <Button className="w-full bg-bright-orange-500 hover:bg-bright-orange-600" asChild>
+                <Link to="/signup">Get Started</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Process Steps */}
+      {/* FAQ Section */}
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { step: "1", title: "Choose Your Business Type", desc: "Select the structure that fits your needs" },
-              { step: "2", title: "Provide Information", desc: "Fill out our simple online questionnaire" },
-              { step: "3", title: "Review & Submit", desc: "We'll prepare and file your documents" },
-              { step: "4", title: "Start Operating", desc: "Receive your formation documents" }
-            ].map((item, index) => (
-              <div key={index} className="relative">
-                <div className="bg-bright-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold mb-4">
-                  {item.step}
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+          <FAQSection />
         </div>
       </section>
 
-      {/* Features Comparison */}
+      {/* Testimonials Section */}
       <section className="py-16 bg-white">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">Compare Business Structures</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="p-4 border text-left">Feature</th>
-                  <th className="p-4 border text-center">LLC</th>
-                  <th className="p-4 border text-center">Corporation</th>
-                  <th className="p-4 border text-center">S-Corporation</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { feature: "Limited Liability Protection", llc: true, corp: true, scorp: true },
-                  { feature: "Tax Flexibility", llc: true, corp: false, scorp: true },
-                  { feature: "Management Flexibility", llc: true, corp: false, scorp: false },
-                  { feature: "Ownership Restrictions", llc: false, corp: false, scorp: true },
-                  { feature: "Stock Options", llc: false, corp: true, scorp: true }
-                ].map((row, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="p-4 border">{row.feature}</td>
-                    <td className="p-4 border text-center">
-                      {row.llc ? <CheckCircle className="inline h-5 w-5 text-green-500" /> : "-"}
-                    </td>
-                    <td className="p-4 border text-center">
-                      {row.corp ? <CheckCircle className="inline h-5 w-5 text-green-500" /> : "-"}
-                    </td>
-                    <td className="p-4 border text-center">
-                      {row.scorp ? <CheckCircle className="inline h-5 w-5 text-green-500" /> : "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      {/* Customer Reviews */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
+          <h2 className="text-3xl font-bold text-black text-center mb-12">
+            What Our Customers Say
+          </h2>
+          
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
                 name: "Sarah Johnson",
                 business: "Tech Startup",
-                text: "The process was incredibly smooth. Got my LLC set up in no time!",
+                text: "Legal Gram made forming my LLC incredibly easy. The whole process took less than 30 minutes!",
                 rating: 5
               },
               {
-                name: "Michael Chang",
+                name: "Michael Chen",
                 business: "Consulting Firm",
+                text: "Professional service and great value. I saved thousands compared to hiring a lawyer.",
+                rating: 5
+              },
+              {
+                name: "Lisa Davis",
+                business: "E-commerce Store",
                 text: "Excellent support team that guided me through every step.",
                 rating: 5
               },

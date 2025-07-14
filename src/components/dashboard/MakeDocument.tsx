@@ -1,7 +1,8 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, ArrowLeft, TrendingUp, Handshake, Factory, UtensilsCrossed, Fuel } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, ArrowLeft, TrendingUp, Handshake, Factory, UtensilsCrossed, Fuel, Search } from "lucide-react";
 import LegalConcernsSection from "@/components/LegalConcernsSection";
 // Convert all form imports to lazy loading to prevent build conflicts
 const ConditionalForm = lazy(() => import("@/components/ConditionalForm"));
@@ -64,6 +65,7 @@ const NonDisturbanceAgreement = lazy(() => import("@/components/NonDisturbanceAg
 const MakeDocument = () => {
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Family Protection documents
   const familyProtectionDocs = [
@@ -535,6 +537,17 @@ const MakeDocument = () => {
     setSelectedDocument(null);
   };
 
+  // Filter documents based on search query
+  const filterDocuments = (documents: any[]) => {
+    if (!searchQuery.trim()) return documents;
+    
+    return documents.filter(doc => 
+      doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.content.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
   // Get documents for selected category
   const getCategoryDocuments = (category: string) => {
     switch (category) {
@@ -584,6 +597,7 @@ const MakeDocument = () => {
   // Render documents in selected category
   if (selectedCategory) {
     const categoryDocuments = getCategoryDocuments(selectedCategory);
+    const filteredDocuments = filterDocuments(categoryDocuments);
     const categoryTitles = {
       'family-protection': 'Family Protection Documents',
       'business-security': 'Business Security Documents', 
@@ -602,38 +616,56 @@ const MakeDocument = () => {
             Back to Categories
           </Button>
           <h1 className="text-3xl font-bold mb-2">{categoryTitles[selectedCategory as keyof typeof categoryTitles]}</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-4">
             Choose a document type to begin generating your legal documents
           </p>
+          
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="Search documents..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 max-w-md"
+            />
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {categoryDocuments.map((docType) => {
-            const IconComponent = docType.icon;
-            return (
-              <Card key={docType.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <IconComponent className="h-5 w-5 text-primary" />
-                    {docType.title}
-                  </CardTitle>
-                  <CardDescription>{docType.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm">
-                  {docType.content}
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => setSelectedDocument(docType.id)}
-                  >
-                    Select Template
-                  </Button>
-                </CardFooter>
-              </Card>
-            );
-          })}
+          {filteredDocuments.length > 0 ? (
+            filteredDocuments.map((docType) => {
+              const IconComponent = docType.icon;
+              return (
+                <Card key={docType.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <IconComponent className="h-5 w-5 text-primary" />
+                      {docType.title}
+                    </CardTitle>
+                    <CardDescription>{docType.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="text-sm">
+                    {docType.content}
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => setSelectedDocument(docType.id)}
+                    >
+                      Select Template
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })
+          ) : (
+            <div className="col-span-full text-center py-8">
+              <p className="text-muted-foreground">No documents found matching your search.</p>
+            </div>
+          )}
         </div>
       </div>
     );

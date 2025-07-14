@@ -61,14 +61,16 @@ const LateRentPaymentAgreement = lazy(() => import("@/components/LateRentPayment
 const NonDisturbanceAgreement = lazy(() => import("@/components/NonDisturbanceAgreement"));
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
-import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, TrendingUp, Handshake, UtensilsCrossed, Fuel, Phone } from "lucide-react";
+import { FileText, Users, ShoppingCart, Briefcase, Heart, ArrowLeft, Building2, DollarSign, Home, Scale, UserCheck, MapPin, Gavel, GraduationCap, Shield, TrendingUp, Handshake, UtensilsCrossed, Fuel, Phone, Search } from "lucide-react";
 
 const Documents = () => {
   const { id } = useParams();
   const [selectedDocument, setSelectedDocument] = useState<string | null>(id || null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Family Protection documents
   const familyProtectionDocs = [
@@ -500,6 +502,16 @@ const Documents = () => {
     setSelectedDocument(null);
   };
 
+  // Filter documents based on search query
+  const filterDocuments = (documents: any[]) => {
+    if (!searchQuery.trim()) return documents;
+    
+    return documents.filter(doc => 
+      doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
   // Render specific document form
   if (selectedDocument && selectedDocumentType) {
     const DocumentComponent = selectedDocumentType.component;
@@ -537,6 +549,7 @@ const Documents = () => {
   // Render documents in selected category
   if (selectedCategory) {
     const categoryDocuments = getCategoryDocuments(selectedCategory);
+    const filteredDocuments = filterDocuments(categoryDocuments);
     const categoryTitles = {
       'family-protection': 'Family Protection Documents',
       'business-security': 'Business Security Documents', 
@@ -547,10 +560,22 @@ const Documents = () => {
       <Layout>
         <div className="container mx-auto px-4 py-12 bg-white min-h-screen pt-16">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">{categoryTitles[selectedCategory as keyof typeof categoryTitles]}</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold mb-2 pt-4">{categoryTitles[selectedCategory as keyof typeof categoryTitles]}</h1>
+            <p className="text-muted-foreground mb-6">
               Choose a document type to begin generating your legal documents
             </p>
+            
+            {/* Search Bar */}
+            <div className="relative mb-6">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search documents..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 max-w-md"
+              />
+            </div>
           </div>
 
           <Button 
@@ -563,35 +588,41 @@ const Documents = () => {
           </Button>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {categoryDocuments.map((docType) => {
-              const IconComponent = docType.icon;
-              return (
-                <Card 
-                  key={docType.id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow bg-white"
-                  onClick={() => setSelectedDocument(docType.id)}
-                >
-                  <CardHeader className="text-center">
-                    <IconComponent className="w-12 h-12 mx-auto mb-4 text-primary" />
-                    <CardTitle className="text-xl">{docType.title}</CardTitle>
-                    <CardDescription className="h-20 flex items-center">
-                      {docType.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <Button 
-                      className="w-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedDocument(docType.id);
-                      }}
-                    >
-                      Start Creating Document
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {filteredDocuments.length > 0 ? (
+              filteredDocuments.map((docType) => {
+                const IconComponent = docType.icon;
+                return (
+                  <Card 
+                    key={docType.id}
+                    className="cursor-pointer hover:shadow-lg transition-shadow bg-white"
+                    onClick={() => setSelectedDocument(docType.id)}
+                  >
+                    <CardHeader className="text-center">
+                      <IconComponent className="w-12 h-12 mx-auto mb-4 text-primary" />
+                      <CardTitle className="text-xl">{docType.title}</CardTitle>
+                      <CardDescription className="h-20 flex items-center">
+                        {docType.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-center">
+                      <Button 
+                        className="w-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedDocument(docType.id);
+                        }}
+                      >
+                        Start Creating Document
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            ) : (
+              <div className="col-span-full text-center py-8">
+                <p className="text-muted-foreground">No documents found matching your search.</p>
+              </div>
+            )}
           </div>
         </div>
       </Layout>
@@ -604,7 +635,7 @@ const Documents = () => {
       <div className="bg-white min-h-screen">
         <div className="container mx-auto px-4 py-8 pt-16">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Legal Documents</h1>
+            <h1 className="text-3xl font-bold mb-2 pt-4">Legal Documents</h1>
             <p className="text-muted-foreground mb-6">
               Create professional legal documents from our comprehensive library
             </p>
