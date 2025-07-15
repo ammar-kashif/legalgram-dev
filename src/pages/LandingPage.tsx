@@ -73,10 +73,8 @@ const LandingPage = () => {
         <Suspense {...loadingConfig}><QASection /></Suspense>
         <Suspense {...loadingConfig}><GettingStartedSection /></Suspense>
         <Suspense {...loadingConfig}><Features /></Suspense>
-        <Suspense {...loadingConfig}><LegalTeamSection /></Suspense>
         <Suspense {...loadingConfig}><StatsSection /></Suspense>
         <Suspense {...loadingConfig}><PracticeAreas /></Suspense>
-        <Suspense {...loadingConfig}><LegalConcernsSection /></Suspense>
         <Suspense {...loadingConfig}><DocumentsSection /></Suspense>
         <Suspense {...loadingConfig}><Testimonials /></Suspense>
         <Suspense {...loadingConfig}><CTASection /></Suspense>
