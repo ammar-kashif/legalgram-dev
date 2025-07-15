@@ -13,7 +13,9 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import BusinessBackgroundSlideshow from "@/components/business/BusinessBackgroundSlideshow";
 import FAQSection from "@/components/business/FAQSection";
-import BusinessFormationFlow from "@/components/LLCFormationFlow";
+import LLCBusinessFormation from "@/components/LLCBusinessFormation";
+import CorporationFormation from "@/components/CorporationFormation";
+import NonprofitFormation from "@/components/NonprofitFormation";
 import {
   Table as UITable,
   TableBody,
@@ -25,6 +27,8 @@ import {
 
 const StartABusiness = () => {
   const [isLLCFlowOpen, setIsLLCFlowOpen] = useState(false);
+  const [isCorpFlowOpen, setIsCorpFlowOpen] = useState(false);
+  const [isNonprofitFlowOpen, setIsNonprofitFlowOpen] = useState(false);
 
   return (
     <Layout>
@@ -201,7 +205,7 @@ const StartABusiness = () => {
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-                    <BusinessFormationFlow onClose={() => setIsLLCFlowOpen(false)} />
+                    <LLCBusinessFormation onClose={() => setIsLLCFlowOpen(false)} />
                   </DialogContent>
                 </Dialog>
                 <Button 
@@ -212,45 +216,6 @@ const StartABusiness = () => {
                   <Link to="/whats-an-llc">What's an LLC?</Link>
                 </Button>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Corporation Section */}
-      <section className="py-16 bg-white">
-        <div className="container-custom">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-4xl font-bold text-gray-900">
-                Start Your Corporation Today
-              </h2>
-              <p className="text-lg text-gray-600">
-                Thinking about attracting investors, selling stock, or eventually going public? Forming a Corporation could be the smart move. It not only helps you raise capital but also protects your personal assets from business liabilities.
-              </p>
-              <div className="flex gap-4">
-                <Button 
-                  size="lg"
-                  className="bg-bright-orange-500 hover:bg-bright-orange-600"
-                  asChild
-                >
-                  <Link to="/documents/corporation">Get Started</Link>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  asChild
-                >
-                  <Link to="/whats-a-corporation">What's a Corporation?</Link>
-                </Button>
-              </div>
-            </div>
-            <div>
-              <img 
-                src="/lovable-uploads/330f6709-99cc-4717-90cb-6f17517714f6.png"
-                alt="Start your Corporation" 
-                className="rounded-lg w-full h-auto"
-              />
             </div>
           </div>
         </div>
@@ -275,13 +240,20 @@ const StartABusiness = () => {
                 Save money on self-employment taxes while keeping things simple. An S-Corp election combines the flexibility of an LLC with potential tax savings. It's perfect for profitable businesses looking to reduce their tax burden.
               </p>
               <div className="flex gap-4">
-                <Button 
-                  size="lg"
-                  className="bg-bright-orange-500 hover:bg-bright-orange-600"
-                  asChild
-                >
-                  <Link to="/documents/s-corp">Get Started</Link>
-                </Button>
+                <Dialog open={isCorpFlowOpen} onOpenChange={setIsCorpFlowOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      size="lg"
+                      className="bg-bright-orange-500 hover:bg-bright-orange-600"
+                      onClick={() => setIsCorpFlowOpen(true)}
+                    >
+                      Get Started
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+                    <CorporationFormation onClose={() => setIsCorpFlowOpen(false)} />
+                  </DialogContent>
+                </Dialog>
                 <Button 
                   variant="outline" 
                   size="lg"
@@ -295,38 +267,45 @@ const StartABusiness = () => {
         </div>
       </section>
 
-      {/* Partnership Section */}
+      {/* Nonprofit Section */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-4xl font-bold text-gray-900">
-                Partnership Formation
+                Start Your Nonprofit Organization
               </h2>
               <p className="text-lg text-gray-600">
-                Starting a business with partners? A Partnership might be your best bet. It's straightforward to set up and gives you flexibility in how you split profits and responsibilities. Plus, you'll avoid the formalities that come with corporations.
+                Looking to make a difference? Starting a nonprofit allows you to pursue your mission while enjoying tax benefits and eligibility for grants. We'll help you navigate the process from formation to tax-exempt status.
               </p>
               <div className="flex gap-4">
-                <Button 
-                  size="lg"
-                  className="bg-bright-orange-500 hover:bg-bright-orange-600"
-                  asChild
-                >
-                  <Link to="/documents/partnership">Get Started with a Partnership</Link>
-                </Button>
+                <Dialog open={isNonprofitFlowOpen} onOpenChange={setIsNonprofitFlowOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      size="lg"
+                      className="bg-bright-orange-500 hover:bg-bright-orange-600"
+                      onClick={() => setIsNonprofitFlowOpen(true)}
+                    >
+                      Get Started
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+                    <NonprofitFormation onClose={() => setIsNonprofitFlowOpen(false)} />
+                  </DialogContent>
+                </Dialog>
                 <Button 
                   variant="outline" 
                   size="lg"
                   asChild
                 >
-                  <Link to="/whats-a-partnership">What's a Partnership?</Link>
+                  <Link to="/whats-a-nonprofit">What's a Nonprofit?</Link>
                 </Button>
               </div>
             </div>
             <div>
               <img 
                 src="/lovable-uploads/609d30f6-95e3-406f-810f-a8f6a462c3f1.png"
-                alt="Partnership Formation" 
+                alt="Nonprofit Formation" 
                 className="rounded-lg w-full h-auto"
               />
             </div>

@@ -162,7 +162,7 @@ const Documents = () => {
       icon: Shield,
       component: NDAForm
     },
-    {
+    { 
       id: 'mutual-nda',
       title: 'Mutual Non-Disclosure Agreement',
       description: 'Create a bilateral confidentiality agreement where both parties protect each other\'s sensitive information',
