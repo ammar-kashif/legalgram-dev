@@ -147,6 +147,7 @@ const NDAForm = () => {
 
   const generatePDF = () => {
     const doc = new jsPDF();
+    const lineHeight = 4; // reduced line height for tighter spacing
     
     // Get proper names for display
     const countryName = formData.country ? getCountryName(formData.country.split(':')[0]) : '';
@@ -166,12 +167,12 @@ const NDAForm = () => {
     const introText = `This Non-Disclosure Agreement ("Agreement") is entered into and made effective as of ${formData.effectiveDate} ("Effective Date"), by and between ${formData.disclosingPartyName}, having its address at ${formData.disclosingPartyAddress} ("Disclosing Party"), and ${formData.recipientName}, having its address at ${formData.recipientAddress} ("Recipient").`;
     const introLines = doc.splitTextToSize(introText, 170);
     doc.text(introLines, 20, yPosition);
-    yPosition += introLines.length * 5 + 10;
+    yPosition += introLines.length * lineHeight + 10;
 
     const purposeText = `The Disclosing Party intends to disclose certain confidential and proprietary information to the Recipient, and the Recipient agrees to maintain the confidentiality of such information under the terms and conditions set forth herein. Accordingly, the parties hereby agree as follows:`;
     const purposeLines = doc.splitTextToSize(purposeText, 170);
     doc.text(purposeLines, 20, yPosition);
-    yPosition += purposeLines.length * 5 + 15;
+    yPosition += purposeLines.length * lineHeight + 15;
 
     // Section 1: Confidential Information
     doc.setFont("helvetica", "bold");
@@ -182,7 +183,7 @@ const NDAForm = () => {
     const section1Text = `"Confidential Information" shall mean any and all non-public, proprietary, or confidential data or information disclosed, whether directly or indirectly, by the Disclosing Party to the Recipient in any form—oral, written, visual, or otherwise—including but not limited to trade secrets, business plans, technical data, financial information, customer information, and any other data or material disclosed on or after the Effective Date.`;
     const section1Lines = doc.splitTextToSize(section1Text, 170);
     doc.text(section1Lines, 20, yPosition);
-    yPosition += section1Lines.length * 5 + 10;
+    yPosition += section1Lines.length * lineHeight + 10;
 
     // Section 2: Term
     doc.setFont("helvetica", "bold");
@@ -193,7 +194,7 @@ const NDAForm = () => {
     const section2Text = `This Agreement shall commence on the Effective Date and shall continue in effect until ${formData.terminationDate} ("Termination Date"), unless earlier terminated in accordance with the Termination clause below. The Termination Date may be extended only by mutual written agreement of the parties. The Recipient shall maintain the confidentiality of all Confidential Information disclosed during the term of this Agreement both throughout the term and indefinitely thereafter.`;
     const section2Lines = doc.splitTextToSize(section2Text, 170);
     doc.text(section2Lines, 20, yPosition);
-    yPosition += section2Lines.length * 5 + 10;
+    yPosition += section2Lines.length * lineHeight + 10;
 
     // Check if we need a new page
     if (yPosition > 240) {
@@ -210,21 +211,69 @@ const NDAForm = () => {
     const section3Text = `Either party may terminate this Agreement prior to the Termination Date, with or without cause, by providing ${formData.earlyTerminationDays} days' written notice to the other party ("Early Termination"). Upon such termination, the Recipient shall remain bound by the confidentiality obligations set forth herein with respect to all Confidential Information received prior to the termination, indefinitely.`;
     const section3Lines = doc.splitTextToSize(section3Text, 170);
     doc.text(section3Lines, 20, yPosition);
-    yPosition += section3Lines.length * 5 + 10;
+    yPosition += section3Lines.length * lineHeight + 10;
 
-    // Continue with remaining sections (abbreviated for space)
+    // Section 4-17 (existing and new sections)
     const sections = [
       {
         title: "4. Protection of Confidential Information",
         content: `The Recipient acknowledges that the Confidential Information is a valuable and unique asset developed through significant investment of time, effort, and resources by the Disclosing Party. In consideration of the disclosure of such information, the Recipient agrees as follows: (a) Non-Disclosure. The Recipient shall hold the Confidential Information in strict confidence and shall not disclose it to any third party without the prior written consent of the Disclosing Party. (b) Non-Copying/Modification. The Recipient shall not copy, reproduce, or modify any Confidential Information without the express prior written consent of the Disclosing Party. (c) Unauthorized Use. The Recipient shall promptly notify the Disclosing Party upon becoming aware of any unauthorized use or disclosure of Confidential Information. (d) Disclosure to Employees. Confidential Information may only be disclosed to employees of the Recipient on a strict need-to-know basis, and such employees shall, at the request of the Disclosing Party, be required to execute a non-disclosure agreement with terms substantially similar to those contained herein.`
       },
       {
+        title: "5. Exceptions",
+        content: `Confidential Information shall not include information that: (i) Is or becomes publicly known through no fault of the Recipient; (ii) Is received lawfully by the Recipient from a third party without a duty of confidentiality; (iii) Is independently developed by the Recipient without use of the Confidential Information; (iv) Is disclosed pursuant to legal or regulatory obligation; or (v) Is expressly agreed in writing by both parties not to be confidential.`
+      },
+      {
+        title: "6. Unauthorized Disclosure – Injunctive Relief",
+        content: `The Recipient acknowledges that any unauthorized disclosure or threatened disclosure of Confidential Information may result in irreparable harm to the Disclosing Party, for which monetary damages may be inadequate. Accordingly, the Disclosing Party shall be entitled to seek injunctive or equitable relief in addition to any other remedies available at law.`
+      },
+      {
+        title: "7. Whistleblower Protection",
+        content: `In accordance with the Defend Trade Secrets Act, the Recipient shall not be held criminally or civilly liable for disclosure of a trade secret: (i) Made in confidence to a government official or attorney for the purpose of reporting a legal violation; or (ii) Made in a court filing under seal.`
+      },
+      {
         title: "8. Non-Circumvention",
-        content: `For a period of ${formData.nonCircumventionDuration} from the Effective Date, the Recipient agrees not to circumvent or attempt to circumvent the Disclosing Party by initiating or engaging in any business transactions with contacts or opportunities introduced by the Disclosing Party, without the Disclosing Party's prior written consent. In the event of a breach, the Disclosing Party shall be entitled to commissions, profits, or other compensation it would have received but for the circumvention.`
+        content: `For a period of ${formData.nonCircumventionDuration || '[insert duration]'} from the Effective Date, the Recipient agrees not to circumvent or attempt to circumvent the Disclosing Party by initiating or engaging in any business transactions with contacts or opportunities introduced by the Disclosing Party, without the Disclosing Party's prior written consent. In the event of a breach, the Disclosing Party shall be entitled to commissions, profits, or other compensation it would have received but for the circumvention.`
+      },
+      {
+        title: "9. Return or Destruction of Confidential Information",
+        content: `Upon termination of this Agreement or upon written request by the Disclosing Party, the Recipient shall promptly return or permanently destroy all Confidential Information, including all copies, summaries, notes, or derivations thereof, and shall certify in writing that all such materials have been returned or destroyed.`
+      },
+      {
+        title: "10. No Obligation to Transact",
+        content: `Nothing in this Agreement shall be construed to obligate either party to enter into any business arrangement, transaction, or contract. This Agreement does not create any agency, partnership, or joint venture between the parties.`
+      },
+      {
+        title: "11. No Warranty",
+        content: `All Confidential Information is provided “as is.” The Disclosing Party makes no representations or warranties, express or implied, regarding the accuracy, completeness, merchantability, fitness for a particular purpose, or non-infringement of the Confidential Information.`
+      },
+      {
+        title: "12. Limited License",
+        content: `This Agreement grants the Recipient no ownership or intellectual property rights in or to the Confidential Information, except for the limited purpose of internal evaluation or as otherwise permitted herein. All intellectual property rights shall remain the exclusive property of the Disclosing Party.`
+      },
+      {
+        title: "13. Indemnification",
+        content: `The Recipient shall indemnify and hold harmless the Disclosing Party from and against any and all claims, liabilities, losses, costs, and expenses (including reasonable attorneys’ fees) resulting from any breach of this Agreement by the Recipient or its employees, agents, or representatives.`
+      },
+      {
+        title: "14. Attorney’s Fees",
+        content: `In the event of any litigation, arbitration, or other legal proceeding arising from or relating to this Agreement, the prevailing party shall be entitled to recover its reasonable attorneys’ fees and costs, in addition to any other relief to which it may be entitled.`
+      },
+      {
+        title: "15. Entire Agreement",
+        content: `This Agreement constitutes the entire understanding between the parties concerning the subject matter hereof and supersedes all prior and contemporaneous communications, agreements, or understandings, whether oral or written. Any amendments or modifications to this Agreement must be in writing and signed by both parties.`
+      },
+      {
+        title: "16. Amendment",
+        content: `This Agreement may be modified, amended, or supplemented only if the changes are made in writing and signed by both parties.`
       },
       {
         title: "17. Governing Law",
         content: `This Agreement shall be governed by the laws of ${stateName}, ${countryName}.`
+      },
+      {
+        title: "18. Signatories",
+        content: `This Agreement shall be executed by ${formData.disclosingSignatoryName || '______'}, on behalf of ${formData.disclosingPartyName || '______'} and ${formData.recipientSignatoryName || '______'} and delivered in the manner prescribed by law as of the date first written above.`
       }
     ];
 
@@ -241,7 +290,7 @@ const NDAForm = () => {
       doc.setFont("helvetica", "normal");
       const lines = doc.splitTextToSize(section.content, 170);
       doc.text(lines, 20, yPosition);
-      yPosition += lines.length * 5 + 10;
+      yPosition += lines.length * lineHeight + 10;
     });
 
     // Signature section
@@ -252,11 +301,11 @@ const NDAForm = () => {
 
     doc.setFont("helvetica", "bold");
     doc.text("SIGNATURES", 20, yPosition);
-    yPosition += 20;
+    yPosition += 10;
 
     doc.setFont("helvetica", "normal");
     doc.text("Disclosing Party:", 20, yPosition);
-    yPosition += 20;
+    yPosition += 10;
     doc.text(`Name: ${formData.disclosingSignatoryName}`, 20, yPosition);
     yPosition += 10;
     doc.text("Signature: _______________________", 20, yPosition);
@@ -267,7 +316,7 @@ const NDAForm = () => {
     yPosition += 30;
 
     doc.text("Recipient:", 20, yPosition);
-    yPosition += 20;
+    yPosition += 10;
     doc.text(`Name: ${formData.recipientSignatoryName}`, 20, yPosition);
     yPosition += 10;
     doc.text("Signature: _______________________", 20, yPosition);
