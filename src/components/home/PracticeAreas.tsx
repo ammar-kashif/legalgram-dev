@@ -1,5 +1,5 @@
 import { memo, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   Home, 
   Building, 
@@ -12,9 +12,11 @@ import {
   GraduationCap,
   ArrowRight
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const PracticeAreas = () => {
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
+  const navigate = useNavigate();
   
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -35,6 +37,16 @@ const PracticeAreas = () => {
     
     return () => observer.disconnect();
   }, []);
+
+  const handleProtectedNavigation = () => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        navigate("/documents");
+      } else {
+        navigate("/login");
+      }
+    });
+  };
 
   const areas = [
     { icon: Home, name: "Real Estate", path: "/documents/real-estate", color: "from-blue-500 to-blue-600" },
@@ -86,13 +98,14 @@ const PracticeAreas = () => {
         </div>
         
         <div className="flex justify-center mt-12">
-          <Link 
-            to="/documents" 
-            className="inline-flex items-center gap-2 text-bright-orange-500 hover:text-bright-orange-600 font-medium"
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 text-bright-orange-500 hover:text-bright-orange-600 font-medium bg-transparent border-none outline-none cursor-pointer"
+            onClick={handleProtectedNavigation}
           >
             <span>View all legal documents</span>
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
+          </button>
         </div>
       </div>
     </section>

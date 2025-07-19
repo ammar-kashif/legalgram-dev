@@ -1,4 +1,3 @@
-
 import { useEffect, useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,35 +31,46 @@ const CTASection = lazy(() => import("@/components/home/CTASection"));
 const LandingPage = () => {
   const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
-  
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
     // Check if there's a hash in the URL (potential auth callback)
     if (window.location.hash || window.location.search.includes('code=')) {
       navigate("/sso-callback");
       return;
     }
-    
+
     // Check authenticated status
     const checkAuth = async () => {
       try {
         const { data } = await supabase.auth.getSession();
+        setIsAuthenticated(!!data.session);
         if (data.session) {
-          // User is logged in, redirect to user dashboard
           navigate("/user-dashboard");
         }
       } catch (error) {
         console.error("Error checking authentication:", error);
       }
     };
-    
+
     checkAuth();
-    
+
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, [navigate]);
+
+  const handleProtectedNavigation = (path: string) => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        navigate(path);
+      } else {
+        navigate("/login");
+      }
+    });
+  };
 
   return (
     <Layout>
@@ -78,6 +88,21 @@ const LandingPage = () => {
         <Suspense {...loadingConfig}><DocumentsSection /></Suspense>
         <Suspense {...loadingConfig}><Testimonials /></Suspense>
         <Suspense {...loadingConfig}><CTASection /></Suspense>
+        {/* Add Make Documents and Start a Business buttons with protected navigation */}
+        <div className="flex justify-center gap-6 mt-8">
+          <button
+            className="bg-bright-orange-500 text-white px-6 py-3 rounded-lg font-bold shadow hover:bg-bright-orange-600 transition"
+            onClick={() => handleProtectedNavigation('/dashboard/make-document')}
+          >
+            Make Documents
+          </button>
+          <button
+            className="bg-bright-orange-500 text-white px-6 py-3 rounded-lg font-bold shadow hover:bg-bright-orange-600 transition"
+            onClick={() => handleProtectedNavigation('/start-a-business')}
+          >
+            Start a Business
+          </button>
+        </div>
       </div>
     </Layout>
   );

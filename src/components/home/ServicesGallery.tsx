@@ -107,7 +107,7 @@ const ServicesGallery = () => {
                 <p className="text-white/90 mb-8 text-lg">
                   Our team of expert attorneys provides a wide range of legal services to meet your personal and business needs.
                 </p>
-                <Link to="/services">
+                <Link to="">
                   <button className="px-8 py-3 bg-bright-orange-500 text-white rounded-lg font-medium hover:bg-bright-orange-600 transition-colors flex items-center">
                     View all services <ArrowRight className="ml-2 h-5 w-5" />
                   </button>

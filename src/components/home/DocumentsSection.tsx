@@ -1,13 +1,25 @@
-
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FileText, ArrowRight } from "lucide-react";
 import { useMemo } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const DocumentsSection = () => {
   const popularDocuments = useMemo(() => [
     { link: "/documents", text: "Residential Lease Agreement" }
   ], []);
+
+  const navigate = useNavigate();
+
+  const handleProtectedNavigation = () => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        navigate("/documents");
+      } else {
+        navigate("/login");
+      }
+    });
+  };
 
   return (
     <section className="py-20 md:py-28 bg-white">
@@ -38,11 +50,13 @@ const DocumentsSection = () => {
         </div>
         
         <div className="text-center">
-          <Link to="/documents">
-            <Button variant="orange" className="hover:bg-[#D17701] shadow-md px-8 py-6 h-auto text-lg">
-              Create Lease Agreement <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center bg-bright-orange-500 text-white font-medium rounded-lg shadow-md px-8 py-6 h-auto text-lg hover:bg-[#D17701] transition-colors"
+            onClick={handleProtectedNavigation}
+          >
+            Create Lease Agreement <ArrowRight className="ml-2 h-5 w-5" />
+          </button>
         </div>
       </div>
     </section>
