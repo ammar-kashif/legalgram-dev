@@ -523,20 +523,23 @@ const BuySellAgreementForm = () => {
       
       // Helper function to add sections
       const addSection = (title: string, content: string) => {
-        if (y > pageHeight - 40) {
-          doc.addPage();
-          y = 20;
-        }
-        
-        if (title) {
-          doc.setFont("helvetica", "bold");
-          doc.text(title, 15, y);
-          y += lineHeight + 3;
-        }
-        
+      if (y > pageHeight - 40) {
+        doc.addPage();
+        y = 20;
+      }
+
+      // Heading
+      if (title) {
+        doc.setFont("helvetica", "bold");
+        doc.text(title, 15, y);
+        y += lineHeight;
+      }
+
+      // Content (optional)
+      if (content.trim() !== "") {
         doc.setFont("helvetica", "normal");
         const lines = doc.splitTextToSize(content, 170);
-        lines.forEach((line: string) => {
+        lines.forEach(line => {
           if (y > pageHeight - 20) {
             doc.addPage();
             y = 20;
@@ -544,8 +547,10 @@ const BuySellAgreementForm = () => {
           doc.text(line, 15, y);
           y += lineHeight;
         });
-        y += lineHeight + 5;
-      };
+        // only add the extra gap when there's actual content
+        y += lineHeight;
+      }
+    };
 
       // Get form values
       const agreementDate = answers.agreement_date ? format(new Date(answers.agreement_date), "do 'day of' MMMM, yyyy") : '___ day of _______, 20__';
