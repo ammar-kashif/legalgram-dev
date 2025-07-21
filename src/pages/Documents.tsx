@@ -594,17 +594,18 @@ const Documents = () => {
                 return (
                   <Card 
                     key={docType.id}
-                    className="cursor-pointer hover:shadow-lg transition-shadow bg-white"
+                    className="flex flex-col h-full cursor-pointer hover:shadow-lg transition-shadow bg-white"
                     onClick={() => setSelectedDocument(docType.id)}
                   >
-                    <CardHeader className="text-center">
+                    <CardHeader className="text-center flex flex-col flex-grow">
                       <IconComponent className="w-12 h-12 mx-auto mb-4 text-primary" />
                       <CardTitle className="text-xl">{docType.title}</CardTitle>
-                      <CardDescription className="h-20 flex items-center">
+                      <CardDescription className="flex-grow flex items-center justify-center min-h-[64px]">
                         {docType.description}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="text-center">
+                    <div className="flex-1" />
+                    <CardContent className="text-center mt-auto">
                       <Button 
                         className="w-full"
                         onClick={(e) => {
