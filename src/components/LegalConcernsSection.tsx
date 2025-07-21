@@ -38,21 +38,21 @@ const LegalConcernsSection: React.FC<LegalConcernsSectionProps> = ({ onCategoryS
   ];
 
   return (
-    <div className="py-16 bg-gradient-to-br from-gray-50 to-white">
+    <div className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Common Legal Concerns We Address
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            We provide comprehensive legal solutions for your most important concerns
-          </p>
-          
-          {/* Professional Legal Services Disclaimer */}
-          <div className="max-w-4xl mx-auto mb-8">
-            <LegalDisclaimer />
-          </div>
+      <div className="text-center mb-12">
+        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        Common Legal Concerns We Address
+        </h2>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+        We provide comprehensive legal solutions for your most important concerns
+        </p>
+        
+        {/* Professional Legal Services Disclaimer */}
+        <div className="max-w-4xl mx-auto mb-8">
+        <LegalDisclaimer />
         </div>
+      </div>
         
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {categories.map((category) => {

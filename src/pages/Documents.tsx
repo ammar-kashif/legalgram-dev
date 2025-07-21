@@ -558,7 +558,7 @@ const Documents = () => {
 
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-12 bg-white min-h-screen pt-16">
+        <div className="container mx-auto px-4 py-12 bg-white min-h-screen pt-24">
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2 pt-4">{categoryTitles[selectedCategory as keyof typeof categoryTitles]}</h1>
             <p className="text-muted-foreground mb-6">
@@ -633,15 +633,15 @@ const Documents = () => {
   return (
     <Layout>
       <div className="bg-white min-h-screen">
-        <div className="container mx-auto px-4 py-8 pt-16">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2 pt-4">Legal Documents</h1>
-            <p className="text-muted-foreground mb-6">
-              Create professional legal documents from our comprehensive library
-            </p>
-          </div>
+      <div className="container mx-auto px-4 pb-8 pt-28 px-4">
+        <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2 pt-4">Legal Documents</h1>
+        <p className="text-muted-foreground mb-6">
+          Create professional legal documents from our comprehensive library
+        </p>
         </div>
-        <LegalConcernsSection onCategorySelect={handleCategorySelect} />
+      </div>
+      <LegalConcernsSection onCategorySelect={handleCategorySelect} />
       </div>
     </Layout>
   );
