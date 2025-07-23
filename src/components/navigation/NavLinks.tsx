@@ -33,10 +33,10 @@ export const NavLinks = memo(({ scrolled, isActive }: NavLinksProps) => {
 
   const navItems = [
     { path: "/", label: "Home", protected: false },
-    { path: "/start-a-business", label: "Start a Business", protected: true },
-    { path: "/documents", label: "Make Documents", protected: true },
+    { path: "/start-a-business", label: "Start a Business", protected: false },
+    { path: "/documents", label: "Make Documents", protected: false },
     { path: "/pricing", label: "Pricing", protected: false },
-    { path: "/ask-legal-advice", label: "Ask Legal Advice", protected: true}
+    { path: "/ask-legal-advice", label: "Ask Legal Advice", protected: false}
   ];
 
   return (
