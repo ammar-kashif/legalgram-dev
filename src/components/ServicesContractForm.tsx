@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import jsPDF from "jspdf";
 import { Link } from "react-router-dom";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -122,6 +123,7 @@ interface ContractData {
 const ServicesContractForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   const [formData, setFormData] = useState<ContractData>({
     contractDate: "",
@@ -181,7 +183,7 @@ const ServicesContractForm = () => {
   };
 
   const generatePDF = async () => {
-    setIsGenerating(true);
+    setIsGeneratingPDF(true);
     
     try {
       const doc = new jsPDF();
@@ -446,12 +448,12 @@ const ServicesContractForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Error generating PDF. Please try again.");
     } finally {
-      setIsGenerating(false);
+      setIsGeneratingPDF(false);
     }
   };
 
   const nextStep = () => {
-    if (currentStep < 6) {
+    if (currentStep < 7) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -1023,6 +1025,16 @@ const ServicesContractForm = () => {
           </div>
         );
 
+      case 7:
+        return (
+          <UserInfoStep
+            onBack={prevStep}
+            onGenerate={generatePDF}
+            documentType="Services Contract"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -1041,7 +1053,7 @@ const ServicesContractForm = () => {
         <CardContent>
           {/* Progress indicator */}
           <div className="flex justify-between items-center mb-8">
-            {[1, 2, 3, 4, 5, 6].map((step) => (
+            {[1, 2, 3, 4, 5, 6, 7].map((step) => (
               <div key={step} className="flex items-center">
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
@@ -1052,7 +1064,7 @@ const ServicesContractForm = () => {
                 >
                   {step < currentStep ? <CheckCircle className="w-4 h-4" /> : step}
                 </div>
-                {step < 6 && (
+                {step < 7 && (
                   <div
                     className={`h-1 w-8 mx-2 ${
                       step < currentStep ? "bg-primary" : "bg-muted"
@@ -1065,39 +1077,31 @@ const ServicesContractForm = () => {
 
           {renderStepContent()}
 
-          {/* Navigation buttons */}
-          <div className="flex justify-between mt-8">
-            <Button
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              variant="outline"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
-
-            {currentStep < 6 ? (
-              <Button onClick={nextStep}>
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
+          {/* Navigation buttons - Hidden on step 7 (UserInfoStep) */}
+          {currentStep !== 7 && (
+            <div className="flex justify-between mt-8">
               <Button
-                onClick={generatePDF}
-                disabled={isGenerating}
-                className="bg-primary hover:bg-primary/90"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                variant="outline"
               >
-                {isGenerating ? (
-                  "Generating..."
-                ) : (
-                  <>
-                    <Download className="w-4 h-4 mr-2" />
-                    Generate Contract
-                  </>
-                )}
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Previous
               </Button>
-            )}
-          </div>
+
+              {currentStep < 6 ? (
+                <Button onClick={nextStep}>
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              ) : (
+                <Button onClick={nextStep}>
+                  Continue to Generate PDF
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

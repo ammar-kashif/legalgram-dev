@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -157,7 +158,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info'
+  },
+  'user_info': {
+    id: 'user_info',
+    title: 'Contact Information',
+    description: 'Enter your contact information for document generation',
+    questions: []
   }
 };
 
@@ -377,6 +385,7 @@ const CommercialLeaseForm = () => {
   const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const currentSection = sections[currentSectionId];
 
@@ -386,6 +395,15 @@ const CommercialLeaseForm = () => {
 
   const handleNext = () => {
     if (currentSectionId === 'confirmation') {
+      const nextSectionId = currentSection.nextSectionId;
+      if (nextSectionId) {
+        setCurrentSectionId(nextSectionId);
+        setSectionHistory([...sectionHistory, nextSectionId]);
+      }
+      return;
+    }
+
+    if (currentSectionId === 'user_info') {
       setIsComplete(true);
       return;
     }
@@ -620,6 +638,8 @@ const CommercialLeaseForm = () => {
   };
 
   const generateCommercialLeasePDF = () => {
+    setIsGeneratingPDF(true);
+    
     try {
       const doc = new jsPDF();
       
@@ -820,6 +840,8 @@ const CommercialLeaseForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Commercial Lease Agreement");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -897,11 +919,27 @@ const CommercialLeaseForm = () => {
               Start Over
             </Button>
             <Button 
-              onClick={generateCommercialLeasePDF}
+              onClick={() => setCurrentSectionId('user_info')}
             >
-              Generate Commercial Lease Agreement
+              Continue to Generate PDF
             </Button>
           </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
+  // Handle user info step
+  if (currentSectionId === 'user_info') {
+    return (
+      <div className="bg-gray-50 py-2 min-h-0">
+        <Card className="max-w-4xl mx-auto bg-white px-4 my-2 rounded-lg shadow-sm">
+          <UserInfoStep
+            onBack={handleBack}
+            onGenerate={generateCommercialLeasePDF}
+            documentType="Commercial Lease Agreement"
+            isGenerating={isGeneratingPDF}
+          />
         </Card>
       </div>
     );

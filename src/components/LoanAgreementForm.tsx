@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -162,7 +163,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info'
+  },
+  'user_info': {
+    id: 'user_info',
+    title: 'Contact Information',
+    description: 'Enter your contact information for document generation',
+    questions: []
   }
 };
 
@@ -268,6 +276,7 @@ const LoanAgreementForm = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [borrower, setBorrower] = useState<Party>({ name: '', address: '' });
   const [lender, setLender] = useState<Party>({ name: '', address: '' });
   const [loanDetails, setLoanDetails] = useState<LoanDetails>({ 
@@ -286,6 +295,20 @@ const LoanAgreementForm = () => {
 
   const handleNext = () => {
     try {
+      if (currentSectionId === 'confirmation') {
+        const nextSectionId = currentSection?.nextSectionId;
+        if (nextSectionId && sections[nextSectionId]) {
+          setSectionHistory([...sectionHistory, nextSectionId]);
+          setCurrentSectionId(nextSectionId);
+        }
+        return;
+      }
+
+      if (currentSectionId === 'user_info') {
+        setIsComplete(true);
+        return;
+      }
+
       const nextSectionId = currentSection?.nextSectionId;
       
       if (!nextSectionId) {
@@ -650,6 +673,8 @@ const LoanAgreementForm = () => {
     return true;
   };
   const generateLoanAgreementPDF = () => {
+    setIsGeneratingPDF(true);
+    
     try {
       console.log("Generating Loan Agreement PDF...");
       const doc = new jsPDF();
@@ -817,6 +842,8 @@ const LoanAgreementForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Loan Agreement");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -922,14 +949,30 @@ const LoanAgreementForm = () => {
             Start Over
           </Button>
           <Button 
-            onClick={generateLoanAgreementPDF}
+            onClick={() => setCurrentSectionId('user_info')}
           >
-            Generate Agreement
+            Continue to Generate PDF
           </Button>
         </CardFooter>
       </Card>
     </div>
   );
+  }
+
+  // Handle user info step
+  if (currentSectionId === 'user_info') {
+    return (
+      <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
+        <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+          <UserInfoStep
+            onBack={handleBack}
+            onGenerate={generateLoanAgreementPDF}
+            documentType="Loan Agreement"
+            isGenerating={isGeneratingPDF}
+          />
+        </Card>
+      </div>
+    );
   }
 
   // Safety check for currentSection

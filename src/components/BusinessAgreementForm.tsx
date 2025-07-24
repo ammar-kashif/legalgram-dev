@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -81,6 +82,7 @@ const BusinessAgreementForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<BusinessAgreementData>({
     agreementDate: '',
     firstPartyName: '',
@@ -101,7 +103,7 @@ const BusinessAgreementForm = () => {
     state: ''
   });
 
-  const totalSteps = 4;
+  const totalSteps = 5;
 
   const handleInputChange = (field: keyof BusinessAgreementData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -151,7 +153,10 @@ const BusinessAgreementForm = () => {
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF();
+    setIsGeneratingPDF(true);
+    
+    try {
+      const doc = new jsPDF();
     
     // Title
     doc.setFontSize(16);
@@ -245,8 +250,14 @@ ${formData.firstPartyAddress}                  ${formData.secondPartyAddress}`;
       currentY += 6;
     }
 
-    doc.save('business-agreement.pdf');
-    toast.success("Business Agreement PDF generated successfully!");
+      doc.save('business-agreement.pdf');
+      toast.success("Business Agreement PDF generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate document");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const renderFormSummary = () => {
@@ -292,6 +303,21 @@ ${formData.firstPartyAddress}                  ${formData.secondPartyAddress}`;
     );
   };
 
+  if (currentStep === 5) {
+    return (
+      <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
+        <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+          <UserInfoStep
+            onBack={handleBack}
+            onGenerate={generatePDF}
+            documentType="Business Agreement"
+            isGenerating={isGeneratingPDF}
+          />
+        </Card>
+      </div>
+    );
+  }
+
   if (isComplete) {
     return (
       <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
@@ -334,9 +360,9 @@ ${formData.firstPartyAddress}                  ${formData.secondPartyAddress}`;
             >
               Start Over
             </Button>
-            <Button onClick={generatePDF}>
+            <Button onClick={() => setCurrentStep(5)}>
               <CheckCircle className="w-4 h-4 mr-2" />
-              Generate PDF
+              Continue to Generate PDF
             </Button>
           </CardFooter>
         </Card>
