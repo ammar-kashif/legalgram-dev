@@ -77,6 +77,36 @@ export type Database = {
         }
         Relationships: []
       }
+      document_users: {
+        Row: {
+          created_at: string
+          document_type: string
+          email: string
+          full_name: string
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          email: string
+          full_name: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          email?: string
+          full_name?: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string

@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -108,7 +109,13 @@ const sections: Record<string, Section> = {
     title: 'Termination Details',
     description: 'Specify the termination date and forwarding address',
     questions: ['termination_date', 'forwarding_name', 'forwarding_street', 'forwarding_city', 'forwarding_state', 'forwarding_zip'],
-    nextSectionId: 'confirmation'
+    nextSectionId: 'user_info'
+  },
+  'user_info': {
+    id: 'user_info',
+    title: 'Contact Information',
+    description: 'Provide your contact information to generate the document',
+    questions: ['user_info_step']
   },
   'confirmation': {
     id: 'confirmation',
@@ -218,6 +225,11 @@ const questions: Record<string, Question> = {
     text: 'Forwarding ZIP Code:',
     defaultNextId: 'confirmation'
   },
+  'user_info_step': {
+    id: 'user_info_step',
+    type: 'confirmation',
+    text: 'Please provide your contact information to generate your document.',
+  },
   'confirmation': {
     id: 'confirmation',
     type: 'confirmation',
@@ -232,6 +244,7 @@ const LeaseTerminationForm = () => {
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [datePickerStates, setDatePickerStates] = useState<Record<string, boolean>>({});
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   const currentSection = sections[currentSectionId];
 
@@ -398,6 +411,16 @@ const LeaseTerminationForm = () => {
         }
         break;
       case 'confirmation':
+        if (questionId === 'user_info_step') {
+          return (
+            <UserInfoStep
+              onBack={handleBack}
+              onGenerate={generateLeaseTerminationPDF}
+              documentType="Lease Termination Agreement"
+              isGenerating={isGeneratingPDF}
+            />
+          );
+        }
         return (
           <div className="mt-2 text-center">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
@@ -438,6 +461,7 @@ const LeaseTerminationForm = () => {
 
   const generateLeaseTerminationPDF = () => {
     try {
+      setIsGeneratingPDF(true);
       console.log("Generating Agreement to Terminate Lease PDF...");
       const doc = new jsPDF();
       
@@ -618,6 +642,8 @@ const LeaseTerminationForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Agreement to Terminate Lease");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -754,32 +780,38 @@ const LeaseTerminationForm = () => {
         </CardHeader>
         <CardContent className="text-black">
           <div className="grid grid-cols-1 gap-y-2">
-            {renderSectionQuestions()}
+            {currentSectionId === 'user_info' ? (
+              renderQuestionInput('user_info_step')
+            ) : (
+              renderSectionQuestions()
+            )}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={sectionHistory.length <= 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={() => handleNext()}
-            disabled={!canAdvance()}
-          >
-            {currentSectionId === 'confirmation' ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentSectionId !== 'user_info' && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={sectionHistory.length <= 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={() => handleNext()}
+              disabled={!canAdvance()}
+            >
+              {currentSectionId === 'confirmation' ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

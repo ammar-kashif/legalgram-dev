@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -79,6 +80,7 @@ const NDAForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<NDAData>({
     country: '',
     state: '',
@@ -124,6 +126,8 @@ const NDAForm = () => {
         return !!(formData.nonCircumventionDuration && formData.governingLaw);
       case 4:
         return !!(formData.disclosingSignatoryName && formData.disclosingSignatoryTitle && formData.recipientSignatoryName && formData.recipientSignatoryTitle);
+      case 5:
+        return true; // User info step
       default:
         return false;
     }
@@ -132,7 +136,7 @@ const NDAForm = () => {
   const handleNext = () => {
     if (!canAdvance()) return;
 
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     } else {
       setIsComplete(true);
@@ -146,6 +150,7 @@ const NDAForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
     const doc = new jsPDF();
     const lineHeight = 4; // reduced line height for tighter spacing
     
@@ -327,6 +332,7 @@ const NDAForm = () => {
     
     doc.save('non-disclosure-agreement.pdf');
     toast.success("Non-Disclosure Agreement PDF generated successfully!");
+    setIsGeneratingPDF(false);
   };
 
   const renderStepContent = () => {
@@ -530,6 +536,16 @@ const NDAForm = () => {
           </div>
         );
 
+      case 5:
+        return (
+          <UserInfoStep
+            onBack={handleBack}
+            onGenerate={generatePDF}
+            documentType="Non-Disclosure Agreement"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -589,6 +605,8 @@ const NDAForm = () => {
         return "Legal Terms";
       case 4:
         return "Signatories";
+      case 5:
+        return "Contact Information";
       default:
         return "";
     }
@@ -604,6 +622,8 @@ const NDAForm = () => {
         return "Define legal terms and governing law";
       case 4:
         return "Enter signatory information for both parties";
+      case 5:
+        return "Provide your contact information to generate the document";
       default:
         return "";
     }
@@ -667,7 +687,7 @@ const NDAForm = () => {
           <CardDescription>
             {getStepDescription()}
             <div className="mt-2 text-sm">
-              Step {currentStep} of 4
+              Step {currentStep} of 5
             </div>
           </CardDescription>
           {currentStep === 1 && (
@@ -687,29 +707,31 @@ const NDAForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={handleNext}
-            disabled={!canAdvance()}
-          >
-            {currentStep === 4 ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentStep !== 5 && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={handleNext}
+              disabled={!canAdvance()}
+            >
+              {currentStep === 4 ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );
