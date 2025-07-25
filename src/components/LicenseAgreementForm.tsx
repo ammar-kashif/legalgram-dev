@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import jsPDF from 'jspdf';
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "./UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -82,6 +83,8 @@ interface LicenseAgreementData {
 const LicenseAgreementForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [showUserInfo, setShowUserInfo] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<LicenseAgreementData>({
     state: "",
     country: "",
@@ -128,6 +131,8 @@ const LicenseAgreementForm = () => {
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
+    } else {
+      setShowUserInfo(true);
     }
   };
 
@@ -138,6 +143,7 @@ const LicenseAgreementForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const margin = 20;
@@ -286,6 +292,7 @@ const LicenseAgreementForm = () => {
 
     doc.save('license-agreement.pdf');
     toast.success("License Agreement PDF generated successfully!");
+    setIsGeneratingPDF(false);
   };
 
   const renderStep = () => {

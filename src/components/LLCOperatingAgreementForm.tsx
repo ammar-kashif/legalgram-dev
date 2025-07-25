@@ -10,6 +10,7 @@ import { jsPDF } from "jspdf";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "./UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -176,6 +177,8 @@ const LLCOperatingAgreementForm = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [showUserInfo, setShowUserInfo] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [members, setMembers] = useState<Member[]>([{ name: '', percentage: '' }]);
   
   const currentSection = sections[currentSectionId];
@@ -185,7 +188,7 @@ const LLCOperatingAgreementForm = () => {
       const nextSectionId = currentSection?.nextSectionId;
       
       if (!nextSectionId) {
-        setIsComplete(true);
+        setShowUserInfo(true);
         return;
       }
       
@@ -414,6 +417,7 @@ const LLCOperatingAgreementForm = () => {
   };
 
   const generateLLCOperatingAgreementPDF = () => {
+    setIsGeneratingPDF(true);
     try {
       console.log("Generating LLC Operating Agreement PDF...");
       const doc = new jsPDF();

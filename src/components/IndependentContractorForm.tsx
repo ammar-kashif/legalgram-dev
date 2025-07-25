@@ -15,6 +15,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "./UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -297,6 +298,8 @@ const IndependentContractorForm = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [showUserInfo, setShowUserInfo] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [company, setCompany] = useState<Party>({ name: '', address: '' });
   const [contractor, setContractor] = useState<Party>({ name: '', address: '' });
   
@@ -307,7 +310,7 @@ const IndependentContractorForm = () => {
       const nextSectionId = currentSection?.nextSectionId;
       
       if (!nextSectionId) {
-        setIsComplete(true);
+        setShowUserInfo(true);
         return;
       }
       
@@ -603,6 +606,7 @@ const IndependentContractorForm = () => {
   };
 
   const generateIndependentContractorPDF = () => {
+    setIsGeneratingPDF(true);
     try {
       console.log("Generating Independent Contractor Agreement PDF...");
       const doc = new jsPDF();

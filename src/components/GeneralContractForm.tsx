@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "./UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -365,10 +366,13 @@ const questions: Record<string, Question> = {
   }
 };
 
-const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
+const GeneralContractForm = () => {
+  const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [showUserInfo, setShowUserInfo] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [items, setItems] = useState<Item[]>([{ description: '', quantity: '', unitPrice: '', totalPrice: '' }]);
   const [buyer, setBuyer] = useState<Party>({ name: '', type: '', stateCountry: '', address: '' });
   const [seller, setSeller] = useState<Party>({ name: '', type: '', stateCountry: '', address: '' });
@@ -380,7 +384,7 @@ const GeneralContractForm = () => {  const [currentSectionId, setCurrentSectionI
       const nextSectionId = currentSection?.nextSectionId;
       
       if (!nextSectionId) {
-        setIsComplete(true);
+        setShowUserInfo(true);
         return;
       }
       
