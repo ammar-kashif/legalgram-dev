@@ -7,6 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import UserInfoStep from '@/components/UserInfoStep';
+import jsPDF from 'jspdf';
+import { toast } from 'sonner';
 
 interface CorporationFormationData {
   businessStructure: string;
@@ -30,7 +33,8 @@ interface Props {
 
 const CorporationFormation: React.FC<Props> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 8;
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const totalSteps = 9;
   
   const [formData, setFormData] = useState<CorporationFormationData>({
     businessStructure: 'corporation',
@@ -64,6 +68,56 @@ const CorporationFormation: React.FC<Props> = ({ onClose }) => {
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const generatePDF = async () => {
+    setIsGeneratingPDF(true);
+    try {
+      const pdf = new jsPDF();
+      
+      // Add title
+      pdf.setFontSize(20);
+      pdf.text('Articles of Incorporation', 20, 30);
+      
+      // Add content
+      pdf.setFontSize(12);
+      let yPosition = 50;
+      
+      pdf.text(`Business Structure: Corporation`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Formation State: ${formData.state}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Business Description: ${formData.businessDescription}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Industry: ${formData.industry}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`S-Corp Election: ${formData.sCorpElection === 'yes' ? 'Yes' : 'No'}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Tax ID Option: ${formData.taxIdOption}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Registered Agent: ${formData.registeredAgentOption}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Trademark Option: ${formData.trademarkOption}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Filing Speed: ${formData.filingSpeed}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Company Name: ${formData.companyName}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Contact: ${formData.fullName}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Email: ${formData.email}`, 20, yPosition);
+      yPosition += 10;
+      pdf.text(`Phone: ${formData.phone}`, 20, yPosition);
+      
+      // Save the PDF
+      pdf.save('articles-of-incorporation.pdf');
+      toast.success('PDF generated successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -608,7 +662,7 @@ const CorporationFormation: React.FC<Props> = ({ onClose }) => {
           </div>
         );
 
-      case 4:
+      case 9:
         return (
           <UserInfoStep
             onBack={handleBack}
@@ -641,6 +695,8 @@ const CorporationFormation: React.FC<Props> = ({ onClose }) => {
         return formData.filingSpeed !== '';
       case 8:
         return formData.fullName.trim() !== '' && formData.email.trim() !== '' && formData.phone.trim() !== '' && formData.companyName.trim() !== '';
+      case 9:
+        return true;
       default:
         return true;
     }
@@ -680,10 +736,11 @@ const CorporationFormation: React.FC<Props> = ({ onClose }) => {
           <span>{currentStep === 1 ? 'Cancel' : 'Back'}</span>
         </Button>
 
-        {currentStep === totalSteps ? (
+        {currentStep === 9 ? null : currentStep === 8 ? (
           <Button 
             className="bg-green-600 hover:bg-green-700 flex items-center space-x-2"
             disabled={!isStepValid()}
+            onClick={handleNext}
           >
             <span>Complete Purchase</span>
           </Button>
