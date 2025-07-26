@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -73,6 +74,7 @@ const EvictionNoticeForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<EvictionNoticeData>({
     dateOfNotice: '',
     tenantName: '',
@@ -111,6 +113,8 @@ const EvictionNoticeForm = () => {
         return !!(formData.leaseDate && formData.violations);
       case 3:
         return !!(formData.correctiveActions && formData.landlordName);
+      case 4:
+        return true; // UserInfoStep handles its own validation
       default:
         return false;
     }
@@ -119,7 +123,7 @@ const EvictionNoticeForm = () => {
   const handleNext = () => {
     if (!canAdvance()) return;
 
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
       setIsComplete(true);
@@ -133,18 +137,21 @@ const EvictionNoticeForm = () => {
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF();
+    setIsGeneratingPDF(true);
     
-    // Get proper names for display
-    const countryName = formData.country ? getCountryName(formData.country.split(':')[0]) : '';
-    const stateName = formData.state ? getStateName(formData.country?.split(':')[0] || '', formData.state.split(':')[0]) : '';
-    
-    // Title
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.text("EVICTION NOTICE", 105, 30, { align: "center" });
-    
-    let yPosition = 60;
+    try {
+      const doc = new jsPDF();
+      
+      // Get proper names for display
+      const countryName = formData.country ? getCountryName(formData.country.split(':')[0]) : '';
+      const stateName = formData.state ? getStateName(formData.country?.split(':')[0] || '', formData.state.split(':')[0]) : '';
+      
+      // Title
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text("EVICTION NOTICE", 105, 30, { align: "center" });
+      
+      let yPosition = 60;
     
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
@@ -244,8 +251,14 @@ const EvictionNoticeForm = () => {
     yPosition += 15;
     doc.text("SIGNATURE: _________________________________", 20, yPosition);
     
-    doc.save('eviction-notice.pdf');
-    toast.success("Eviction Notice PDF generated successfully!");
+      doc.save('eviction-notice.pdf');
+      toast.success("Eviction Notice PDF generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate Eviction Notice PDF");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const renderStepContent = () => {
@@ -378,6 +391,16 @@ const EvictionNoticeForm = () => {
           </div>
         );
 
+      case 4:
+        return (
+          <UserInfoStep
+            onBack={handleBack}
+            onGenerate={generatePDF}
+            documentType="Eviction Notice"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -428,6 +451,8 @@ const EvictionNoticeForm = () => {
         return "Lease Information";
       case 3:
         return "Actions & Parties";
+      case 4:
+        return "Contact Information";
       default:
         return "";
     }
@@ -441,6 +466,8 @@ const EvictionNoticeForm = () => {
         return "Provide lease agreement details and violation specifics";
       case 3:
         return "Specify corrective actions and landlord information";
+      case 4:
+        return "Provide your contact information to generate the document";
       default:
         return "";
     }
@@ -498,7 +525,7 @@ const EvictionNoticeForm = () => {
           <CardDescription>
             {getStepDescription()}
             <div className="mt-2 text-sm">
-              Step {currentStep} of 3
+              Step {currentStep} of 4
             </div>
           </CardDescription>
           {currentStep === 1 && (
@@ -518,6 +545,7 @@ const EvictionNoticeForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
+        {currentStep !== 4 && (
         <CardFooter className="flex justify-between">
           <Button 
             variant="outline" 
@@ -530,7 +558,7 @@ const EvictionNoticeForm = () => {
             onClick={handleNext}
             disabled={!canAdvance()}
           >
-            {currentStep === 3 ? (
+            {currentStep === 4 ? (
               <>
                 Complete <Send className="w-4 h-4 ml-2" />
               </>
@@ -541,6 +569,7 @@ const EvictionNoticeForm = () => {
             )}
           </Button>
         </CardFooter>
+        )}
       </Card>
     </div>
   );

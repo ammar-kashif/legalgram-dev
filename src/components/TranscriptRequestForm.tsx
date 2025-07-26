@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -77,6 +78,7 @@ const TranscriptRequestForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<TranscriptRequestData>({
     country: '',
     state: '',
@@ -118,6 +120,8 @@ const TranscriptRequestForm = () => {
         return !!(formData.studentFullName && formData.registrationNumber && formData.enrollmentNumber && formData.departmentName && formData.academicYear);
       case 3:
         return !!(formData.phoneNumber && formData.emailAddress && formData.studentAddress);
+      case 4:
+        return true; // UserInfoStep handles its own validation
       default:
         return false;
     }
@@ -126,7 +130,7 @@ const TranscriptRequestForm = () => {
   const handleNext = () => {
     if (!canAdvance()) return;
 
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
       setIsComplete(true);
@@ -140,14 +144,17 @@ const TranscriptRequestForm = () => {
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF();
+    setIsGeneratingPDF(true);
     
-    // Title
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.text("TRANSCRIPT REQUEST", 105, 30, { align: "center" });
-    
-    let yPosition = 60;
+    try {
+      const doc = new jsPDF();
+      
+      // Title
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text("TRANSCRIPT REQUEST", 105, 30, { align: "center" });
+      
+      let yPosition = 60;
     
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
@@ -218,8 +225,14 @@ const TranscriptRequestForm = () => {
     yPosition += 15;
     doc.text(`Address: ${formData.studentAddress}`, 20, yPosition);
     
-    doc.save('transcript-request.pdf');
-    toast.success("Transcript Request PDF generated successfully!");
+      doc.save('transcript-request.pdf');
+      toast.success("Transcript Request PDF generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate Transcript Request PDF");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const renderStepContent = () => {
@@ -386,6 +399,16 @@ const TranscriptRequestForm = () => {
           </div>
         );
 
+      case 4:
+        return (
+          <UserInfoStep
+            onBack={handleBack}
+            onGenerate={generatePDF}
+            documentType="Transcript Request"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -440,6 +463,8 @@ const TranscriptRequestForm = () => {
         return "Student Information";
       case 3:
         return "Contact Information";
+      case 4:
+        return "Your Details";
       default:
         return "";
     }
@@ -453,6 +478,8 @@ const TranscriptRequestForm = () => {
         return "Provide student academic information and numbers";
       case 3:
         return "Enter contact details and current address";
+      case 4:
+        return "Provide your contact information to generate the document";
       default:
         return "";
     }
@@ -514,7 +541,7 @@ const TranscriptRequestForm = () => {
           <CardDescription>
             {getStepDescription()}
             <div className="mt-2 text-sm">
-              Step {currentStep} of 3
+              Step {currentStep} of 4
             </div>
           </CardDescription>
           {currentStep === 1 && (
@@ -534,6 +561,7 @@ const TranscriptRequestForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
+        {currentStep !== 4 && (
         <CardFooter className="flex justify-between">
           <Button 
             variant="outline" 
@@ -546,7 +574,7 @@ const TranscriptRequestForm = () => {
             onClick={handleNext}
             disabled={!canAdvance()}
           >
-            {currentStep === 3 ? (
+            {currentStep === 4 ? (
               <>
                 Complete <Send className="w-4 h-4 ml-2" />
               </>
@@ -557,6 +585,7 @@ const TranscriptRequestForm = () => {
             )}
           </Button>
         </CardFooter>
+        )}
       </Card>
     </div>
   );

@@ -608,6 +608,16 @@ const CorporationFormation: React.FC<Props> = ({ onClose }) => {
           </div>
         );
 
+      case 4:
+        return (
+          <UserInfoStep
+            onBack={handleBack}
+            onGenerate={generatePDF}
+            documentType="Articles of Incorporation"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
