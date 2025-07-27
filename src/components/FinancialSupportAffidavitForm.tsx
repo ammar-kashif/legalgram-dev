@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "./UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -181,6 +182,13 @@ const sections: Record<string, Section> = {
     title: 'Review and Confirmation',
     description: 'Review all information before generating your Affidavit of Financial Support',
     questions: ['confirmation'],
+    nextSectionId: 'user_info'
+  },
+  'user_info': {
+    id: 'user_info',
+    title: 'Contact Information',
+    description: 'Enter your contact information to generate the document',
+    questions: []
   }
 };
 
@@ -254,6 +262,7 @@ const FinancialSupportAffidavitForm = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [affiant, setAffiant] = useState<Party>({ name: '', address: '', phone: '', city: '', state: '' });
   const [incomeSources, setIncomeSources] = useState<IncomeSource[]>([{ source: '', description: '', income: '' }]);
   const [deductions, setDeductions] = useState<Deduction[]>([
@@ -352,7 +361,11 @@ const FinancialSupportAffidavitForm = () => {
     if (!canAdvance()) return;
 
     if (currentSectionId === 'confirmation') {
-      setIsComplete(true);
+      const nextSectionId = currentSection.nextSectionId;
+      if (nextSectionId) {
+        setCurrentSectionId(nextSectionId);
+        setSectionHistory(prev => [...prev, nextSectionId]);
+      }
       return;
     }
 
@@ -360,6 +373,8 @@ const FinancialSupportAffidavitForm = () => {
     if (nextSectionId) {
       setCurrentSectionId(nextSectionId);
       setSectionHistory(prev => [...prev, nextSectionId]);
+    } else {
+      setIsComplete(true);
     }
   };
 
@@ -381,7 +396,8 @@ const FinancialSupportAffidavitForm = () => {
     return { totalIncome, totalDeductions, netIncome, totalExpenses, totalAssets };
   };
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
+    setIsGeneratingPDF(true);
     const doc = new jsPDF();
     const { totalIncome, totalDeductions, netIncome, totalExpenses, totalAssets } = calculateTotals();
     
@@ -1087,54 +1103,69 @@ const FinancialSupportAffidavitForm = () => {
     );
   };
 
+  if (currentSectionId === 'user_info') {
+    return (
+      <UserInfoStep
+        onBack={handleBack}
+        onGenerate={generatePDF}
+        documentType="Affidavit of Financial Support"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   if (isComplete) {
     return (
-    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
-      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+      <Card className="w-full max-w-4xl mx-auto">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl text-green-600">Affidavit of Financial Support</CardTitle>
+          <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <CheckCircle className="w-6 h-6 text-green-600" />
+          </div>
+          <CardTitle className="text-green-800">Affidavit Complete!</CardTitle>
           <CardDescription>
-            Review your Affidavit of Financial Support details below before generating the final document.
+            Your Affidavit of Financial Support has been completed successfully.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {renderFormSummary()}
-        </CardContent>
-        <CardFooter className="flex justify-between">
+        <CardContent className="text-center space-y-4">
           <Button 
-            variant="outline"
-            onClick={() => {
-              setAnswers({});
-              setSectionHistory(['location_selection']);
-              setCurrentSectionId('location_selection');
-              setIsComplete(false);
-              setAffiant({ name: '', address: '', phone: '', city: '', state: '' });
-              setIncomeSources([{ source: '', description: '', income: '' }]);
-              setDeductions([
-                { type: 'Federal, State, and Local income tax', amount: '' },
-                { type: 'FICA or self-employment taxes', amount: '' },
-                { type: 'Medicare payments', amount: '' },
-                { type: 'Mandatory union dues', amount: '' },
-                { type: 'Mandatory retirement payments', amount: '' },
-                { type: 'Health insurance payments', amount: '' },
-                { type: 'Child Support', amount: '' },
-                { type: 'Alimony', amount: '' }
-              ]);
-              setExpenses([{ expense: '', description: '', averageCost: '' }]);
-              setDebts([{ lender: '', description: '', totalDebt: '', monthlyPayment: '' }]);
-              setAssets([{ asset: '', description: '', value: '' }]);
-            }}
+            onClick={generatePDF}
+            className="bg-green-600 hover:bg-green-700 text-white"
+            disabled={isGeneratingPDF}
           >
-            Start Over
+            <FileText className="w-4 h-4 mr-2" />
+            {isGeneratingPDF ? "Generating..." : "Download PDF"}
           </Button>
-          <Button onClick={generatePDF}>
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Generate PDF
-          </Button>
-        </CardFooter>
+          <div>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setCurrentSectionId('location_selection');
+                setSectionHistory(['location_selection']);
+                setAnswers({});
+                setAffiant({ name: '', address: '', phone: '', city: '', state: '' });
+                setIncomeSources([{ source: '', description: '', income: '' }]);
+                setDeductions([
+                  { type: 'Federal, State, and Local income tax', amount: '' },
+                  { type: 'FICA or self-employment taxes', amount: '' },
+                  { type: 'Medicare payments', amount: '' },
+                  { type: 'Mandatory union dues', amount: '' },
+                  { type: 'Mandatory retirement payments', amount: '' },
+                  { type: 'Health insurance payments', amount: '' },
+                  { type: 'Child Support', amount: '' },
+                  { type: 'Alimony', amount: '' }
+                ]);
+                setExpenses([{ expense: '', description: '', averageCost: '' }]);
+                setDebts([{ lender: '', description: '', totalDebt: '', monthlyPayment: '' }]);
+                setAssets([{ asset: '', description: '', value: '' }]);
+                setIsComplete(false);
+              }}
+            >
+              Start Over
+            </Button>
+          </div>
+        </CardContent>
       </Card>
-    </div>
-  );
+    );
   }
 
   return (

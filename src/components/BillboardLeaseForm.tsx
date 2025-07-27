@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import jsPDF from 'jspdf';
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "./UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -95,6 +96,7 @@ interface BillboardLeaseData {
 const BillboardLeaseForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<BillboardLeaseData>({
     state: "",
     country: "",
@@ -122,7 +124,7 @@ const BillboardLeaseForm = () => {
     notaryName: ""
   });
 
-  const totalSteps = 6;
+  const totalSteps = 7;
 
   const updateFormData = (field: keyof BillboardLeaseData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -153,7 +155,8 @@ const BillboardLeaseForm = () => {
     }
   };
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
+    setIsGeneratingPDF(true);
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const margin = 20;
@@ -364,11 +367,29 @@ const BillboardLeaseForm = () => {
     addText("Additional Assistance", 12, true);
     addText("If you are unsure or have questions regarding this Agreement or need additional assistance with special situations or circumstances, use Legal Gram. Find A Lawyer search engine to find a lawyer in your area to assist you in this matter");
 
-    doc.save('billboard-lease-agreement.pdf');
-    toast.success("Billboard Lease Agreement PDF generated successfully!");
+    try {
+      doc.save('billboard-lease-agreement.pdf');
+      toast.success("Billboard Lease Agreement PDF generated successfully!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Error generating PDF. Please try again.");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const renderStep = () => {
+    if (currentStep === 7) {
+      return (
+        <UserInfoStep
+          onBack={prevStep}
+          onGenerate={generatePDF}
+          documentType="Billboard Lease Agreement"
+          isGenerating={isGeneratingPDF}
+        />
+      );
+    }
+
     switch (currentStep) {
       case 1:
         return (

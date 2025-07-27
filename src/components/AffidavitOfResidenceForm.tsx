@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "./UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -114,7 +115,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info'
+  },
+  'user_info': {
+    id: 'user_info',
+    title: 'Contact Information',
+    description: 'Enter your contact information to generate the document',
+    questions: []
   }
 };
 
@@ -211,10 +219,12 @@ const questions: Record<string, Question> = {
 };
 
 const AffidavitOfResidenceForm = () => {
+  const navigate = useNavigate();
   const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   const currentSection = sections[currentSectionId];
 
@@ -229,6 +239,15 @@ const AffidavitOfResidenceForm = () => {
 
   const handleNext = () => {
     try {
+      if (currentSectionId === 'confirmation') {
+        const nextSectionId = currentSection?.nextSectionId;
+        if (nextSectionId) {
+          setSectionHistory([...sectionHistory, nextSectionId]);
+          setCurrentSectionId(nextSectionId);
+        }
+        return;
+      }
+
       const nextSectionId = currentSection?.nextSectionId;
       
       if (!nextSectionId) {
@@ -472,7 +491,8 @@ const AffidavitOfResidenceForm = () => {
     return true;
   };
 
-  const generateAffidavitOfResidencePDF = () => {
+  const generateAffidavitOfResidencePDF = async () => {
+    setIsGeneratingPDF(true);
     try {
       console.log("Generating Affidavit of Residence PDF...");
       const doc = new jsPDF();
@@ -620,102 +640,64 @@ const AffidavitOfResidenceForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Affidavit of Residence");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
-  const renderFormSummary = () => {
+  if (currentSectionId === 'user_info') {
     return (
-      <div className="space-y-4 text-black">
-        <div className="border rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4">Affidavit of Residence Summary</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h4 className="font-medium text-sm">Jurisdiction</h4>
-              <p><strong>Country:</strong> {answers.country ? getCountryName(answers.country.split('|')[0]) : 'Not provided'}</p>
-              <p><strong>State/Province:</strong> {answers.state ? getStateName(answers.country?.split('|')[0] || '', answers.state.split('|')[0]) : 'Not provided'}</p>
-              <p><strong>County:</strong> {answers.county || 'Not provided'}</p>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-sm">Affiant Information</h4>
-              <p><strong>Name:</strong> {answers.affiant_name || 'Not provided'}</p>
-              <p><strong>Address:</strong> {answers.affiant_address || 'Not provided'}</p>
-              <p><strong>Date:</strong> {answers.affidavit_date || 'Not provided'}</p>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-sm">Subject</h4>
-              <p><strong>Person Status:</strong> {answers.person_status || 'Not provided'}</p>
-              {answers.person_status === 'alive' && (
-                <>
-                  <p><strong>Years of Residence:</strong> {answers.residence_years || 'Not provided'}</p>
-                  <p><strong>Household Members:</strong> {answers.household_members || 'Not provided'}</p>
-                </>
-              )}
-              {answers.person_status === 'deceased' && (
-                <>
-                  <p><strong>Deceased Name:</strong> {answers.deceased_name || 'Not provided'}</p>
-                  <p><strong>Date of Death:</strong> {answers.death_date || 'Not provided'}</p>
-                  <p><strong>Deceased Address:</strong> {answers.deceased_address || 'Not provided'}</p>
-                  <p><strong>Residence Duration:</strong> {answers.residence_duration || 'Not provided'}</p>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-        
-        <div className="border rounded-lg p-4 bg-green-50 dark:bg-green-900/10">
-          <p className="text-center mb-2">
-            By generating this document, you confirm the accuracy of the information provided. 
-            This document will serve as your official Affidavit of Residence.
-          </p>
-        </div>
-      </div>
+      <UserInfoStep
+        onBack={handleBack}
+        onGenerate={generateAffidavitOfResidencePDF}
+        documentType="Affidavit of Residence"
+        isGenerating={isGeneratingPDF}
+      />
     );
-  };
+  }
 
   if (isComplete) {
     return (
-    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
-      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+      <Card className="w-full max-w-4xl mx-auto">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl text-green-600">Affidavit of Residence</CardTitle>
+          <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <CheckCircle className="w-6 h-6 text-green-600" />
+          </div>
+          <CardTitle className="text-green-800">Affidavit of Residence Complete!</CardTitle>
           <CardDescription>
-            Review your affidavit details below before generating the final document.
+            Your document has been generated successfully.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {renderFormSummary()}
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline"
-            onClick={() => {
-              setAnswers({});
-              setSectionHistory(['location_selection']);
-              setCurrentSectionId('location_selection');
-              setIsComplete(false);
-            }}
-          >
-            Start Over
-          </Button>
+        <CardContent className="text-center space-y-4">
           <Button 
             onClick={generateAffidavitOfResidencePDF}
+            className="bg-green-600 hover:bg-green-700 text-white"
+            disabled={isGeneratingPDF}
           >
-            Generate Affidavit
+            <FileText className="w-4 h-4 mr-2" />
+            {isGeneratingPDF ? "Generating..." : "Download PDF"}
           </Button>
-        </CardFooter>
+          <div>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setCurrentSectionId('location_selection');
+                setSectionHistory(['location_selection']);
+                setAnswers({});
+                setIsComplete(false);
+              }}
+            >
+              Start Over
+            </Button>
+          </div>
+        </CardContent>
       </Card>
-    </div>
-  );
+    );
   }
-
 
   if (!currentSection) {
     return (
-    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
-      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+      <Card className="w-full max-w-4xl mx-auto">
         <CardContent className="text-center p-4">
           <p className="text-red-500">An error occurred. Please refresh the page.</p>
           <Button 
@@ -729,73 +711,65 @@ const AffidavitOfResidenceForm = () => {
           </Button>
         </CardContent>
       </Card>
-    </div>
-  );
+    );
   }
-
 
   return (
     <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
       <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-xl">{currentSection.title}</CardTitle>
-        <CardDescription>
-          {currentSection.description}
-          <div className="mt-2 text-sm">
-            Step {sectionHistory.length} of {Object.keys(sections).length}
-          </div>
-        </CardDescription>
-        {/* Learn More button for first step only */}
-        {currentSectionId === 'location_selection' && (
-          <div className="mt-4">
-            <Button 
-              variant="outline" 
-              onClick={() => window.open('/affidavit-of-residence-info', '_blank')}
-              className="text-bright-orange-600 border-bright-orange-600 hover:bg-bright-orange-50"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              Learn More About Affidavit of Residence
-            </Button>
-          </div>
-        )}
-      </CardHeader>
-      <CardContent className="text-black">
-        <div className="grid grid-cols-1 gap-y-2">
-          {renderSectionQuestions()}
-        </div>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={handleBack}
-          disabled={sectionHistory.length <= 1}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
-        </Button>
-        <Button 
-          onClick={() => handleNext()}
-          disabled={!canAdvance()}
-        >
-          {currentSectionId === 'confirmation' ? (
-            <>
-              Complete <Send className="w-4 h-4 ml-2" />
-            </>
-          ) : (
-            <>
-              Next <ArrowRight className="w-4 h-4 ml-2" />
-            </>
+        <CardHeader>
+          <CardTitle className="text-xl">{currentSection.title}</CardTitle>
+          <CardDescription>
+            {currentSection.description}
+            <div className="mt-2 text-sm">
+              Step {sectionHistory.length} of {Object.keys(sections).length}
+            </div>
+          </CardDescription>
+          {/* Learn More button for first step only */}
+          {currentSectionId === 'location_selection' && (
+            <div className="mt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => window.open('/affidavit-of-residence-info', '_blank')}
+                className="text-bright-orange-600 border-bright-orange-600 hover:bg-bright-orange-50"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Learn More About Affidavit of Residence
+              </Button>
+            </div>
           )}
-        </Button>
-      </CardFooter>
-    </Card>
-  </div>
+        </CardHeader>
+        <CardContent className="text-black">
+          <div className="grid grid-cols-1 gap-y-2">
+            {renderSectionQuestions()}
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Button 
+            variant="outline" 
+            onClick={handleBack}
+            disabled={sectionHistory.length <= 1}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+          </Button>
+          <Button 
+            onClick={() => handleNext()}
+            disabled={!canAdvance()}
+          >
+            {currentSectionId === 'confirmation' ? (
+              <>
+                Complete <Send className="w-4 h-4 ml-2" />
+              </>
+            ) : (
+              <>
+                Next <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   );
-}
+};
 
 export default AffidavitOfResidenceForm;
-
-
-
-
-
-

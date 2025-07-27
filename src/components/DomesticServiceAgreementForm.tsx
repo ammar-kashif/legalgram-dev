@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "./UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -149,7 +151,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info'
+  },
+  'user_info': {
+    id: 'user_info',
+    title: 'Contact Information',
+    description: 'Enter your contact information to generate the document',
+    questions: []
   }
 };
 
@@ -219,10 +228,12 @@ const questions: Record<string, Question> = {
 };
 
 const DomesticServiceAgreementForm = () => {
+  const navigate = useNavigate();
   const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [master, setMaster] = useState<Master>({ name: '', address: '', cnic: '' });
   const [servant, setServant] = useState<Servant>({ name: '', relationshipField: '', address: '', cnic: '' });
   const [witness1, setWitness1] = useState<Witness>({ name: '', cnic: '' });
@@ -233,6 +244,15 @@ const DomesticServiceAgreementForm = () => {
 
   const handleNext = () => {
     try {
+      if (currentSectionId === 'confirmation') {
+        const nextSectionId = currentSection?.nextSectionId;
+        if (nextSectionId) {
+          setSectionHistory([...sectionHistory, nextSectionId]);
+          setCurrentSectionId(nextSectionId);
+        }
+        return;
+      }
+
       const nextSectionId = currentSection?.nextSectionId;
       
       if (!nextSectionId) {

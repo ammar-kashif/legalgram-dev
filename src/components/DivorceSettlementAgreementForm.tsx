@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "./UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -120,7 +122,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info'
+  },
+  'user_info': {
+    id: 'user_info',
+    title: 'Contact Information',
+    description: 'Enter your contact information to generate the document',
+    questions: []
   }
 };
 
@@ -248,15 +257,26 @@ const questions: Record<string, Question> = {
 };
 
 const DivorceSettlementAgreementForm = () => {
+  const navigate = useNavigate();
   const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   const currentSection = sections[currentSectionId];
 
   const handleNext = () => {
     try {
+      if (currentSectionId === 'confirmation') {
+        const nextSectionId = currentSection?.nextSectionId;
+        if (nextSectionId) {
+          setSectionHistory([...sectionHistory, nextSectionId]);
+          setCurrentSectionId(nextSectionId);
+        }
+        return;
+      }
+
       const nextSectionId = currentSection?.nextSectionId;
       
       if (!nextSectionId) {
@@ -504,7 +524,8 @@ const DivorceSettlementAgreementForm = () => {
     return true;
   };
 
-  const generateDivorceSettlementAgreementPDF = () => {
+  const generateDivorceSettlementAgreementPDF = async () => {
+    setIsGeneratingPDF(true);
     try {
       console.log("Generating Divorce Settlement Agreement PDF...");
       const doc = new jsPDF();
@@ -845,40 +866,54 @@ const DivorceSettlementAgreementForm = () => {
     );
   };
 
+  if (currentSectionId === 'user_info') {
+    return (
+      <UserInfoStep
+        onBack={handleBack}
+        onGenerate={generateDivorceSettlementAgreementPDF}
+        documentType="Divorce Settlement Agreement"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   if (isComplete) {
     return (
-    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
-      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+      <Card className="w-full max-w-4xl mx-auto">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl text-green-600">Divorce Settlement Agreement</CardTitle>
+          <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <CheckCircle className="w-6 h-6 text-green-600" />
+          </div>
+          <CardTitle className="text-green-800">Divorce Settlement Agreement Complete!</CardTitle>
           <CardDescription>
-            Review your agreement details below before generating the final document.
+            Your document has been generated successfully.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {renderFormSummary()}
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline"
-            onClick={() => {
-              setAnswers({});
-              setSectionHistory(['location_selection']);
-              setCurrentSectionId('location_selection');
-              setIsComplete(false);
-            }}
-          >
-            Start Over
-          </Button>
+        <CardContent className="text-center space-y-4">
           <Button 
             onClick={generateDivorceSettlementAgreementPDF}
+            className="bg-green-600 hover:bg-green-700 text-white"
+            disabled={isGeneratingPDF}
           >
-            Generate Agreement
+            <FileText className="w-4 h-4 mr-2" />
+            {isGeneratingPDF ? "Generating..." : "Download PDF"}
           </Button>
-        </CardFooter>
+          <div>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setCurrentSectionId('location_selection');
+                setSectionHistory(['location_selection']);
+                setAnswers({});
+                setIsComplete(false);
+              }}
+            >
+              Start Over
+            </Button>
+          </div>
+        </CardContent>
       </Card>
-    </div>
-  );
+    );
   }
 
   if (!currentSection) {
