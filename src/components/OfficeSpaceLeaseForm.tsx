@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, ArrowRight, Download } from "lucide-react";
 import jsPDF from 'jspdf';
 import { Country, State, City } from 'country-state-city';
+import UserInfoStep from "@/components/UserInfoStep";
+import { toast } from 'react-toastify';
 
 interface FormData {
   // Location
@@ -93,12 +95,13 @@ const OfficeSpaceLeaseForm = () => {
     landlordNoticeAddress: '',
     tenantNoticeAddress: ''
   });
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const countries = Country.getAllCountries();
   const states = formData.country ? State.getStatesOfCountry(formData.country) : [];
   const cities = formData.state ? City.getCitiesOfState(formData.country, formData.state) : [];
 
-  const totalSteps = 7;
+  const totalSteps = 6;
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({
@@ -107,52 +110,56 @@ const OfficeSpaceLeaseForm = () => {
     }));
   };
 
-  const handleNext = () => {
-    if (currentStep < totalSteps) {
+  const nextStep = () => {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
+    } else if (currentStep === 5) {
+      setCurrentStep(6); // User info step
     }
   };
 
-  const handlePrevious = () => {
+  const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 20;
-    const maxWidth = pageWidth - 2 * margin;
-    let yPosition = 30;
+    setIsGeneratingPDF(true);
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 20;
+      const maxWidth = pageWidth - 2 * margin;
+      let yPosition = 30;
 
-    // Helper function to add text with word wrapping
-    const addText = (text: string, fontSize = 10, isBold = false) => {
-      doc.setFontSize(fontSize);
-      if (isBold) {
-        doc.setFont(undefined, 'bold');
-      } else {
-        doc.setFont(undefined, 'normal');
-      }
-      
-      const lines = doc.splitTextToSize(text, maxWidth);
-      
-      // Check if we need a new page
-      if (yPosition + (lines.length * fontSize * 0.5) > doc.internal.pageSize.height - margin) {
-        doc.addPage();
-        yPosition = margin;
-      }
-      
-      doc.text(lines, margin, yPosition);
-      yPosition += lines.length * fontSize * 0.5 + 3;
-    };
+      // Helper function to add text with word wrapping
+      const addText = (text: string, fontSize = 10, isBold = false) => {
+        doc.setFontSize(fontSize);
+        if (isBold) {
+          doc.setFont(undefined, 'bold');
+        } else {
+          doc.setFont(undefined, 'normal');
+        }
+        
+        const lines = doc.splitTextToSize(text, maxWidth);
+        
+        // Check if we need a new page
+        if (yPosition + (lines.length * fontSize * 0.5) > doc.internal.pageSize.height - margin) {
+          doc.addPage();
+          yPosition = margin;
+        }
+        
+        doc.text(lines, margin, yPosition);
+        yPosition += lines.length * fontSize * 0.5 + 3;
+      };
 
-    // Title
-    addText('OFFICE SPACE LEASE AGREEMENT', 16, true);
-    yPosition += 10;
+      // Title
+      addText('OFFICE SPACE LEASE AGREEMENT', 16, true);
+      yPosition += 10;
 
-    // Generate the legal document text with filled values
-    const legalText = `This Lease Agreement ("Lease") is made and entered into as of ${formData.leaseDate || '[Insert Date]'}, by and between ${formData.landlordName || '[Insert Landlord\'s Full Legal Name]'}, hereinafter referred to as the "Landlord," 
+      // Generate the legal document text with filled values
+      const legalText = `This Lease Agreement ("Lease") is made and entered into as of ${formData.leaseDate || '[Insert Date]'}, by and between ${formData.landlordName || '[Insert Landlord\'s Full Legal Name]'}, hereinafter referred to as the "Landlord," 
 And
 ${formData.tenantName || '[Insert Tenant\'s Full Legal Name]'}, hereinafter referred to as the "Tenant" (collectively, the "Parties").
 
@@ -282,10 +289,17 @@ The Affiant should maintain a copy of the Agreement. Your copy should be kept in
 Additional Assistance
 If you are unsure or have questions regarding this Agreement or need additional assistance with special situations or circumstances, use Legal Gram. Find A Lawyer search engine to find a lawyer in your area to assist you in this matter.`;
 
-    addText(legalText);
+      addText(legalText);
 
-    // Save the PDF
-    doc.save('office-space-lease-agreement.pdf');
+      // Save the PDF
+      doc.save('office-space-lease-agreement.pdf');
+      toast.success("Document generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate document");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const renderStep = () => {
@@ -579,138 +593,12 @@ If you are unsure or have questions regarding this Agreement or need additional 
 
       case 6:
         return (
-          <div className="space-y-6">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold mb-2">Renewal and Payment Terms</h2>
-              <p className="text-muted-foreground">Set renewal options and payment policies</p>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="renewalTerm">Renewal Term Duration</Label>
-                <Input
-                  id="renewalTerm"
-                  value={formData.renewalTerm}
-                  onChange={(e) => handleInputChange('renewalTerm', e.target.value)}
-                  placeholder="e.g., 1 year, 6 months"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="renewalNotice">Renewal Notice Period (days)</Label>
-                <Input
-                  id="renewalNotice"
-                  type="number"
-                  value={formData.renewalNotice}
-                  onChange={(e) => handleInputChange('renewalNotice', e.target.value)}
-                  placeholder="Number of days notice required for non-renewal"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="renewalRent">Renewal Rent Terms</Label>
-                <Input
-                  id="renewalRent"
-                  value={formData.renewalRent}
-                  onChange={(e) => handleInputChange('renewalRent', e.target.value)}
-                  placeholder="e.g., same amount, increased by 3% annually"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="lateFeeDays">Late Payment Grace Period (days)</Label>
-                  <Input
-                    id="lateFeeDays"
-                    type="number"
-                    value={formData.lateFeeDays}
-                    onChange={(e) => handleInputChange('lateFeeDays', e.target.value)}
-                    placeholder="Days before late fee applies"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="lateFeeAmount">Late Fee Amount ($)</Label>
-                  <Input
-                    id="lateFeeAmount"
-                    type="number"
-                    value={formData.lateFeeAmount}
-                    onChange={(e) => handleInputChange('lateFeeAmount', e.target.value)}
-                    placeholder="Late fee amount"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 7:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold mb-2">Additional Terms and Notices</h2>
-              <p className="text-muted-foreground">Set additional terms and notice addresses</p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="saleNotice">Sale Termination Notice (days)</Label>
-                  <Input
-                    id="saleNotice"
-                    type="number"
-                    value={formData.saleNotice}
-                    onChange={(e) => handleInputChange('saleNotice', e.target.value)}
-                    placeholder="Days notice if property is sold"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="repairCostLimit">Repair Cost Limit ($)</Label>
-                  <Input
-                    id="repairCostLimit"
-                    type="number"
-                    value={formData.repairCostLimit}
-                    onChange={(e) => handleInputChange('repairCostLimit', e.target.value)}
-                    placeholder="Maximum repair cost before termination allowed"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="nsfFee">NSF (Returned Check) Fee ($)</Label>
-                <Input
-                  id="nsfFee"
-                  type="number"
-                  value={formData.nsfFee}
-                  onChange={(e) => handleInputChange('nsfFee', e.target.value)}
-                  placeholder="Fee for returned checks"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="landlordNoticeAddress">Landlord Notice Address *</Label>
-                <Textarea
-                  id="landlordNoticeAddress"
-                  value={formData.landlordNoticeAddress}
-                  onChange={(e) => handleInputChange('landlordNoticeAddress', e.target.value)}
-                  placeholder="Complete address for sending notices to landlord"
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="tenantNoticeAddress">Tenant Notice Address *</Label>
-                <Textarea
-                  id="tenantNoticeAddress"
-                  value={formData.tenantNoticeAddress}
-                  onChange={(e) => handleInputChange('tenantNoticeAddress', e.target.value)}
-                  placeholder="Complete address for sending notices to tenant"
-                  rows={3}
-                />
-              </div>
-            </div>
-          </div>
+          <UserInfoStep
+            onBack={() => setCurrentStep(5)}
+            onGenerate={generatePDF}
+            documentType="Office Space Lease Agreement"
+            isGenerating={isGeneratingPDF}
+          />
         );
 
       default:
@@ -747,28 +635,30 @@ If you are unsure or have questions regarding this Agreement or need additional 
         <CardContent>
           {renderStep()}
 
-          <div className="flex justify-between mt-8">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={currentStep === 1}
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
+          {currentStep !== 6 && (
+            <div className="flex justify-between mt-8">
+              <Button
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Previous
+              </Button>
 
-            {currentStep === totalSteps ? (
-              <Button onClick={generatePDF} className="bg-primary">
-                <Download className="w-4 h-4 mr-2" />
-                Generate PDF
-              </Button>
-            ) : (
-              <Button onClick={handleNext}>
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            )}
-          </div>
+              {currentStep === totalSteps ? (
+                <Button onClick={generatePDF} className="bg-primary">
+                  <Download className="w-4 h-4 mr-2" />
+                  Generate PDF
+                </Button>
+              ) : (
+                <Button onClick={nextStep}>
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

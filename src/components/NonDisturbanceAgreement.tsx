@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
 import LegalDisclaimer from "@/components/LegalDisclaimer";
+import UserInfoStep from "@/components/UserInfoStep";
 
 interface FormData {
   // Agreement Information
@@ -73,6 +74,8 @@ const NonDisturbanceAgreement = () => {
     selectedState: '',
     selectedCity: ''
   });
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const totalSteps = 5;
 
   const countries = Country.getAllCountries();
   const states = formData.selectedCountry ? State.getStatesOfCountry(formData.selectedCountry) : [];
@@ -107,6 +110,7 @@ const NonDisturbanceAgreement = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const margin = 20;
@@ -208,13 +212,21 @@ If you are unsure or have questions regarding this Agreement or need additional 
     addText(agreementText);
 
     // Save the PDF
-    doc.save('Non_Disturbance_Agreement.pdf');
-    toast.success("PDF generated successfully!");
-  };
+    doc.save('non-disturbance-agreement.pdf');
+    toast.success("Document generated successfully!");
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    toast.error("Failed to generate document");
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
   const nextStep = () => {
-    if (currentStep < 5) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
+    } else if (currentStep === 4) {
+      setCurrentStep(5); // User info step
     }
   };
 
@@ -431,77 +443,12 @@ If you are unsure or have questions regarding this Agreement or need additional 
 
       case 5:
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold mb-4">Step 5: Signature Information</h3>
-            
-            <div className="space-y-6">
-              <div>
-                <h4 className="text-md font-medium mb-3">Mortgagee Signature Information</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="mortgageeSignerName">Signer's Printed Name</Label>
-                    <Input
-                      id="mortgageeSignerName"
-                      value={formData.mortgageeSignerName}
-                      onChange={(e) => handleInputChange('mortgageeSignerName', e.target.value)}
-                      placeholder="Enter signer's full name"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="mortgageeSignerTitle">Title</Label>
-                    <Input
-                      id="mortgageeSignerTitle"
-                      value={formData.mortgageeSignerTitle}
-                      onChange={(e) => handleInputChange('mortgageeSignerTitle', e.target.value)}
-                      placeholder="e.g., President, Manager"
-                    />
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <Label htmlFor="mortgageeSignatureDate">Signature Date</Label>
-                  <Input
-                    type="date"
-                    id="mortgageeSignatureDate"
-                    value={formData.mortgageeSignatureDate}
-                    onChange={(e) => handleInputChange('mortgageeSignatureDate', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-md font-medium mb-3">Tenant Signature Information</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="tenantSignerName">Signer's Printed Name</Label>
-                    <Input
-                      id="tenantSignerName"
-                      value={formData.tenantSignerName}
-                      onChange={(e) => handleInputChange('tenantSignerName', e.target.value)}
-                      placeholder="Enter signer's full name"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="tenantSignerTitle">Title (if applicable)</Label>
-                    <Input
-                      id="tenantSignerTitle"
-                      value={formData.tenantSignerTitle}
-                      onChange={(e) => handleInputChange('tenantSignerTitle', e.target.value)}
-                      placeholder="e.g., Individual, Representative"
-                    />
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <Label htmlFor="tenantSignatureDate">Signature Date</Label>
-                  <Input
-                    type="date"
-                    id="tenantSignatureDate"
-                    value={formData.tenantSignatureDate}
-                    onChange={(e) => handleInputChange('tenantSignatureDate', e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <UserInfoStep
+            onBack={() => setCurrentStep(4)}
+            onGenerate={generatePDF}
+            documentType="Non-Disturbance Agreement"
+            isGenerating={isGeneratingPDF}
+          />
         );
 
       default:
@@ -537,29 +484,31 @@ If you are unsure or have questions regarding this Agreement or need additional 
           <CardContent>
             {renderStepContent()}
 
-            <div className="flex justify-between mt-8">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 1}
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Previous
-              </Button>
+            {currentStep !== 5 && (
+              <div className="flex justify-between mt-8">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Previous
+                </Button>
 
-              {currentStep < 5 ? (
-                <Button type="button" onClick={nextStep}>
-                  Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              ) : (
-                <Button type="button" onClick={generatePDF}>
-                  Generate PDF
-                  <Download className="w-4 h-4 ml-2" />
-                </Button>
-              )}
-            </div>
+                {currentStep < 5 ? (
+                  <Button type="button" onClick={nextStep}>
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                ) : (
+                  <Button type="button" onClick={generatePDF}>
+                    Generate PDF
+                    <Download className="w-4 h-4 ml-2" />
+                  </Button>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -11,6 +11,7 @@ import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -77,6 +78,8 @@ const NonCircumventionForm = () => {
     disclosingPartySignatory: '',
     recipientSignatory: ''
   });
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const totalSteps = 6;
 
   const handleInputChange = (field: keyof NonCircumventionData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -114,10 +117,11 @@ const NonCircumventionForm = () => {
 
   const handleNext = () => {
     if (!canAdvance()) return;
-
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
-    } else {
+    } else if (currentStep === 5) {
+      setCurrentStep(6); // User info step
+    } else if (currentStep === 6) {
       setIsComplete(true);
     }
   };
@@ -129,6 +133,7 @@ const NonCircumventionForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
     try {
       const doc = new jsPDF();
       
@@ -303,6 +308,8 @@ const NonCircumventionForm = () => {
     } catch (error) {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Non-Circumvention Agreement");
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -619,6 +626,17 @@ const NonCircumventionForm = () => {
     );
   }
 
+  if (currentStep === 6) {
+    return (
+      <UserInfoStep
+        onBack={() => setCurrentStep(5)}
+        onGenerate={generatePDF}
+        documentType="Non-Circumvention Agreement"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
       <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
@@ -627,7 +645,7 @@ const NonCircumventionForm = () => {
           <CardDescription>
             {getStepDescription()}
             <div className="mt-2 text-sm">
-              Step {currentStep} of 5
+              Step {currentStep} of {totalSteps}
             </div>
           </CardDescription>
           {currentStep === 1 && (
@@ -647,29 +665,31 @@ const NonCircumventionForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={handleNext}
-            disabled={!canAdvance()}
-          >
-            {currentStep === 5 ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentStep !== 6 && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={handleNext}
+              disabled={!canAdvance()}
+            >
+              {currentStep === 5 ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

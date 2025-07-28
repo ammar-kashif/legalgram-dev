@@ -159,6 +159,13 @@ const sections: Record<string, Section> = {
     title: 'Governing Law',
     description: 'Specify applicable law and jurisdiction',
     questions: ['governing_country', 'governing_state', 'governing_jurisdiction'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'Contact Information',
+    description: 'Provide your contact information to generate the document',
+    questions: ['user_info_step'],
     nextSectionId: 'confirmation'
   },
   'confirmation': {
@@ -283,10 +290,10 @@ const questions: Record<string, Question> = {
     id: 'governing_jurisdiction',
     type: 'text',
     text: 'Governing Law Jurisdiction:',
-    defaultNextId: 'confirmation'
+    defaultNextId: 'user_info_step'
   },
-  'confirmation': {
-    id: 'confirmation',
+  'user_info_step': {
+    id: 'user_info_step',
     type: 'confirmation',
     text: 'Thank you for providing the information. We will generate your Independent Contractor Agreement based on your answers.',
   }
@@ -1141,6 +1148,17 @@ const IndependentContractorForm = () => {
   );
   }
 
+  if (currentSectionId === 'user_info_step') {
+    return (
+      <UserInfoStep
+        onBack={handleBack}
+        onGenerate={generateIndependentContractorPDF}
+        documentType="Independent Contractor Agreement"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   // Safety check for currentSection
   if (!currentSection) {
     return (
@@ -1192,29 +1210,31 @@ const IndependentContractorForm = () => {
           {renderSectionQuestions()}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={handleBack}
-          disabled={sectionHistory.length <= 1}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
-        </Button>
-        <Button 
-          onClick={() => handleNext()}
-          disabled={!canAdvance()}
-        >
-          {currentSectionId === 'confirmation' ? (
-            <>
-              Complete <Send className="w-4 h-4 ml-2" />
-            </>
-          ) : (
-            <>
-              Next <ArrowRight className="w-4 h-4 ml-2" />
-            </>
-          )}
-        </Button>
-      </CardFooter>
+      {currentSectionId !== 'user_info_step' && (
+        <CardFooter className="flex justify-between">
+          <Button 
+            variant="outline" 
+            onClick={handleBack}
+            disabled={sectionHistory.length <= 1}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+          </Button>
+          <Button 
+            onClick={() => handleNext()}
+            disabled={!canAdvance()}
+          >
+            {currentSectionId === 'confirmation' ? (
+              <>
+                Complete <Send className="w-4 h-4 ml-2" />
+              </>
+            ) : (
+              <>
+                Next <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   </div>
   );

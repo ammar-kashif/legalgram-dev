@@ -159,13 +159,14 @@ const sections: Record<string, Section> = {
     title: 'Confirmation',
     description: 'Review and confirm your information',
     questions: ['confirmation'],
-    nextSectionId: 'user_info'
+    nextSectionId: 'user_info_step'
   },
-  'user_info': {
-    id: 'user_info',
+  'user_info_step': {
+    id: 'user_info_step',
     title: 'Contact Information',
-    description: 'Enter your contact information for document generation',
-    questions: []
+    description: 'Provide your contact information to generate the document',
+    questions: ['user_info_step'],
+    nextSectionId: 'confirmation'
   }
 };
 
@@ -403,7 +404,7 @@ const CommercialLeaseForm = () => {
       return;
     }
 
-    if (currentSectionId === 'user_info') {
+    if (currentSectionId === 'user_info_step') {
       setIsComplete(true);
       return;
     }
@@ -919,7 +920,7 @@ const CommercialLeaseForm = () => {
               Start Over
             </Button>
             <Button 
-              onClick={() => setCurrentSectionId('user_info')}
+              onClick={() => setCurrentSectionId('user_info_step')}
             >
               Continue to Generate PDF
             </Button>
@@ -930,7 +931,7 @@ const CommercialLeaseForm = () => {
   }
 
   // Handle user info step
-  if (currentSectionId === 'user_info') {
+  if (currentSectionId === 'user_info_step') {
     return (
       <div className="bg-gray-50 py-2 min-h-0">
         <Card className="max-w-4xl mx-auto bg-white px-4 my-2 rounded-lg shadow-sm">
@@ -997,29 +998,31 @@ const CommercialLeaseForm = () => {
             {renderSectionQuestions()}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={sectionHistory.length <= 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={() => handleNext()}
-            disabled={!canAdvance()}
-          >
-            {currentSectionId === 'confirmation' ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentSectionId !== 'user_info_step' && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={sectionHistory.length <= 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={() => handleNext()}
+              disabled={!canAdvance()}
+            >
+              {currentSectionId === 'confirmation' ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

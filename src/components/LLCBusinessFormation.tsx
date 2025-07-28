@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import UserInfoStep from "@/components/UserInfoStep";
+import { toast } from 'react-toastify';
 
 interface LLCFormationData {
   state: string;
@@ -28,7 +30,8 @@ interface Props {
 
 const LLCBusinessFormation: React.FC<Props> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 7;
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const totalSteps = 8;
   
   const [formData, setFormData] = useState<LLCFormationData>({
     state: '',
@@ -51,14 +54,30 @@ const LLCBusinessFormation: React.FC<Props> = ({ onClose }) => {
   };
 
   const handleNext = () => {
-    if (currentStep < totalSteps) {
+    if (currentStep < 7) {
       setCurrentStep(currentStep + 1);
+    } else if (currentStep === 7) {
+      setCurrentStep(8); // User info step
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const generatePDF = () => {
+    setIsGeneratingPDF(true);
+    try {
+      // ... existing PDF generation logic ...
+      // doc.save('llc-business-formation.pdf');
+      toast.success("Document generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate document");
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -443,6 +462,16 @@ const LLCBusinessFormation: React.FC<Props> = ({ onClose }) => {
       case 7:
         return renderFinalReviewStep();
 
+      case 8:
+        return (
+          <UserInfoStep
+            onBack={() => setCurrentStep(7)}
+            onGenerate={generatePDF}
+            documentType="LLC Business Formation"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -464,6 +493,8 @@ const LLCBusinessFormation: React.FC<Props> = ({ onClose }) => {
         return formData.fullName.trim() !== '' && formData.email.trim() !== '' && formData.phone.trim() !== '' && formData.companyName.trim() !== '';
       case 7:
         return true;
+      case 8:
+        return true; // User info step is always valid
       default:
         return true;
     }
@@ -493,34 +524,36 @@ const LLCBusinessFormation: React.FC<Props> = ({ onClose }) => {
       </Card>
 
       {/* Navigation */}
-      <div className="flex justify-between">
-        <Button
-          variant="outline"
-          onClick={currentStep === 1 ? onClose : handleBack}
-          className="flex items-center space-x-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>{currentStep === 1 ? 'Cancel' : 'Back'}</span>
-        </Button>
-
-        {currentStep === totalSteps ? (
-          <Button 
-            className="bg-green-600 hover:bg-green-700 flex items-center space-x-2"
-            disabled={!isStepValid()}
-          >
-            <span>Confirm Purchase</span>
-          </Button>
-        ) : (
-          <Button 
-            onClick={handleNext}
-            disabled={!isStepValid()}
+      {currentStep !== 8 && (
+        <div className="flex justify-between">
+          <Button
+            variant="outline"
+            onClick={currentStep === 1 ? onClose : handleBack}
             className="flex items-center space-x-2"
           >
-            <span>Continue</span>
-            <ArrowRight className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" />
+            <span>{currentStep === 1 ? 'Cancel' : 'Back'}</span>
           </Button>
-        )}
-      </div>
+
+          {currentStep === totalSteps ? (
+            <Button 
+              className="bg-green-600 hover:bg-green-700 flex items-center space-x-2"
+              disabled={!isStepValid()}
+            >
+              <span>Confirm Purchase</span>
+            </Button>
+          ) : (
+            <Button 
+              onClick={handleNext}
+              disabled={!isStepValid()}
+              className="flex items-center space-x-2"
+            >
+              <span>Continue</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -116,6 +117,13 @@ const sections: Record<string, Section> = {
     title: 'Secretary Information',
     description: 'Corporate Secretary details for certification',
     questions: ['secretary_name'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'Contact Information',
+    description: 'Provide your contact information to generate the document',
+    questions: ['user_info_step'],
     nextSectionId: 'confirmation'
   },
   'confirmation': {
@@ -176,7 +184,13 @@ const questions: Record<string, Question> = {
     id: 'secretary_name',
     type: 'text',
     text: 'Corporate Secretary Name:',
-    defaultNextId: 'confirmation'
+    defaultNextId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    type: 'confirmation',
+    text: 'Please review all information above and click "Complete" to generate your Corporate Bylaws.',
+    defaultNextId: ''
   },
   'confirmation': {
     id: 'confirmation',
@@ -192,6 +206,7 @@ const CorporateBylawsForm = () => {
   const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const currentSection = sections[currentSectionId];
 
@@ -200,7 +215,7 @@ const CorporateBylawsForm = () => {
   };
 
   const handleNext = () => {
-    if (currentSectionId === 'confirmation') {
+    if (currentSectionId === 'user_info_step') {
       setIsComplete(true);
       return;
     }
@@ -413,12 +428,16 @@ const CorporateBylawsForm = () => {
     if (currentSectionId === 'secretary_info') {
       return answers.secretary_name;
     }
+    if (currentSectionId === 'user_info_step') {
+      return answers.user_info_step;
+    }
     
     // Default validation
     return true;
   };
 
   const generateCorporateBylawsPDF = () => {
+    setIsGeneratingPDF(true);
     try {
       const doc = new jsPDF();
       
@@ -558,6 +577,8 @@ const CorporateBylawsForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Corporate Bylaws");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -631,6 +652,17 @@ const CorporateBylawsForm = () => {
     );
   }
 
+  if (currentSectionId === 'user_info_step') {
+    return (
+      <UserInfoStep
+        onBack={handleBack}
+        onGenerate={generateCorporateBylawsPDF}
+        documentType="Corporate Bylaws"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   // Safety check for currentSection
   if (!currentSection) {
     return (
@@ -683,29 +715,31 @@ const CorporateBylawsForm = () => {
             {renderSectionQuestions()}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={sectionHistory.length <= 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={() => handleNext()}
-            disabled={!canAdvance()}
-          >
-            {currentSectionId === 'confirmation' ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentSectionId !== 'user_info_step' && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={sectionHistory.length <= 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={() => handleNext()}
+              disabled={!canAdvance()}
+            >
+              {currentSectionId === 'confirmation' ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

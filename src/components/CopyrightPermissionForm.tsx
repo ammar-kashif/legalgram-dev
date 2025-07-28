@@ -11,6 +11,7 @@ import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -87,6 +88,7 @@ const CopyrightPermissionForm = () => {
     excerptMaterial: '',
     printedName: ''
   });
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const handleInputChange = (field: keyof CopyrightPermissionData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -125,7 +127,9 @@ const CopyrightPermissionForm = () => {
 
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
-    } else {
+    } else if (currentStep === 4) {
+      setCurrentStep(5); // User info step
+    } else if (currentStep === 5) {
       setIsComplete(true);
     }
   };
@@ -137,6 +141,7 @@ const CopyrightPermissionForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
     try {
       const doc = new jsPDF();
       
@@ -311,6 +316,8 @@ const CopyrightPermissionForm = () => {
     } catch (error) {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Copyright Permission Request");
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -650,6 +657,17 @@ const CopyrightPermissionForm = () => {
     );
   }
 
+  if (currentStep === 5) {
+    return (
+      <UserInfoStep
+        onBack={() => setCurrentStep(4)}
+        onGenerate={generatePDF}
+        documentType="Copyright Permission Request"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
       <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
@@ -678,29 +696,31 @@ const CopyrightPermissionForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={handleNext}
-            disabled={!canAdvance()}
-          >
-            {currentStep === 4 ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentStep !== 5 && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={handleNext}
+              disabled={!canAdvance()}
+            >
+              {currentStep === 4 ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

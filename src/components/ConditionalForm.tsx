@@ -15,6 +15,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -131,6 +132,13 @@ const sections: Record<string, Section> = {
     title: 'Occupancy Details',
     description: 'Rules regarding guests and occupancy',
     questions: ['max_guests', 'max_guest_days', 'early_termination_days'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'Contact Information',
+    description: 'Provide your contact information to generate the document',
+    questions: ['user_info_step'],
     nextSectionId: 'confirmation'
   },
   'confirmation': {
@@ -305,6 +313,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   const currentSection = sections[currentSectionId];
   
@@ -562,6 +571,7 @@ const ConditionalForm = () => {  const [currentSectionId, setCurrentSectionId] =
     return requiredQuestions.every(questionId => !!answers[questionId]);
   };
   const generateLeaseAgreementPDF = () => {
+    setIsGeneratingPDF(true);
     try {
       console.log("Generating PDF document...");
       const doc = new jsPDF();
@@ -845,6 +855,8 @@ The Landlord is unaware of any asbestos-containing construction materials or any
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate lease agreement");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
   const renderFormSummary = () => {
@@ -955,6 +967,17 @@ The Landlord is unaware of any asbestos-containing construction materials or any
   );
   }
 
+  if (currentSectionId === 'user_info_step') {
+    return (
+      <UserInfoStep
+        onBack={handleBack}
+        onGenerate={generateLeaseAgreementPDF}
+        documentType="Lease Agreement"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
       <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
@@ -985,29 +1008,31 @@ The Landlord is unaware of any asbestos-containing construction materials or any
           {renderSectionQuestions()}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={handleBack}
-          disabled={sectionHistory.length <= 1}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
-        </Button>
-        <Button 
-          onClick={() => handleNext()}
-          disabled={!canAdvance()}
-        >
-          {currentSectionId === 'confirmation' ? (
-            <>
-              Complete <Send className="w-4 h-4 ml-2" />
-            </>
-          ) : (
-            <>
-              Next <ArrowRight className="w-4 h-4 ml-2" />
-            </>
-          )}
-        </Button>
-      </CardFooter>
+      {currentSectionId !== 'user_info_step' && (
+        <CardFooter className="flex justify-between">
+          <Button 
+            variant="outline" 
+            onClick={handleBack}
+            disabled={sectionHistory.length <= 1}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+          </Button>
+          <Button 
+            onClick={() => handleNext()}
+            disabled={!canAdvance()}
+          >
+            {currentSectionId === 'confirmation' ? (
+              <>
+                Complete <Send className="w-4 h-4 ml-2" />
+              </>
+            ) : (
+              <>
+                Next <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   </div>
   );

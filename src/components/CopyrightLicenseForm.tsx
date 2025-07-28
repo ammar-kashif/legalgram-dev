@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -90,6 +91,7 @@ const CopyrightLicenseForm = () => {
     defaultNoticeDays: '',
     exclusiveOrNonExclusive: 'exclusive'
   });
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const handleInputChange = (field: keyof CopyrightLicenseData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -129,7 +131,9 @@ const CopyrightLicenseForm = () => {
 
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
-    } else {
+    } else if (currentStep === 4) {
+      setCurrentStep(5); // User info step
+    } else if (currentStep === 5) {
       setIsComplete(true);
     }
   };
@@ -141,6 +145,7 @@ const CopyrightLicenseForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
     const doc = new jsPDF();
     
     // Get proper names for display
@@ -386,8 +391,14 @@ const CopyrightLicenseForm = () => {
     doc.text(legalLines, 20, yPosition);
     
     doc.save('copyright-license-agreement.pdf');
-    toast.success("Copyright License Agreement PDF generated successfully!");
-  };
+    toast.success("Document generated successfully!");
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    toast.error("Failed to generate document");
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -684,6 +695,17 @@ const CopyrightLicenseForm = () => {
     );
   }
 
+  if (currentStep === 5) {
+    return (
+      <UserInfoStep
+        onBack={() => setCurrentStep(4)}
+        onGenerate={generatePDF}
+        documentType="Copyright License Agreement"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
       <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
@@ -712,29 +734,31 @@ const CopyrightLicenseForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={handleNext}
-            disabled={!canAdvance()}
-          >
-            {currentStep === 4 ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentStep !== 5 && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={handleNext}
+              disabled={!canAdvance()}
+            >
+              {currentStep === 4 ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

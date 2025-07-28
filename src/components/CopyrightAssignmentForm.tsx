@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -88,6 +89,7 @@ const CopyrightAssignmentForm = () => {
     copyrightedWorkTitle: '',
     workDescription: ''
   });
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const handleInputChange = (field: keyof CopyrightAssignmentData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -125,7 +127,9 @@ const CopyrightAssignmentForm = () => {
 
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
-    } else {
+    } else if (currentStep === 3) {
+      setCurrentStep(4); // User info step
+    } else if (currentStep === 4) {
       setIsComplete(true);
     }
   };
@@ -137,6 +141,7 @@ const CopyrightAssignmentForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
     const doc = new jsPDF();
     
     // Get proper names for display
@@ -351,8 +356,14 @@ const CopyrightAssignmentForm = () => {
     doc.text(descriptionLines, 20, 70);
     
     doc.save('copyright-assignment.pdf');
-    toast.success("Copyright Assignment PDF generated successfully!");
-  };
+    toast.success("Document generated successfully!");
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    toast.error("Failed to generate document");
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -633,6 +644,17 @@ const CopyrightAssignmentForm = () => {
     );
   }
 
+  if (currentStep === 4) {
+    return (
+      <UserInfoStep
+        onBack={() => setCurrentStep(3)}
+        onGenerate={generatePDF}
+        documentType="Copyright Assignment"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
       <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
@@ -661,29 +683,31 @@ const CopyrightAssignmentForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={handleNext}
-            disabled={!canAdvance()}
-          >
-            {currentStep === 3 ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentStep !== 4 && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={handleNext}
+              disabled={!canAdvance()}
+            >
+              {currentStep === 3 ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

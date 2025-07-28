@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import jsPDF from 'jspdf';
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -95,8 +96,8 @@ const ManufacturingLicenseForm = () => {
     licensorSignatureDate: "",
     manufacturerSignatureDate: ""
   });
-
-  const totalSteps = 5;
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const totalSteps = 6;
 
   const updateFormData = (field: keyof ManufacturingLicenseData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -116,8 +117,10 @@ const ManufacturingLicenseForm = () => {
   };
 
   const nextStep = () => {
-    if (currentStep < totalSteps) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
+    } else if (currentStep === 5) {
+      setCurrentStep(6); // User info step
     }
   };
 
@@ -128,141 +131,149 @@ const ManufacturingLicenseForm = () => {
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 20;
-    const maxWidth = pageWidth - 2 * margin;
-    let y = 20;
+    setIsGeneratingPDF(true);
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 20;
+      const maxWidth = pageWidth - 2 * margin;
+      let y = 20;
 
-    // Helper function to add text with word wrapping
-    const addText = (text: string, fontSize = 12, isBold = false) => {
-      doc.setFontSize(fontSize);
-      doc.setFont("helvetica", isBold ? "bold" : "normal");
-      const lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, margin, y);
-      y += (lines.length * fontSize * 0.4) + 5;
-    };
+      // Helper function to add text with word wrapping
+      const addText = (text: string, fontSize = 12, isBold = false) => {
+        doc.setFontSize(fontSize);
+        doc.setFont("helvetica", isBold ? "bold" : "normal");
+        const lines = doc.splitTextToSize(text, maxWidth);
+        doc.text(lines, margin, y);
+        y += (lines.length * fontSize * 0.4) + 5;
+      };
 
-    // Title
-    addText("MANUFACTURING LICENSE AGREEMENT", 16, true);
-    y += 5;
+      // Title
+      addText("MANUFACTURING LICENSE AGREEMENT", 16, true);
+      y += 5;
 
-    // Main content
-    addText(`This Manufacturing License Agreement ("Agreement") is entered into as of ${formData.effectiveDate}, by and between ${formData.licensorName}, of ${formData.licensorAddress}, and ${formData.manufacturerName}, of ${formData.manufacturerAddress}.`);
-    addText(`In this Agreement, the party granting the right to use the licensed property will be referred to as "${formData.licensorName}," and the party receiving the license to manufacture, produce, market, and sell the licensed product will be referred to as "${formData.manufacturerName}."`);
-    addText("The parties hereby agree to the following:");
-    y += 5;
+      // Main content
+      addText(`This Manufacturing License Agreement ("Agreement") is entered into as of ${formData.effectiveDate}, by and between ${formData.licensorName}, of ${formData.licensorAddress}, and ${formData.manufacturerName}, of ${formData.manufacturerAddress}.`);
+      addText(`In this Agreement, the party granting the right to use the licensed property will be referred to as "${formData.licensorName}," and the party receiving the license to manufacture, produce, market, and sell the licensed product will be referred to as "${formData.manufacturerName}."`);
+      addText("The parties hereby agree to the following:");
+      y += 5;
 
-    addText("1. GRANT OF LICENSE", 14, true);
-    addText(`${formData.licensorName} owns ${formData.productDescription} (the "Product"). Under the terms of this Agreement, ${formData.licensorName} grants to ${formData.manufacturerName} an exclusive license to manufacture, sell, and distribute the Product. The license includes all associated rights such as copyrights, patents, and related intellectual property required for manufacturing and distribution. This license applies only within the geographic region of ${formData.geographicRegion}.`);
-    y += 5;
+      addText("1. GRANT OF LICENSE", 14, true);
+      addText(`${formData.licensorName} owns ${formData.productDescription} (the "Product"). Under the terms of this Agreement, ${formData.licensorName} grants to ${formData.manufacturerName} an exclusive license to manufacture, sell, and distribute the Product. The license includes all associated rights such as copyrights, patents, and related intellectual property required for manufacturing and distribution. This license applies only within the geographic region of ${formData.geographicRegion}.`);
+      y += 5;
 
-    addText("2. PAYMENT OF ROYALTY", 14, true);
-    addText(`${formData.manufacturerName} shall pay ${formData.licensorName} a royalty of ${formData.royaltyAmount}, calculated as follows: ${formData.royaltyCalculation}.`);
-    addText("Each royalty payment shall be accompanied by a written statement detailing how the royalty amount was determined.");
-    y += 10;
+      addText("2. PAYMENT OF ROYALTY", 14, true);
+      addText(`${formData.manufacturerName} shall pay ${formData.licensorName} a royalty of ${formData.royaltyAmount}, calculated as follows: ${formData.royaltyCalculation}.`);
+      addText("Each royalty payment shall be accompanied by a written statement detailing how the royalty amount was determined.");
+      y += 10;
 
-    addText("3. MODIFICATIONS", 14, true);
-    addText(`No changes or modifications may be made to the Product unless prior written approval is obtained from ${formData.licensorName}.`);
-    y += 5;
+      addText("3. MODIFICATIONS", 14, true);
+      addText(`No changes or modifications may be made to the Product unless prior written approval is obtained from ${formData.licensorName}.`);
+      y += 5;
 
-    addText("4. QUALITY CONTROL AND APPROVAL", 14, true);
-    addText("(a) The manufactured goods must meet a high-quality standard and conform to a sample agreed upon by both parties.");
-    addText(`(b) Prior to full-scale manufacturing, ${formData.manufacturerName} must submit a sample of the Product at no cost to ${formData.licensorName} for review and approval.`);
-    addText(`(c) If ${formData.licensorName} fails to respond within thirty (30) days, the sample shall be deemed approved.`);
-    addText(`(d) No alterations or modifications to the approved design shall be made without prior written consent from ${formData.licensorName}.`);
-    addText(`(e) Any disputes relating to quality standards will be resolved in good faith by both parties. ${formData.licensorName} may allow modifications if approved in writing.`);
-    y += 5;
+      addText("4. QUALITY CONTROL AND APPROVAL", 14, true);
+      addText("(a) The manufactured goods must meet a high-quality standard and conform to a sample agreed upon by both parties.");
+      addText(`(b) Prior to full-scale manufacturing, ${formData.manufacturerName} must submit a sample of the Product at no cost to ${formData.licensorName} for review and approval.`);
+      addText(`(c) If ${formData.licensorName} fails to respond within thirty (30) days, the sample shall be deemed approved.`);
+      addText(`(d) No alterations or modifications to the approved design shall be made without prior written consent from ${formData.licensorName}.`);
+      addText(`(e) Any disputes relating to quality standards will be resolved in good faith by both parties. ${formData.licensorName} may allow modifications if approved in writing.`);
+      y += 5;
 
-    // Check if we need a new page
-    if (y > 250) {
-      doc.addPage();
-      y = 20;
+      // Check if we need a new page
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+
+      addText("5. DEFAULTS", 14, true);
+      addText(`If ${formData.manufacturerName} fails to meet its obligations, including royalty payments, ${formData.licensorName} shall have the right to cancel the Agreement by providing written notice. If the default is not resolved within the cure period, the Agreement may be terminated.`);
+      y += 5;
+
+      addText("6. ARBITRATION", 14, true);
+      addText("Any dispute under this Agreement that cannot be resolved amicably shall be submitted to binding arbitration in accordance with the rules of the American Arbitration Association. Each party shall bear its own costs, and the decision shall be final and enforceable.");
+      y += 5;
+
+      addText("7. RELATIONSHIP OF THE PARTIES", 14, true);
+      addText("This Agreement does not create any partnership, joint venture, or other relationship except that of licensor and licensee. Neither party may bind the other or represent itself as having such authority.");
+      y += 5;
+
+      addText("8. WARRANTIES", 14, true);
+      addText(`${formData.licensorName} represents and warrants that they are the legal owner of the Product and have the authority to grant the rights contained in this Agreement. ${formData.manufacturerName} agrees to manufacture and sell the Product according to the terms laid out herein and in compliance with all applicable laws.`);
+      y += 5;
+
+      addText("9. TRANSFER OF RIGHTS", 14, true);
+      addText("This Agreement shall be binding upon and benefit both parties and their successors. Neither party may assign its rights or obligations without prior written consent of the other.");
+      y += 5;
+
+      addText("10. INDEMNIFICATION", 14, true);
+      addText(`${formData.manufacturerName} agrees to indemnify, defend, and hold harmless ${formData.licensorName}, its officers, employees, and agents from any losses, damages, or claims resulting from the use or sale of the Product, including third-party intellectual property claims.`);
+      y += 5;
+
+      // Check if we need a new page
+      if (y > 200) {
+        doc.addPage();
+        y = 20;
+      }
+
+      addText("11. TERMINATION", 14, true);
+      addText(`This Agreement may be terminated by either party with thirty (30) days' written notice. Either party may also terminate immediately in the event of a material breach if not cured within the notice period. Upon termination, ${formData.manufacturerName} shall cease production and return all materials provided by ${formData.licensorName}.`);
+      y += 5;
+
+      addText("12. CONFIDENTIALITY", 14, true);
+      addText("Each party shall keep the contents and financial details of this Agreement confidential. Neither party shall disclose confidential information without the other's prior written approval. This obligation survives termination of the Agreement.");
+      y += 5;
+
+      addText("13. ENTIRE AGREEMENT", 14, true);
+      addText("This Agreement represents the entire agreement between the parties and supersedes all prior understandings, whether oral or written. Any amendments must be made in writing and signed by both parties.");
+      y += 5;
+
+      addText("14. SECTION HEADINGS", 14, true);
+      addText("Headings used in this Agreement are for convenience only and shall not affect the interpretation of the provisions herein.");
+      y += 5;
+
+      addText("15. AMENDMENT", 14, true);
+      addText("This Agreement may be changed or amended only by a written instrument signed by both parties.");
+      y += 5;
+
+      addText("16. SEVERABILITY", 14, true);
+      addText("If any provision of this Agreement is held to be invalid or unenforceable, the remaining provisions shall remain in full force and effect.");
+      y += 5;
+
+      addText("17. WAIVER OF CONTRACTUAL RIGHT", 14, true);
+      addText("The failure to enforce any provision of this Agreement shall not constitute a waiver of that right or any other provision.");
+      y += 5;
+
+      addText("18. APPLICABLE LAW", 14, true);
+      addText(`This Agreement shall be governed by the laws of the State of ${formData.governingState}.`);
+      y += 5;
+
+      addText("19. SIGNATURES", 14, true);
+      addText(`This Agreement shall be signed on behalf of ${formData.licensorName} by ${formData.licensorSignatory} and on behalf of ${formData.manufacturerName} by ${formData.manufacturerSignatory}.`);
+      y += 10;
+
+      // Check if we need a new page for signatures
+      if (y > 220) {
+        doc.addPage();
+        y = 20;
+      }
+
+      addText("Manufacturer:", 12, true);
+      addText(`By: ${formData.manufacturerSignatory}`);
+      addText(`Date: ${formData.manufacturerSignatureDate}`);
+      y += 5;
+
+      addText("Licensor:", 12, true);
+      addText(`By: ${formData.licensorSignatory}`);
+      addText(`Date: ${formData.licensorSignatureDate}`);
+
+      doc.save('manufacturing-license-agreement.pdf');
+      toast.success("Document generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate document");
+    } finally {
+      setIsGeneratingPDF(false);
     }
-
-    addText("5. DEFAULTS", 14, true);
-    addText(`If ${formData.manufacturerName} fails to meet its obligations, including royalty payments, ${formData.licensorName} shall have the right to cancel the Agreement by providing written notice. If the default is not resolved within the cure period, the Agreement may be terminated.`);
-    y += 5;
-
-    addText("6. ARBITRATION", 14, true);
-    addText("Any dispute under this Agreement that cannot be resolved amicably shall be submitted to binding arbitration in accordance with the rules of the American Arbitration Association. Each party shall bear its own costs, and the decision shall be final and enforceable.");
-    y += 5;
-
-    addText("7. RELATIONSHIP OF THE PARTIES", 14, true);
-    addText("This Agreement does not create any partnership, joint venture, or other relationship except that of licensor and licensee. Neither party may bind the other or represent itself as having such authority.");
-    y += 5;
-
-    addText("8. WARRANTIES", 14, true);
-    addText(`${formData.licensorName} represents and warrants that they are the legal owner of the Product and have the authority to grant the rights contained in this Agreement. ${formData.manufacturerName} agrees to manufacture and sell the Product according to the terms laid out herein and in compliance with all applicable laws.`);
-    y += 5;
-
-    addText("9. TRANSFER OF RIGHTS", 14, true);
-    addText("This Agreement shall be binding upon and benefit both parties and their successors. Neither party may assign its rights or obligations without prior written consent of the other.");
-    y += 5;
-
-    addText("10. INDEMNIFICATION", 14, true);
-    addText(`${formData.manufacturerName} agrees to indemnify, defend, and hold harmless ${formData.licensorName}, its officers, employees, and agents from any losses, damages, or claims resulting from the use or sale of the Product, including third-party intellectual property claims.`);
-    y += 5;
-
-    // Check if we need a new page
-    if (y > 200) {
-      doc.addPage();
-      y = 20;
-    }
-
-    addText("11. TERMINATION", 14, true);
-    addText(`This Agreement may be terminated by either party with thirty (30) days' written notice. Either party may also terminate immediately in the event of a material breach if not cured within the notice period. Upon termination, ${formData.manufacturerName} shall cease production and return all materials provided by ${formData.licensorName}.`);
-    y += 5;
-
-    addText("12. CONFIDENTIALITY", 14, true);
-    addText("Each party shall keep the contents and financial details of this Agreement confidential. Neither party shall disclose confidential information without the other's prior written approval. This obligation survives termination of the Agreement.");
-    y += 5;
-
-    addText("13. ENTIRE AGREEMENT", 14, true);
-    addText("This Agreement represents the entire agreement between the parties and supersedes all prior understandings, whether oral or written. Any amendments must be made in writing and signed by both parties.");
-    y += 5;
-
-    addText("14. SECTION HEADINGS", 14, true);
-    addText("Headings used in this Agreement are for convenience only and shall not affect the interpretation of the provisions herein.");
-    y += 5;
-
-    addText("15. AMENDMENT", 14, true);
-    addText("This Agreement may be changed or amended only by a written instrument signed by both parties.");
-    y += 5;
-
-    addText("16. SEVERABILITY", 14, true);
-    addText("If any provision of this Agreement is held to be invalid or unenforceable, the remaining provisions shall remain in full force and effect.");
-    y += 5;
-
-    addText("17. WAIVER OF CONTRACTUAL RIGHT", 14, true);
-    addText("The failure to enforce any provision of this Agreement shall not constitute a waiver of that right or any other provision.");
-    y += 5;
-
-    addText("18. APPLICABLE LAW", 14, true);
-    addText(`This Agreement shall be governed by the laws of the State of ${formData.governingState}.`);
-    y += 5;
-
-    addText("19. SIGNATURES", 14, true);
-    addText(`This Agreement shall be signed on behalf of ${formData.licensorName} by ${formData.licensorSignatory} and on behalf of ${formData.manufacturerName} by ${formData.manufacturerSignatory}.`);
-    y += 10;
-
-    // Check if we need a new page for signatures
-    if (y > 220) {
-      doc.addPage();
-      y = 20;
-    }
-
-    addText("Manufacturer:", 12, true);
-    addText(`By: ${formData.manufacturerSignatory}`);
-    addText(`Date: ${formData.manufacturerSignatureDate}`);
-    y += 5;
-
-    addText("Licensor:", 12, true);
-    addText(`By: ${formData.licensorSignatory}`);
-    addText(`Date: ${formData.licensorSignatureDate}`);
-
-    doc.save('manufacturing-license-agreement.pdf');
-    toast.success("Manufacturing License Agreement PDF generated successfully!");
   };
 
   const renderStep = () => {
@@ -536,6 +547,16 @@ const ManufacturingLicenseForm = () => {
           </Card>
         );
 
+      case 6:
+        return (
+          <UserInfoStep
+            onBack={() => setCurrentStep(5)}
+            onGenerate={generatePDF}
+            documentType="Manufacturing License Agreement"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -569,28 +590,30 @@ const ManufacturingLicenseForm = () => {
 
         {renderStep()}
 
-        <div className="flex justify-between mt-8">
-          <Button
-            variant="outline"
-            onClick={prevStep}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Previous
-          </Button>
+        {currentStep !== 6 && (
+          <div className="flex justify-between mt-8">
+            <Button
+              variant="outline"
+              onClick={prevStep}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Button>
 
-          {currentStep === totalSteps ? (
-            <Button onClick={generatePDF} className="bg-green-600 hover:bg-green-700">
-              <Download className="w-4 h-4 mr-2" />
-              Generate PDF
-            </Button>
-          ) : (
-            <Button onClick={nextStep}>
-              Next
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          )}
-        </div>
+            {currentStep === totalSteps ? (
+              <Button onClick={generatePDF} className="bg-green-600 hover:bg-green-700">
+                <Download className="w-4 h-4 mr-2" />
+                Generate PDF
+              </Button>
+            ) : (
+              <Button onClick={nextStep}>
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

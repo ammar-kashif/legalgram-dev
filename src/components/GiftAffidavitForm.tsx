@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -124,13 +125,20 @@ const sections: Record<string, Section> = {
     title: 'Gift Details',
     description: 'Specify the gift description and relationship',
     questions: ['gift_description', 'relationship', 'transfer_date'],
-    nextSectionId: 'governing_law'
+    nextSectionId: 'transfer_details'
   },
-  'governing_law': {
-    id: 'governing_law',
-    title: 'Governing Law',
-    description: 'Specify the jurisdiction that will govern this affidavit',
-    questions: ['governing_jurisdiction'],
+  'transfer_details': {
+    id: 'transfer_details',
+    title: 'Transfer Details',
+    description: 'Provide details about the transfer date and any side deals',
+    questions: ['transfer_date', 'side_deals'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'Contact Information',
+    description: 'Provide your contact information to generate the document',
+    questions: ['user_info_step'],
     nextSectionId: 'confirmation'
   },
   'confirmation': {
@@ -204,6 +212,7 @@ const GiftAffidavitForm = () => {
   const [recipient, setRecipient] = useState<Party>({ name: '', address: '', city: '', state: '' });
   const [giftDetails, setGiftDetails] = useState<GiftDetails>({ description: '', relationship: '' });
   const [transferDate, setTransferDate] = useState<Date>();
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   const currentSection = sections[currentSectionId];
 
@@ -280,7 +289,7 @@ const GiftAffidavitForm = () => {
   const handleNext = () => {
     if (!canAdvance()) return;
 
-    if (currentSectionId === 'confirmation') {
+    if (currentSectionId === 'user_info_step') {
       setIsComplete(true);
       return;
     }
@@ -301,6 +310,7 @@ const GiftAffidavitForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
     const doc = new jsPDF();
     
     // Title
@@ -418,8 +428,15 @@ const GiftAffidavitForm = () => {
     yPosition += 10;
     doc.text("to assist you in this matter.", 20, yPosition);
     
-    doc.save('gift-affidavit.pdf');
-    toast.success("Gift Affidavit PDF generated successfully!");
+    try {
+      doc.save('gift-affidavit.pdf');
+      toast.success("Document generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate document");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const renderSectionQuestions = () => {
@@ -670,6 +687,17 @@ const GiftAffidavitForm = () => {
   );
   }
 
+  if (currentSectionId === 'user_info_step') {
+    return (
+      <UserInfoStep
+        onBack={handleBack}
+        onGenerate={generatePDF}
+        documentType="Gift Affidavit"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
       <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
@@ -700,29 +728,31 @@ const GiftAffidavitForm = () => {
           {renderSectionQuestions()}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={handleBack}
-          disabled={sectionHistory.length <= 1}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
-        </Button>
-        <Button 
-          onClick={() => handleNext()}
-          disabled={!canAdvance()}
-        >
-          {currentSectionId === 'confirmation' ? (
-            <>
-              Complete <Send className="w-4 h-4 ml-2" />
-            </>
-          ) : (
-            <>
-              Next <ArrowRight className="w-4 h-4 ml-2" />
-            </>
-          )}
-        </Button>
-      </CardFooter>
+      {currentSectionId !== 'user_info_step' && (
+        <CardFooter className="flex justify-between">
+          <Button 
+            variant="outline" 
+            onClick={handleBack}
+            disabled={sectionHistory.length <= 1}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+          </Button>
+          <Button 
+            onClick={() => handleNext()}
+            disabled={!canAdvance()}
+          >
+            {currentSectionId === 'confirmation' ? (
+              <>
+                Complete <Send className="w-4 h-4 ml-2" />
+              </>
+            ) : (
+              <>
+                Next <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
     </div>
   );

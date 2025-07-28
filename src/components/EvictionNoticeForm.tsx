@@ -125,7 +125,9 @@ const EvictionNoticeForm = () => {
 
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
-    } else {
+    } else if (currentStep === 4) {
+      setCurrentStep(5); // User info step
+    } else if (currentStep === 5) {
       setIsComplete(true);
     }
   };
@@ -517,6 +519,17 @@ const EvictionNoticeForm = () => {
     );
   }
 
+  if (currentStep === 5) {
+    return (
+      <UserInfoStep
+        onBack={() => setCurrentStep(4)}
+        onGenerate={generatePDF}
+        documentType="Eviction Notice"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm p-4">
       <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
@@ -545,7 +558,7 @@ const EvictionNoticeForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
-        {currentStep !== 4 && (
+        {currentStep !== 5 && (
         <CardFooter className="flex justify-between">
           <Button 
             variant="outline" 

@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -137,6 +138,13 @@ const sections: Record<string, Section> = {
     title: 'Contact Addresses',
     description: 'Landlord and tenant addresses for notices',
     questions: ['landlord_address', 'landlord_city_state', 'tenant_address', 'tenant_city_state'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'Contact Information',
+    description: 'Provide your contact information to generate the document',
+    questions: ['user_info_step'],
     nextSectionId: 'confirmation'
   },
   'confirmation': {
@@ -357,6 +365,7 @@ const CondominiumLeaseForm = () => {
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [datePickerStates, setDatePickerStates] = useState<Record<string, boolean>>({});
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   const currentSection = sections[currentSectionId];
 
@@ -606,6 +615,7 @@ const CondominiumLeaseForm = () => {
   };
 
   const generateCondominiumLeasePDF = () => {
+    setIsGeneratingPDF(true);
     try {
       console.log("Generating Condominium Lease Agreement PDF...");
       const doc = new jsPDF();
@@ -917,6 +927,8 @@ const CondominiumLeaseForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Condominium Lease Agreement");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -1031,6 +1043,18 @@ const CondominiumLeaseForm = () => {
     );
   }
 
+  // In the render logic, render UserInfoStep for user_info_step section
+  if (currentSectionId === 'user_info_step') {
+    return (
+      <UserInfoStep
+        onBack={handleBack}
+        onGenerate={generateCondominiumLeasePDF}
+        documentType="Condominium Lease Agreement"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   return (
     <div className="bg-gray-50 py-2 min-h-0">
       <Card className="max-w-4xl mx-auto bg-white px-4 my-2 rounded-lg shadow-sm">
@@ -1061,29 +1085,31 @@ const CondominiumLeaseForm = () => {
             {renderSectionQuestions()}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={sectionHistory.length <= 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={() => handleNext()}
-            disabled={!canAdvance()}
-          >
-            {currentSectionId === 'confirmation' ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentSectionId !== 'user_info_step' && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={sectionHistory.length <= 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={() => handleNext()}
+              disabled={!canAdvance()}
+            >
+              {currentSectionId === 'confirmation' ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

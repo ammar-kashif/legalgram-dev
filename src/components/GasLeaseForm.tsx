@@ -9,6 +9,7 @@ import { Country, State, City } from 'country-state-city';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
+import UserInfoStep from "@/components/UserInfoStep";
 
 interface FormData {
   // Agreement Date and Parties
@@ -68,6 +69,8 @@ const GasLeaseForm = () => {
     selectedState: '',
     selectedCity: ''
   });
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const totalSteps = 5;
 
   const countries = Country.getAllCountries();
   const states = formData.selectedCountry ? State.getStatesOfCountry(formData.selectedCountry) : [];
@@ -106,6 +109,7 @@ const GasLeaseForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const margin = 20;
@@ -244,13 +248,21 @@ Additional Assistance
     addText(agreementText);
 
     // Save the PDF
-    doc.save('Gas_Lease_Agreement.pdf');
-    toast.success("PDF generated successfully!");
-  };
+    doc.save('gas-lease-agreement.pdf');
+    toast.success("Document generated successfully!");
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    toast.error("Failed to generate document");
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
   const nextStep = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
+    } else if (currentStep === 4) {
+      setCurrentStep(5); // User info step
     }
   };
 
@@ -533,6 +545,17 @@ Additional Assistance
     }
   };
 
+  if (currentStep === 5) {
+    return (
+      <UserInfoStep
+        onBack={() => setCurrentStep(4)}
+        onGenerate={generatePDF}
+        documentType="Gas Lease Agreement"
+        isGenerating={isGeneratingPDF}
+      />
+    );
+  }
+
   return (
     <div className="bg-gray-50">
       <div className="max-w-4xl mx-auto p-6">
@@ -551,36 +574,38 @@ Additional Assistance
             <CardTitle className="flex items-center justify-between">
               <span>Gas Lease Agreement Form</span>
               <span className="text-sm font-normal text-gray-500">
-                Step {currentStep} of 4
+                Step {currentStep} of {totalSteps}
               </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {renderStepContent()}
 
-            <div className="flex justify-between mt-8">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 1}
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Previous
-              </Button>
+            {currentStep !== 5 && (
+              <div className="flex justify-between mt-8">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Previous
+                </Button>
 
-              {currentStep < 4 ? (
-                <Button type="button" onClick={nextStep}>
-                  Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              ) : (
-                <Button type="button" onClick={generatePDF}>
-                  Generate PDF
-                  <Download className="w-4 h-4 ml-2" />
-                </Button>
-              )}
-            </div>
+                {currentStep < 4 ? (
+                  <Button type="button" onClick={nextStep}>
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                ) : (
+                  <Button type="button" onClick={generatePDF}>
+                    Generate PDF
+                    <Download className="w-4 h-4 ml-2" />
+                  </Button>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
