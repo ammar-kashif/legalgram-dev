@@ -294,7 +294,7 @@ const AgreementToSellForm = () => {
     }
   };
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     setIsGeneratingPDF(true);
     
     try {

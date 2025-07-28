@@ -11,6 +11,7 @@ import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -86,6 +87,7 @@ const BusinessPlanForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<BusinessPlanData>({
     state: '',
     country: '',
@@ -165,6 +167,8 @@ const BusinessPlanForm = () => {
         return !!(formData.startupCosts && formData.monthlyExpenses && formData.monthlyRevenue && formData.breakEvenMonths);
       case 11:
         return !!(formData.yearEndProfit && formData.netMargin && formData.unitPrice && formData.monthlySales);
+      case 12:
+        return true;
       default:
         return false;
     }
@@ -173,7 +177,7 @@ const BusinessPlanForm = () => {
   const handleNext = () => {
     if (!canAdvance()) return;
 
-    if (currentStep < 11) {
+  if (currentStep < 12) {
       setCurrentStep(currentStep + 1);
     } else {
       setIsComplete(true);
@@ -186,7 +190,9 @@ const BusinessPlanForm = () => {
     }
   };
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
+    setIsGeneratingPDF(true);
+    
     try {
       const doc = new jsPDF();
       
@@ -317,6 +323,8 @@ const BusinessPlanForm = () => {
     } catch (error) {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Business Plan");
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -772,6 +780,16 @@ const BusinessPlanForm = () => {
           </div>
         );
 
+      case 12:
+        return (
+          <UserInfoStep
+            onBack={handleBack}
+            onGenerate={generatePDF}
+            documentType="Business Plan"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -837,6 +855,8 @@ const BusinessPlanForm = () => {
         return "Financial Basics";
       case 11:
         return "Financial Projections";
+      case 12:
+        return "Contact Information";
       default:
         return "";
     }
@@ -866,6 +886,8 @@ const BusinessPlanForm = () => {
         return "Establish basic financial requirements";
       case 11:
         return "Complete financial projections and pricing";
+      case 12:
+        return "Enter your contact information to generate the document";
       default:
         return "";
     }
@@ -949,7 +971,7 @@ const BusinessPlanForm = () => {
           <CardDescription>
             {getStepDescription()}
             <div className="mt-2 text-sm">
-              Step {currentStep} of 11
+              Step {currentStep} of 12
             </div>
           </CardDescription>
           {currentStep === 1 && (
@@ -983,7 +1005,11 @@ const BusinessPlanForm = () => {
           >
             {currentStep === 11 ? (
               <>
-                Complete <Send className="w-4 h-4 ml-2" />
+                Continue <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            ) : currentStep === 12 ? (
+              <>
+                Generate PDF <Send className="w-4 h-4 ml-2" />
               </>
             ) : (
               <>

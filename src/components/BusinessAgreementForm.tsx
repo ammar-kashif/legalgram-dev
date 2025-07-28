@@ -152,7 +152,7 @@ const BusinessAgreementForm = () => {
     }
   };
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     setIsGeneratingPDF(true);
     
     try {

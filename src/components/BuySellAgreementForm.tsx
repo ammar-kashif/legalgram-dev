@@ -244,10 +244,6 @@ const BuySellAgreementForm = () => {
       return;
     }
 
-    if (currentSectionId === 'user_info') {
-      setIsComplete(true);
-      return;
-    }
 
     const nextSectionId = currentSection.nextSectionId;
     if (nextSectionId) {

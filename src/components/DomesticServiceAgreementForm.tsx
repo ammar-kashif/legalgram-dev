@@ -931,44 +931,69 @@ const DomesticServiceAgreementForm = () => {
     );
   };
 
+  // Show UserInfoStep after confirmation
+  if (currentSectionId === 'user_info') {
+    return (
+      <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+        <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl text-green-600">Domestic Service Agreement</CardTitle>
+            <CardDescription>
+              Enter your contact information to generate your document
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UserInfoStep
+              onBack={handleBack}
+              onGenerate={generateDomesticServiceAgreementPDF}
+              documentType="Domestic Service Agreement"
+              isGenerating={isGeneratingPDF}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (isComplete) {
     return (
-    <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
-      <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl text-green-600">Domestic Service Agreement</CardTitle>
-          <CardDescription>
-            Review your Domestic Service Agreement details below before generating the final document.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {renderFormSummary()}
-        </CardContent>
-        <CardFooter className="flex justify-between">          <Button 
-            variant="outline"
-            onClick={() => {
-              setAnswers({});
-              setSectionHistory(['location_selection']);
-              setCurrentSectionId('location_selection');
-              setIsComplete(false);
-              setMaster({ name: '', address: '', cnic: '' });
-              setServant({ name: '', relationshipField: '', address: '', cnic: '' });
-              setWitness1({ name: '', cnic: '' });
-              setWitness2({ name: '', cnic: '' });
-              setAgreementDate(undefined);
-            }}
-          >
-            Start Over
-          </Button>
-          <Button 
-            onClick={generateDomesticServiceAgreementPDF}
-          >
-            Generate Agreement
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
-  );
+      <div className="bg-gray-50 min-h-0 bg-white rounded-lg shadow-sm">
+        <Card className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm">
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl text-green-600">Domestic Service Agreement</CardTitle>
+            <CardDescription>
+              Review your Domestic Service Agreement details below before generating the final document.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {renderFormSummary()}
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline"
+              onClick={() => {
+                setAnswers({});
+                setSectionHistory(['location_selection']);
+                setCurrentSectionId('location_selection');
+                setIsComplete(false);
+                setMaster({ name: '', address: '', cnic: '' });
+                setServant({ name: '', relationshipField: '', address: '', cnic: '' });
+                setWitness1({ name: '', cnic: '' });
+                setWitness2({ name: '', cnic: '' });
+                setAgreementDate(undefined);
+              }}
+            >
+              Start Over
+            </Button>
+            <Button 
+              onClick={generateDomesticServiceAgreementPDF}
+            >
+              Generate Agreement
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
   }
 
   // Safety check for currentSection

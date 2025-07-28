@@ -195,7 +195,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info'
+  },
+  'user_info': {
+    id: 'user_info',
+    title: 'Contact Information',
+    description: 'Enter your contact information to generate the document',
+    questions: []
   }
 };
 
@@ -371,7 +378,6 @@ const GeneralContractForm = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
-  const [showUserInfo, setShowUserInfo] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [items, setItems] = useState<Item[]>([{ description: '', quantity: '', unitPrice: '', totalPrice: '' }]);
   const [buyer, setBuyer] = useState<Party>({ name: '', type: '', stateCountry: '', address: '' });
@@ -381,10 +387,16 @@ const GeneralContractForm = () => {
 
   const handleNext = () => {
     try {
+      if (currentSectionId === 'confirmation') {
+        setCurrentSectionId('user_info');
+        setSectionHistory([...sectionHistory, 'user_info']);
+        return;
+      }
+      
       const nextSectionId = currentSection?.nextSectionId;
       
       if (!nextSectionId) {
-        setShowUserInfo(true);
+        setIsComplete(true);
         return;
       }
       
