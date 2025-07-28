@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import jsPDF from 'jspdf';
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -113,6 +114,7 @@ interface RestaurantLeaseData {
 const RestaurantLeaseForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<RestaurantLeaseData>({
     state: "",
     country: "",
@@ -150,7 +152,7 @@ const RestaurantLeaseForm = () => {
     notaryName: ""
   });
 
-  const totalSteps = 7;
+  const totalSteps = 8;
 
   const updateFormData = (field: keyof RestaurantLeaseData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -182,7 +184,10 @@ const RestaurantLeaseForm = () => {
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF();
+    setIsGeneratingPDF(true);
+    
+    try {
+      const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const margin = 20;
     const maxWidth = pageWidth - 2 * margin;
@@ -450,7 +455,13 @@ const RestaurantLeaseForm = () => {
 
     doc.save('restaurant-lease-agreement.pdf');
     toast.success("Restaurant Lease Agreement PDF generated successfully!");
-  };
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    toast.error("Failed to generate document");
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
   const renderStep = () => {
     switch (currentStep) {
@@ -950,6 +961,16 @@ const RestaurantLeaseForm = () => {
           </Card>
         );
 
+      case 8:
+        return (
+          <UserInfoStep
+            onBack={prevStep}
+            onGenerate={generatePDF}
+            documentType="Restaurant Lease Agreement"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -983,28 +1004,30 @@ const RestaurantLeaseForm = () => {
 
         {renderStep()}
 
-        <div className="flex justify-between mt-8">
-          <Button
-            variant="outline"
-            onClick={prevStep}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Previous
-          </Button>
+        {currentStep !== 8 && (
+          <div className="flex justify-between mt-8">
+            <Button
+              variant="outline"
+              onClick={prevStep}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Button>
 
-          {currentStep === totalSteps ? (
-            <Button onClick={generatePDF} className="bg-green-600 hover:bg-green-700">
-              <Download className="w-4 h-4 mr-2" />
-              Generate PDF
-            </Button>
-          ) : (
-            <Button onClick={nextStep}>
-              Next
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          )}
-        </div>
+            {currentStep === 7 ? (
+              <Button onClick={nextStep}>
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            ) : (
+              <Button onClick={nextStep}>
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

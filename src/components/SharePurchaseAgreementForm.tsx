@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -170,7 +171,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'User Information',
+    description: 'Enter your information to generate the document',
+    questions: []
   }
 };
 
@@ -269,6 +277,7 @@ const SharePurchaseAgreementForm = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [seller, setSeller] = useState<Party>({ name: '', address: '' });
   const [buyer, setBuyer] = useState<Party>({ name: '', address: '' });
   const [company, setCompany] = useState<Company>({ name: '', incorporationNumber: '', jurisdiction: '', sharesSold: '' });
@@ -712,13 +721,24 @@ const SharePurchaseAgreementForm = () => {
 
   // Override the existing shareholder question rendering
   const renderSectionQuestionsOverride = () => {
+    if (currentSectionId === 'user_info_step') {
+      return (
+        <UserInfoStep
+          onComplete={generateSharePurchaseAgreementPDF}
+          isGenerating={isGeneratingPDF}
+          documentType="Share Purchase Agreement"
+        />
+      );
+    }
+    
     return currentSection.questions.map(questionId => {
       if (questionId === 'existing_shareholder_info') {
         return renderExistingShareholderInput();
       }
       return renderQuestionInput(questionId);
     });
-  };  const generateSharePurchaseAgreementPDF = () => {
+  };  const generateSharePurchaseAgreementPDF = async (userInfo?: { name: string; email: string; phone: string }) => {
+    setIsGeneratingPDF(true);
     try {
       console.log("Generating Share Purchase Agreement PDF...");
       const doc = new jsPDF();
@@ -955,6 +975,8 @@ const SharePurchaseAgreementForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Share Purchase Agreement");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -1117,27 +1139,31 @@ const SharePurchaseAgreementForm = () => {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={handleBack}
-          disabled={sectionHistory.length <= 1}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
-        </Button>
-        <Button 
-          onClick={() => handleNext()}
-          disabled={!canAdvance()}
-        >
-          {currentSectionId === 'confirmation' ? (
-            <>
-              Complete <Send className="w-4 h-4 ml-2" />
-            </>
-          ) : (
-            <>
-              Next <ArrowRight className="w-4 h-4 ml-2" />
-            </>
-          )}
-        </Button>
+        {currentSectionId !== 'user_info_step' && (
+          <>
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={sectionHistory.length <= 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={() => handleNext()}
+              disabled={!canAdvance()}
+            >
+              {currentSectionId === 'confirmation' ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </>
+        )}
       </CardFooter>
     </Card>
   </div>

@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -129,7 +130,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'User Information',
+    description: 'Enter your information to generate the document',
+    questions: []
   }
 };
 
@@ -247,6 +255,7 @@ const RentIncreaseForm = () => {
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
   const [datePickerStates, setDatePickerStates] = useState<Record<string, boolean>>({});
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   const currentSection = sections[currentSectionId];
 
@@ -459,11 +468,23 @@ const RentIncreaseForm = () => {
   };
 
   const renderSectionQuestions = () => {
+    if (currentSectionId === 'user_info_step') {
+      return (
+        <UserInfoStep
+          onBack={handleBack}
+          onGenerate={generatePDF}
+          documentType="Rent Increase Agreement"
+          isGenerating={isGeneratingPDF}
+        />
+      );
+    }
+    
     return currentSection.questions.map(questionId => renderQuestionInput(questionId));
   };
 
   const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
+    if (currentSectionId === 'user_info_step') return false; // Handled by UserInfoStep component
     
     // Special validation for different sections
     if (currentSectionId === 'location_selection') {
@@ -792,6 +813,100 @@ const RentIncreaseForm = () => {
     }
   };
 
+  const generatePDF = () => {
+    setIsGeneratingPDF(true);
+    
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 20;
+      const maxWidth = pageWidth - 2 * margin;
+      let y = 20;
+
+      // Helper function to add text with word wrapping
+      const addText = (text: string, fontSize = 11, isBold = false) => {
+        doc.setFontSize(fontSize);
+        doc.setFont("helvetica", isBold ? "bold" : "normal");
+        const lines = doc.splitTextToSize(text, maxWidth);
+        doc.text(lines, margin, y);
+        y += (lines.length * fontSize * 0.4) + 3;
+      };
+
+      const addSpace = (space = 5) => {
+        y += space;
+      };
+
+      // Title
+      addText("RENT INCREASE AGREEMENT", 16, true);
+      addSpace();
+
+      // Agreement date
+      if (answers.effective_date) {
+        const formattedDate = format(new Date(answers.effective_date), 'MMMM d, yyyy');
+        addText(`This Rent Increase Agreement is entered into on ${formattedDate}.`);
+      }
+      addSpace();
+
+      // Parties
+      addText("PARTIES", 12, true);
+      addText(`Landlord: ${answers.landlord_name || '[LANDLORD NAME]'}`);
+      addText(`Address: ${answers.landlord_address || '[LANDLORD ADDRESS]'}, ${answers.landlord_city_state_zip || '[CITY, STATE ZIP]'}`);
+      if (answers.landlord_email) {
+        addText(`Email: ${answers.landlord_email}`);
+      }
+      if (answers.landlord_phone) {
+        addText(`Phone: ${answers.landlord_phone}`);
+      }
+      addSpace();
+
+      addText(`Tenant: ${answers.tenant_name || '[TENANT NAME]'}`);
+      addText(`Premises: ${answers.premises_address || '[PREMISES ADDRESS]'}`);
+      addSpace();
+
+      // Original lease information
+      addText("ORIGINAL LEASE INFORMATION", 12, true);
+      if (answers.original_lease_date) {
+        const originalDate = format(new Date(answers.original_lease_date), 'MMMM d, yyyy');
+        addText(`Original Lease Date: ${originalDate}`);
+      }
+      addText(`Current Monthly Rent: $${answers.current_rent || '[CURRENT RENT]'}`);
+      addText(`Current Due Day: ${answers.current_due_day || '[DUE DAY]'} of each month`);
+      addSpace();
+
+      // Rent increase details
+      addText("RENT INCREASE DETAILS", 12, true);
+      if (answers.increase_effective_date) {
+        const increaseDate = format(new Date(answers.increase_effective_date), 'MMMM d, yyyy');
+        addText(`Effective Date of Increase: ${increaseDate}`);
+      }
+      addText(`New Monthly Rent: $${answers.new_rent_amount || '[NEW RENT AMOUNT]'}`);
+      addText(`New Due Day: ${answers.new_due_day || '[NEW DUE DAY]'} of each month`);
+      addSpace();
+
+      // Terms
+      addText("TERMS AND CONDITIONS", 12, true);
+      addText("1. This agreement serves as an amendment to the original lease agreement.");
+      addText("2. All other terms and conditions of the original lease remain in full force and effect.");
+      addText("3. This rent increase shall take effect on the date specified above.");
+      addText("4. The tenant acknowledges receipt of this notice and agrees to the new rental amount.");
+      addSpace();
+
+      // Signatures
+      addText("SIGNATURES", 12, true);
+      addText("Landlord: _______________________ Date: _______");
+      addSpace(10);
+      addText("Tenant: _______________________ Date: _______");
+
+      doc.save('rent-increase-agreement.pdf');
+      toast.success("Rent Increase Agreement PDF generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate document");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
   const renderFormSummary = () => {
     return (
       <div className="space-y-2 text-black">
@@ -929,29 +1044,31 @@ const RentIncreaseForm = () => {
             {renderSectionQuestions()}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={sectionHistory.length <= 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={() => handleNext()}
-            disabled={!canAdvance()}
-          >
-            {currentSectionId === 'confirmation' ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentSectionId !== 'user_info_step' && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={sectionHistory.length <= 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={() => handleNext()}
+              disabled={!canAdvance()}
+            >
+              {currentSectionId === 'confirmation' ? (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

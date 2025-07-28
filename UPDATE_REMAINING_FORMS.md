@@ -87,6 +87,14 @@ Hide the default footer/navigation buttons when on the user info step:
 
 ## Forms to Update
 
+### ✅ Recently Completed Forms
+1. `SpecialPowerOfAttorneyForm.tsx` ✅ Completed
+2. `StorageSpaceLeaseForm.tsx` ✅ Completed  
+3. `SubleaseForm.tsx` ✅ Completed
+4. `TranscriptRequestForm.tsx` ✅ Completed (was already done)
+5. `TripleNetLeaseForm.tsx` ✅ Completed
+6. `WarehouseLeaseForm.tsx` ✅ Completed
+
 ### High Priority Forms (Most Used)
 1. `GeneralContractForm.tsx` ✅ Started
 2. `BusinessAgreementForm.tsx`

@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
+import UserInfoStep from "@/components/UserInfoStep";
 
 interface FormData {
   // Tenant Information
@@ -42,6 +43,7 @@ interface FormData {
 
 const SecurityDepositReturnLetter = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     tenantName: '',
     leaseDate: '',
@@ -96,7 +98,10 @@ const SecurityDepositReturnLetter = () => {
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF();
+    setIsGeneratingPDF(true);
+    
+    try {
+      const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const margin = 20;
     const lineHeight = 6;
@@ -155,10 +160,16 @@ ${formData.letterDate || '[Date]'}`;
     // Save the PDF
     doc.save('Security_Deposit_Return_Letter.pdf');
     toast.success("PDF generated successfully!");
-  };
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    toast.error("Failed to generate document");
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
   const nextStep = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -383,6 +394,16 @@ ${formData.letterDate || '[Date]'}`;
           </div>
         );
 
+      case 5:
+        return (
+          <UserInfoStep
+            onBack={prevStep}
+            onGenerate={generatePDF}
+            documentType="Security Deposit Return Letter"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -409,36 +430,38 @@ ${formData.letterDate || '[Date]'}`;
             <CardTitle className="flex items-center justify-between">
               <span>Security Deposit Return Letter Form</span>
               <span className="text-sm font-normal text-gray-500">
-                Step {currentStep} of 4
+                Step {currentStep} of 5
               </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {renderStepContent()}
 
-            <div className="flex justify-between mt-8">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 1}
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Previous
-              </Button>
+            {currentStep !== 5 && (
+              <div className="flex justify-between mt-8">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Previous
+                </Button>
 
-              {currentStep < 4 ? (
-                <Button type="button" onClick={nextStep}>
-                  Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              ) : (
-                <Button type="button" onClick={generatePDF}>
-                  Generate PDF
-                  <Download className="w-4 h-4 ml-2" />
-                </Button>
-              )}
-            </div>
+                {currentStep < 4 ? (
+                  <Button type="button" onClick={nextStep}>
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                ) : (
+                  <Button type="button" onClick={nextStep}>
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -11,6 +11,7 @@ import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -71,6 +72,7 @@ const RoyaltyAgreementForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<RoyaltyAgreementData>({
     state: '',
     country: '',
@@ -128,6 +130,8 @@ const RoyaltyAgreementForm = () => {
         );
       case 5:
         return !!(formData.governingState);
+      case 6:
+        return false; // Handled by UserInfoStep component
       default:
         return false;
     }
@@ -136,7 +140,7 @@ const RoyaltyAgreementForm = () => {
   const handleNext = () => {
     if (!canAdvance()) return;
 
-    if (currentStep < 5) {
+    if (currentStep < 6) {
       setCurrentStep(currentStep + 1);
     } else {
       setIsComplete(true);
@@ -150,6 +154,8 @@ const RoyaltyAgreementForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
+    
     try {
       const doc = new jsPDF();
       
@@ -304,6 +310,8 @@ const RoyaltyAgreementForm = () => {
     } catch (error) {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Royalty Agreement");
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -552,6 +560,16 @@ const RoyaltyAgreementForm = () => {
           </div>
         );
 
+      case 6:
+        return (
+          <UserInfoStep
+            onBack={() => setCurrentStep(5)}
+            onGenerate={generatePDF}
+            documentType="Royalty Agreement"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -700,7 +718,7 @@ const RoyaltyAgreementForm = () => {
           <CardDescription>
             {getStepDescription()}
             <div className="mt-2 text-sm">
-              Step {currentStep} of 5
+              Step {currentStep} of 6
             </div>
           </CardDescription>
           {currentStep === 1 && (
@@ -720,29 +738,31 @@ const RoyaltyAgreementForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={handleNext}
-            disabled={!canAdvance()}
-          >
-            {currentStep === 5 ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentStep !== 6 && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={handleNext}
+              disabled={!canAdvance()}
+            >
+              {currentStep === 5 ? (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

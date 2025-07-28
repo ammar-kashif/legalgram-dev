@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -142,7 +143,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'User Information',
+    description: 'Enter your information to generate the document',
+    questions: []
   }
 };
 
@@ -210,6 +218,7 @@ const SpecialPowerOfAttorneyForm = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [executant, setExecutant] = useState<Person>({ name: '', address: '', signature: '' });
   const [attorney, setAttorney] = useState<Person>({ name: '', address: '', signature: '' });
   const [witness1, setWitness1] = useState<Witness>({ name: '', address: '', nicNo: '' });
@@ -468,10 +477,21 @@ const SpecialPowerOfAttorneyForm = () => {
   };
 
   const renderSectionQuestions = () => {
+    if (currentSectionId === 'user_info_step') {
+      return (
+        <UserInfoStep
+          onComplete={generateSpecialPowerOfAttorneyPDF}
+          isGenerating={isGeneratingPDF}
+          documentType="Special Power of Attorney"
+        />
+      );
+    }
+    
     return currentSection.questions.map(questionId => renderQuestionInput(questionId));
   };
   const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
+    if (currentSectionId === 'user_info_step') return false; // Handled by UserInfoStep component
     
     // Special validation for different sections
     if (currentSectionId === 'location_selection') {
@@ -497,7 +517,8 @@ const SpecialPowerOfAttorneyForm = () => {
     return true;
   };
 
-  const generateSpecialPowerOfAttorneyPDF = () => {
+  const generateSpecialPowerOfAttorneyPDF = async (userInfo?: { name: string; email: string; phone: string }) => {
+    setIsGeneratingPDF(true);
     try {
       console.log("Generating Special Power of Attorney PDF...");
       const doc = new jsPDF();
@@ -751,6 +772,8 @@ const SpecialPowerOfAttorneyForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Special Power of Attorney");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
   const renderFormSummary = () => {
@@ -909,27 +932,31 @@ const SpecialPowerOfAttorneyForm = () => {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={handleBack}
-          disabled={sectionHistory.length <= 1}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
-        </Button>
-        <Button 
-          onClick={() => handleNext()}
-          disabled={!canAdvance()}
-        >
-          {currentSectionId === 'confirmation' ? (
-            <>
-              Complete <Send className="w-4 h-4 ml-2" />
-            </>
-          ) : (
-            <>
-              Next <ArrowRight className="w-4 h-4 ml-2" />
-            </>
-          )}
-        </Button>
+        {currentSectionId !== 'user_info_step' && (
+          <>
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={sectionHistory.length <= 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={() => handleNext()}
+              disabled={!canAdvance()}
+            >
+              {currentSectionId === 'confirmation' ? (
+                <>
+                  Complete <Send className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </>
+        )}
       </CardFooter>
     </Card>
   </div>

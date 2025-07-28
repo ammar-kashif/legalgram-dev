@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -135,7 +136,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'User Information',
+    description: 'Enter your information to generate the document',
+    questions: []
   }
 };
 
@@ -210,6 +218,7 @@ const SaleAgreementForm = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [seller, setSeller] = useState<Party>({ name: '', cnic: '', address: '' });
   const [buyer, setBuyer] = useState<Party>({ name: '', cnic: '', address: '' });
   const [witness1, setWitness1] = useState<Witness>({ name: '', cnic: '' });
@@ -502,10 +511,22 @@ const SaleAgreementForm = () => {
   };
 
   const renderSectionQuestions = () => {
+    if (currentSectionId === 'user_info_step') {
+      return (
+        <UserInfoStep
+          onBack={handleBack}
+          onGenerate={generatePDF}
+          documentType="Sale Agreement"
+          isGenerating={isGeneratingPDF}
+        />
+      );
+    }
+    
     return currentSection.questions.map(questionId => renderQuestionInput(questionId));
   };
   const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
+    if (currentSectionId === 'user_info_step') return false; // Handled by UserInfoStep component
     
     // Special validation for different sections
     if (currentSectionId === 'location_selection') {
@@ -873,6 +894,96 @@ const SaleAgreementForm = () => {
     }
   };
 
+  const generatePDF = () => {
+    setIsGeneratingPDF(true);
+    
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 20;
+      const maxWidth = pageWidth - 2 * margin;
+      let y = 20;
+
+      // Helper function to add text with word wrapping
+      const addText = (text: string, fontSize = 11, isBold = false) => {
+        doc.setFontSize(fontSize);
+        doc.setFont("helvetica", isBold ? "bold" : "normal");
+        const lines = doc.splitTextToSize(text, maxWidth);
+        doc.text(lines, margin, y);
+        y += (lines.length * fontSize * 0.4) + 3;
+      };
+
+      const addSpace = (space = 5) => {
+        y += space;
+      };
+
+      // Title
+      addText("SALE AGREEMENT", 16, true);
+      addSpace();
+
+      // Basic Information
+      addText(`Business Name: ${answers.business_name || '[BUSINESS NAME]'}`);
+      addText(`Sale Price: $${answers.sale_price || '[SALE PRICE]'}`);
+      if (effectiveDate) {
+        addText(`Effective Date: ${format(effectiveDate, 'MMMM d, yyyy')}`);
+      }
+      addSpace();
+
+      // Location
+      const countryName = answers.country ? getCountryName(answers.country) : '[COUNTRY]';
+      const stateName = answers.state ? getStateName(answers.country || '', answers.state) : '[STATE]';
+      addText(`Location: ${stateName}, ${countryName}`);
+      addSpace();
+
+      // Parties
+      addText("PARTIES TO THE AGREEMENT", 12, true);
+      addSpace();
+      
+      addText("SELLER:", 11, true);
+      addText(`Name: ${seller.name || '[SELLER NAME]'}`);
+      addText(`CNIC: ${seller.cnic || '[SELLER CNIC]'}`);
+      if (seller.address) {
+        addText(`Address: ${seller.address}`);
+      }
+      addSpace();
+
+      addText("BUYER:", 11, true);
+      addText(`Name: ${buyer.name || '[BUYER NAME]'}`);
+      addText(`CNIC: ${buyer.cnic || '[BUYER CNIC]'}`);
+      if (buyer.address) {
+        addText(`Address: ${buyer.address}`);
+      }
+      addSpace();
+
+      // Agreement Terms
+      addText("TERMS AND CONDITIONS", 12, true);
+      addText("1. The Seller agrees to sell and the Buyer agrees to purchase the above-mentioned business for the agreed price.");
+      addText("2. All terms and conditions are binding upon both parties.");
+      addText("3. This agreement shall be governed by the laws of the specified jurisdiction.");
+      addSpace();
+
+      // Witnesses
+      addText("WITNESSES", 12, true);
+      addText(`Witness 1: ${witness1.name || '[WITNESS 1 NAME]'} (CNIC: ${witness1.cnic || '[WITNESS 1 CNIC]'})`);
+      addText(`Witness 2: ${witness2.name || '[WITNESS 2 NAME]'} (CNIC: ${witness2.cnic || '[WITNESS 2 CNIC]'})`);
+      addSpace();
+
+      // Signatures
+      addText("SIGNATURES", 12, true);
+      addText("Seller: _______________________ Date: _______");
+      addSpace(10);
+      addText("Buyer: _______________________ Date: _______");
+
+      doc.save('sale-agreement.pdf');
+      toast.success("Sale Agreement PDF generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate document");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
   const renderFormSummary = () => {
     return (          <div className="space-y-4 text-black">
         <div className="border rounded-lg p-4">
@@ -1014,29 +1125,31 @@ const SaleAgreementForm = () => {
           {renderSectionQuestions()}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={handleBack}
-          disabled={sectionHistory.length <= 1}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
-        </Button>
-        <Button 
-          onClick={() => handleNext()}
-          disabled={!canAdvance()}
-        >
-          {currentSectionId === 'confirmation' ? (
-            <>
-              Complete <Send className="w-4 h-4 ml-2" />
-            </>
-          ) : (
-            <>
-              Next <ArrowRight className="w-4 h-4 ml-2" />
-            </>
-          )}
-        </Button>
-      </CardFooter>
+      {currentSectionId !== 'user_info_step' && (
+        <CardFooter className="flex justify-between">
+          <Button 
+            variant="outline" 
+            onClick={handleBack}
+            disabled={sectionHistory.length <= 1}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+          </Button>
+          <Button 
+            onClick={() => handleNext()}
+            disabled={!canAdvance()}
+          >
+            {currentSectionId === 'confirmation' ? (
+              <>
+                Next <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            ) : (
+              <>
+                Next <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   </div>
   );

@@ -11,6 +11,7 @@ import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -64,6 +65,7 @@ const PatentAssignmentForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<PatentAssignmentData>({
     state: '',
     country: '',
@@ -115,7 +117,7 @@ const PatentAssignmentForm = () => {
   const handleNext = () => {
     if (!canAdvance()) return;
 
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     } else {
       setIsComplete(true);
@@ -129,6 +131,8 @@ const PatentAssignmentForm = () => {
   };
 
   const generatePDF = () => {
+    setIsGeneratingPDF(true);
+    
     try {
       const doc = new jsPDF();
       
@@ -240,6 +244,8 @@ const PatentAssignmentForm = () => {
     } catch (error) {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Patent Assignment Agreement");
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -388,6 +394,16 @@ const PatentAssignmentForm = () => {
           </div>
         );
 
+      case 5:
+        return (
+          <UserInfoStep
+            onBack={() => setCurrentStep(4)}
+            onGenerate={generatePDF}
+            documentType="Patent Assignment Agreement"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -519,7 +535,7 @@ const PatentAssignmentForm = () => {
           <CardDescription>
             {getStepDescription()}
             <div className="mt-2 text-sm">
-              Step {currentStep} of 4
+              Step {currentStep} of 5
             </div>
           </CardDescription>
           {currentStep === 1 && (
@@ -539,29 +555,31 @@ const PatentAssignmentForm = () => {
         <CardContent className="text-black">
           {renderStepContent()}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={handleNext}
-            disabled={!canAdvance()}
-          >
-            {currentStep === 4 ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </CardFooter>
+        {currentStep !== 5 && (
+          <CardFooter className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            </Button>
+            <Button 
+              onClick={handleNext}
+              disabled={!canAdvance()}
+            >
+              {currentStep === 4 ? (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

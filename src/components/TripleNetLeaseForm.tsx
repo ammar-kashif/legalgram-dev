@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define section structure
 interface Section {
@@ -150,7 +151,14 @@ const sections: Record<string, Section> = {
     id: 'confirmation',
     title: 'Confirmation',
     description: 'Review and confirm your information',
-    questions: ['confirmation']
+    questions: ['confirmation'],
+    nextSectionId: 'user_info_step'
+  },
+  'user_info_step': {
+    id: 'user_info_step',
+    title: 'User Information',
+    description: 'Enter your information to generate the document',
+    questions: []
   }
 };
 
@@ -310,6 +318,7 @@ const TripleNetLeaseForm = () => {
   const [currentSectionId, setCurrentSectionId] = useState<string>('location_selection');
   const [sectionHistory, setSectionHistory] = useState<string[]>(['location_selection']);
   const [isComplete, setIsComplete] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const currentSection = sections[currentSectionId];
 
@@ -509,11 +518,22 @@ const TripleNetLeaseForm = () => {
   };
 
   const renderSectionQuestions = () => {
+    if (currentSectionId === 'user_info_step') {
+      return (
+        <UserInfoStep
+          onComplete={generateTripleNetLeasePDF}
+          isGenerating={isGeneratingPDF}
+          documentType="Triple Net Lease Agreement"
+        />
+      );
+    }
+    
     return currentSection.questions.map(questionId => renderQuestionInput(questionId));
   };
 
   const canAdvance = () => {
     if (currentSectionId === 'confirmation') return true;
+    if (currentSectionId === 'user_info_step') return false; // Handled by UserInfoStep component
     
     // Special validation for different sections
     if (currentSectionId === 'location_selection') {
@@ -549,7 +569,8 @@ const TripleNetLeaseForm = () => {
     return true;
   };
 
-  const generateTripleNetLeasePDF = () => {
+  const generateTripleNetLeasePDF = async (userInfo?: { name: string; email: string; phone: string }) => {
+    setIsGeneratingPDF(true);
     try {
       const doc = new jsPDF();
       
@@ -747,6 +768,8 @@ const TripleNetLeaseForm = () => {
       console.error("Error generating PDF:", error);
       toast.error("Failed to generate Triple Net Lease Agreement");
       return null;
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -887,27 +910,31 @@ const TripleNetLeaseForm = () => {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={sectionHistory.length <= 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-          <Button 
-            onClick={() => handleNext()}
-            disabled={!canAdvance()}
-          >
-            {currentSectionId === 'confirmation' ? (
-              <>
-                Complete <Send className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
+          {currentSectionId !== 'user_info_step' && (
+            <>
+              <Button 
+                variant="outline" 
+                onClick={handleBack}
+                disabled={sectionHistory.length <= 1}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" /> Back
+              </Button>
+              <Button 
+                onClick={() => handleNext()}
+                disabled={!canAdvance()}
+              >
+                {currentSectionId === 'confirmation' ? (
+                  <>
+                    Complete <Send className="w-4 h-4 ml-2" />
+                  </>
+                ) : (
+                  <>
+                    Next <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </Button>
+            </>
+          )}
         </CardFooter>
       </Card>
     </div>

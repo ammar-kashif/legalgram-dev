@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import jsPDF from 'jspdf';
 import { toast } from "sonner";
 import CountryStateAPI from 'countries-states-cities';
+import UserInfoStep from "@/components/UserInfoStep";
 
 // Define interfaces for data structures
 interface CountryData {
@@ -81,6 +82,7 @@ interface StorageSpaceLeaseData {
 const StorageSpaceLeaseForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<StorageSpaceLeaseData>({
     state: "",
     country: "",
@@ -102,7 +104,7 @@ const StorageSpaceLeaseForm = () => {
     lesseeSignatureDate: ""
   });
 
-  const totalSteps = 5;
+  const totalSteps = 6;
 
   const updateFormData = (field: keyof StorageSpaceLeaseData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -133,8 +135,10 @@ const StorageSpaceLeaseForm = () => {
     }
   };
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
+  const generatePDF = async (userInfo?: { name: string; email: string; phone: string }) => {
+    setIsGeneratingPDF(true);
+    try {
+      const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const margin = 20;
     const maxWidth = pageWidth - 2 * margin;
@@ -254,6 +258,12 @@ const StorageSpaceLeaseForm = () => {
 
     doc.save('storage-space-lease-agreement.pdf');
     toast.success("Storage Space Lease Agreement PDF generated successfully!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate Storage Space Lease Agreement");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const renderStep = () => {
@@ -565,6 +575,15 @@ const StorageSpaceLeaseForm = () => {
           </Card>
         );
 
+      case 6:
+        return (
+          <UserInfoStep
+            onComplete={generatePDF}
+            isGenerating={isGeneratingPDF}
+            documentType="Storage Space Lease Agreement"
+          />
+        );
+
       default:
         return null;
     }
@@ -598,28 +617,30 @@ const StorageSpaceLeaseForm = () => {
 
         {renderStep()}
 
-        <div className="flex justify-between mt-8">
-          <Button
-            variant="outline"
-            onClick={prevStep}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Previous
-          </Button>
+        {currentStep !== 6 && (
+          <div className="flex justify-between mt-8">
+            <Button
+              variant="outline"
+              onClick={prevStep}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Button>
 
-          {currentStep === totalSteps ? (
-            <Button onClick={generatePDF} className="bg-green-600 hover:bg-green-700">
-              <Download className="w-4 h-4 mr-2" />
-              Generate PDF
-            </Button>
-          ) : (
-            <Button onClick={nextStep}>
-              Next
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          )}
-        </div>
+            {currentStep === totalSteps - 1 ? (
+              <Button onClick={nextStep}>
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            ) : (
+              <Button onClick={nextStep}>
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

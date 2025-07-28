@@ -9,6 +9,7 @@ import { Country, State, City } from 'country-state-city';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
+import UserInfoStep from "@/components/UserInfoStep";
 
 interface FormData {
   // Agreement Date and Parties
@@ -51,6 +52,7 @@ interface FormData {
 
 const WarehouseLeaseForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('US');
   const [selectedState, setSelectedState] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -91,8 +93,10 @@ const WarehouseLeaseForm = () => {
     }));
   };
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
+  const generatePDF = async (userInfo?: { name: string; email: string; phone: string }) => {
+    setIsGeneratingPDF(true);
+    try {
+      const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const margin = 20;
     const lineHeight = 7;
@@ -369,10 +373,16 @@ const WarehouseLeaseForm = () => {
     // Save the PDF
     doc.save('warehouse-lease-agreement.pdf');
     toast.success("Warehouse Lease Agreement PDF generated successfully!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate Warehouse Lease Agreement");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const nextStep = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 4));
+    setCurrentStep(prev => Math.min(prev + 1, 5));
   };
 
   const prevStep = () => {
@@ -682,6 +692,15 @@ const WarehouseLeaseForm = () => {
           </Card>
         );
 
+      case 5:
+        return (
+          <UserInfoStep
+            onComplete={generatePDF}
+            isGenerating={isGeneratingPDF}
+            documentType="Warehouse Lease Agreement"
+          />
+        );
+
       default:
         return null;
     }
@@ -699,50 +718,48 @@ const WarehouseLeaseForm = () => {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="text-sm font-medium text-gray-700">
-            Step {currentStep} of 4
+            Step {currentStep} of 5
           </div>
           <div className="text-sm text-gray-500">
             {currentStep === 1 && "Location Information"}
             {currentStep === 2 && "Agreement Details"}
             {currentStep === 3 && "Lease Terms"}
             {currentStep === 4 && "Default Terms & Notices"}
+            {currentStep === 5 && "User Information"}
           </div>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div 
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 4) * 100}%` }}
+            style={{ width: `${(currentStep / 5) * 100}%` }}
           ></div>
         </div>
       </div>
 
       {renderStep()}
 
-      <div className="flex justify-between mt-8">
-        <Button
-          variant="outline"
-          onClick={prevStep}
-          disabled={currentStep === 1}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Previous
-        </Button>
+      {currentStep !== 5 && (
+        <div className="flex justify-between mt-8">
+          <Button
+            variant="outline"
+            onClick={prevStep}
+            disabled={currentStep === 1}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Previous
+          </Button>
 
-        <div className="flex gap-2">
-          {currentStep < 4 ? (
-            <Button onClick={nextStep} className="flex items-center gap-2">
-              Next
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          ) : (
-            <Button onClick={generatePDF} className="flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Generate PDF
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {currentStep < 5 ? (
+              <Button onClick={nextStep} className="flex items-center gap-2">
+                Next
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            ) : null}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

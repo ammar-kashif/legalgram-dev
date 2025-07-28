@@ -9,6 +9,7 @@ import { Country, State, City } from 'country-state-city';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
+import UserInfoStep from "@/components/UserInfoStep";
 
 interface FormData {
   // Agreement Date and Parties
@@ -42,6 +43,7 @@ interface FormData {
 
 const OilLeaseForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     agreementDate: '',
     lessorName: '',
@@ -77,7 +79,10 @@ const OilLeaseForm = () => {
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF();
+    setIsGeneratingPDF(true);
+    
+    try {
+      const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const margin = 20;
     const lineHeight = 7;
@@ -282,10 +287,16 @@ const OilLeaseForm = () => {
     // Save the PDF
     doc.save('oil-lease-agreement.pdf');
     toast.success("Oil Lease Agreement PDF generated successfully!");
-  };
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    toast.error("Failed to generate document");
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
   const nextStep = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 4));
+    setCurrentStep(prev => Math.min(prev + 1, 5));
   };
 
   const prevStep = () => {
@@ -557,6 +568,16 @@ const OilLeaseForm = () => {
           </Card>
         );
 
+      case 5:
+        return (
+          <UserInfoStep
+            onBack={prevStep}
+            onGenerate={generatePDF}
+            documentType="Oil Lease Agreement"
+            isGenerating={isGeneratingPDF}
+          />
+        );
+
       default:
         return null;
     }
@@ -574,50 +595,53 @@ const OilLeaseForm = () => {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="text-sm font-medium text-gray-700">
-            Step {currentStep} of 4
+            Step {currentStep} of 5
           </div>
           <div className="text-sm text-gray-500">
             {currentStep === 1 && "Location Information"}
             {currentStep === 2 && "Agreement Details"}
             {currentStep === 3 && "Property Details"}
             {currentStep === 4 && "Royalty & Payment Terms"}
+            {currentStep === 5 && "User Information"}
           </div>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div 
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 4) * 100}%` }}
+            style={{ width: `${(currentStep / 5) * 100}%` }}
           ></div>
         </div>
       </div>
 
       {renderStep()}
 
-      <div className="flex justify-between mt-8">
-        <Button
-          variant="outline"
-          onClick={prevStep}
-          disabled={currentStep === 1}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Previous
-        </Button>
+      {currentStep !== 5 && (
+        <div className="flex justify-between mt-8">
+          <Button
+            variant="outline"
+            onClick={prevStep}
+            disabled={currentStep === 1}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Previous
+          </Button>
 
-        <div className="flex gap-2">
-          {currentStep < 4 ? (
-            <Button onClick={nextStep} className="flex items-center gap-2">
-              Next
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          ) : (
-            <Button onClick={generatePDF} className="flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Generate PDF
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {currentStep < 4 ? (
+              <Button onClick={nextStep} className="flex items-center gap-2">
+                Next
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button onClick={nextStep} className="flex items-center gap-2">
+                Next
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
