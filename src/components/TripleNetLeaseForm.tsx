@@ -521,8 +521,9 @@ const TripleNetLeaseForm = () => {
     if (currentSectionId === 'user_info_step') {
       return (
         <UserInfoStep
-          onComplete={generateTripleNetLeasePDF}
-          isGenerating={isGeneratingPDF}
+        onBack={handleBack}
+        onGenerate={generateTripleNetLeasePDF}
+        isGenerating={isGeneratingPDF}
           documentType="Triple Net Lease Agreement"
         />
       );
@@ -847,8 +848,8 @@ const TripleNetLeaseForm = () => {
               Start Over
             </Button>
             <Button 
-              onClick={generateTripleNetLeasePDF}
-            >
+              onClick={() => generateTripleNetLeasePDF()}
+>
               Generate Triple Net Lease Agreement
             </Button>
           </CardFooter>

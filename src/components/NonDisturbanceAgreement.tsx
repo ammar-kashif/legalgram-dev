@@ -111,34 +111,35 @@ const NonDisturbanceAgreement = () => {
 
   const generatePDF = () => {
     setIsGeneratingPDF(true);
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 20;
-    const lineHeight = 6;
-    let yPosition = margin;
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 20;
+      const lineHeight = 6;
+      let yPosition = margin;
 
-    // Helper function to add text with word wrapping
-    const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
-      doc.setFontSize(fontSize);
-      doc.setFont("helvetica", isBold ? "bold" : "normal");
-      
-      const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
-      lines.forEach((line: string) => {
-        if (yPosition > doc.internal.pageSize.height - margin) {
-          doc.addPage();
-          yPosition = margin;
-        }
-        doc.text(line, margin, yPosition);
-        yPosition += lineHeight;
-      });
-    };
+      // Helper function to add text with word wrapping
+      const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
+        doc.setFontSize(fontSize);
+        doc.setFont("helvetica", isBold ? "bold" : "normal");
+        
+        const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
+        lines.forEach((line: string) => {
+          if (yPosition > doc.internal.pageSize.height - margin) {
+            doc.addPage();
+            yPosition = margin;
+          }
+          doc.text(line, margin, yPosition);
+          yPosition += lineHeight;
+        });
+      };
 
-    // Title
-    addText("NON-DISTURBANCE AGREEMENT", 14, true);
-    yPosition += 10;
+      // Title
+      addText("NON-DISTURBANCE AGREEMENT", 14, true);
+      yPosition += 10;
 
-    // Agreement content with substituted values using the exact legal text
-    const agreementText = `This Agreement ("Agreement") is made and entered into on the ${formData.agreementDay || '___'} day of ${formData.agreementMonth || '_______'}, ${formData.agreementYear || '20__'}, by and between
+      // Agreement content with substituted values using the exact legal text
+      const agreementText = `This Agreement ("Agreement") is made and entered into on the ${formData.agreementDay || '___'} day of ${formData.agreementMonth || '_______'}, ${formData.agreementYear || '20__'}, by and between
 
 ${formData.mortgageeName || '[Insert Mortgagee Name]'}, of ${formData.mortgageeAddress || '[Insert Address]'} (hereinafter referred to as the "Mortgagee"),
 And
@@ -209,18 +210,18 @@ The Affiant should maintain a copy of the Agreement. Your copy should be kept in
 Additional Assistance
 If you are unsure or have questions regarding this Agreement or need additional assistance with special situations or circumstances, use Legal Gram. Find A Lawyer search engine to find a lawyer in your area to assist you in this matter.`;
 
-    addText(agreementText);
+      addText(agreementText);
 
-    // Save the PDF
-    doc.save('non-disturbance-agreement.pdf');
-    toast.success("Document generated successfully!");
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    toast.error("Failed to generate document");
-  } finally {
-    setIsGeneratingPDF(false);
-  }
-};
+      // Save the PDF
+      doc.save('non-disturbance-agreement.pdf');
+      toast.success("Document generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate document");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   const nextStep = () => {
     if (currentStep < 4) {

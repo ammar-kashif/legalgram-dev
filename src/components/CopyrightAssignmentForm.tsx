@@ -143,10 +143,10 @@ const CopyrightAssignmentForm = () => {
   const generatePDF = () => {
     setIsGeneratingPDF(true);
     const doc = new jsPDF();
-    
     // Get proper names for display
     const countryName = formData.country ? getCountryName(formData.country.split(':')[0]) : '';
     const stateName = formData.state ? getStateName(formData.country?.split(':')[0] || '', formData.state.split(':')[0]) : '';
+    try {
     
     // Title
     doc.setFontSize(18);

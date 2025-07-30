@@ -110,153 +110,153 @@ const GasLeaseForm = () => {
 
   const generatePDF = () => {
     setIsGeneratingPDF(true);
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 20;
-    const lineHeight = 6;
-    let yPosition = margin;
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 20;
+      const lineHeight = 6;
+      let yPosition = margin;
 
-    // Helper function to add text with word wrapping
-    const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
-      doc.setFontSize(fontSize);
-      doc.setFont("helvetica", isBold ? "bold" : "normal");
-      
-      const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
-      lines.forEach((line: string) => {
-        if (yPosition > doc.internal.pageSize.height - margin) {
-          doc.addPage();
-          yPosition = margin;
-        }
-        doc.text(line, margin, yPosition);
-        yPosition += lineHeight;
-      });
-    };
+      // Helper function to add text with word wrapping
+      const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
+        doc.setFontSize(fontSize);
+        doc.setFont("helvetica", isBold ? "bold" : "normal");
+        const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
+        lines.forEach((line: string) => {
+          if (yPosition > doc.internal.pageSize.height - margin) {
+            doc.addPage();
+            yPosition = margin;
+          }
+          doc.text(line, margin, yPosition);
+          yPosition += lineHeight;
+        });
+      };
 
-    // Title
-    addText("GAS LEASE AGREEMENT", 16, true);
-    yPosition += 5;
+      // Title
+      addText("GAS LEASE AGREEMENT", 16, true);
+      yPosition += 5;
 
-    // Agreement text with substituted values
-    const agreementText = `This Gas Lease Agreement ("Agreement") is made and entered into on ${formData.agreementDate || '[Insert Date]'}, by and between 
-${formData.lessorName || '[Insert Name]'}, residing at ${formData.lessorAddress || '[Insert Address]'} ("Lessor"), 
-And
- ${formData.lesseeName || '[Insert Name]'}, residing at ${formData.lesseeAddress || '[Insert Address]'} ("Lessee"). 
-The Lessor and Lessee shall collectively be referred to as the "Parties."
+      // Agreement text with substituted values
+      const agreementText = `This Gas Lease Agreement ("Agreement") is made and entered into on ${formData.agreementDate || '[Insert Date]'}, by and between 
+  ${formData.lessorName || '[Insert Name]'}, residing at ${formData.lessorAddress || '[Insert Address]'} ("Lessor"), 
+  And
+   ${formData.lesseeName || '[Insert Name]'}, residing at ${formData.lesseeAddress || '[Insert Address]'} ("Lessee"). 
+  The Lessor and Lessee shall collectively be referred to as the "Parties."
 
-1. GRANT OF LEASED PREMISES
-In consideration of the sum of $${formData.annualRental || '0.00'} as annual rental, the receipt of which is acknowledged, and in further consideration of the covenants and obligations contained herein, the Lessor hereby leases exclusively to the Lessee the tract of land situated in the County of ${formData.county || '[Insert County]'}, State of ${formData.state || '[Insert State]'}, located at ${formData.propertyAddress || '[Insert Address]'}, and more fully described as: ${formData.legalDescription || '[Insert Legal Description]'}, comprising approximately ${formData.acreage || '0'} acres (the "Premises"), for the purpose of exploring, drilling, mining, extracting, storing, and removing oil, gas, hydrocarbons, and all associated substances.
-The lease shall remain in force for a term of ${formData.leaseTerm || '0'} years from the date of execution, and shall continue thereafter so long as:
-(a) oil, gas, or other hydrocarbon substances are being produced in paying quantities from the Premises;
-(b) drilling operations are being continuously conducted; or
-(c) the term is extended by mutual written agreement.
+  1. GRANT OF LEASED PREMISES
+  In consideration of the sum of $${formData.annualRental || '0.00'} as annual rental, the receipt of which is acknowledged, and in further consideration of the covenants and obligations contained herein, the Lessor hereby leases exclusively to the Lessee the tract of land situated in the County of ${formData.county || '[Insert County]'}, State of ${formData.state || '[Insert State]'}, located at ${formData.propertyAddress || '[Insert Address]'}, and more fully described as: ${formData.legalDescription || '[Insert Legal Description]'}, comprising approximately ${formData.acreage || '0'} acres (the "Premises"), for the purpose of exploring, drilling, mining, extracting, storing, and removing oil, gas, hydrocarbons, and all associated substances.
+  The lease shall remain in force for a term of ${formData.leaseTerm || '0'} years from the date of execution, and shall continue thereafter so long as:
+  (a) oil, gas, or other hydrocarbon substances are being produced in paying quantities from the Premises;
+  (b) drilling operations are being continuously conducted; or
+  (c) the term is extended by mutual written agreement.
 
-2. RIGHTS GRANTED TO LESSEE
-Lessee is granted the exclusive right to:
-(a) enter and occupy the Premises;
-(b) construct, maintain, operate, and repair any necessary structures, including plants, pipelines, equipment, power and communication lines, employee housing, and roadways;
-(c) inject gas, water, and other substances into the Premises;
-(d) drill for water and use water obtained from the Premises free of charge;
-(e) build and operate processing facilities for extraction of oil and gas from the Premises or nearby lands.
+  2. RIGHTS GRANTED TO LESSEE
+  Lessee is granted the exclusive right to:
+  (a) enter and occupy the Premises;
+  (b) construct, maintain, operate, and repair any necessary structures, including plants, pipelines, equipment, power and communication lines, employee housing, and roadways;
+  (c) inject gas, water, and other substances into the Premises;
+  (d) drill for water and use water obtained from the Premises free of charge;
+  (e) build and operate processing facilities for extraction of oil and gas from the Premises or nearby lands.
 
-3. ROYALTY PROVISIONS
-3.1 Oil Royalty
+  3. ROYALTY PROVISIONS
+  3.1 Oil Royalty
 
-Lessee shall pay to Lessor a royalty equal to ${formData.oilRoyaltyPercentage || '_'}% of the value of oil produced and removed, adjusted for temperature, water, and sediment. Value shall be based on the prevailing market price on the date of removal. Lessor may elect, with 90 days' written notice, to receive royalty in kind. No royalty shall be owed for oil lost prior to delivery or due to casualty.
-3.2 Gas Royalty
+  Lessee shall pay to Lessor a royalty equal to ${formData.oilRoyaltyPercentage || '_'}% of the value of oil produced and removed, adjusted for temperature, water, and sediment. Value shall be based on the prevailing market price on the date of removal. Lessor may elect, with 90 days' written notice, to receive royalty in kind. No royalty shall be owed for oil lost prior to delivery or due to casualty.
+  3.2 Gas Royalty
 
-Lessee shall pay to Lessor a royalty equal to ${formData.gasRoyaltyPercentage || '_'}% of net proceeds received from the sale of gas. Deductions for transportation and processing are permitted. No royalty is due for gas:
-(a) lost or used in plant operations;
-(b) used for repressurization of oil-bearing formations.
-3.3 Casinghead Gasoline
+  Lessee shall pay to Lessor a royalty equal to ${formData.gasRoyaltyPercentage || '_'}% of net proceeds received from the sale of gas. Deductions for transportation and processing are permitted. No royalty is due for gas:
+  (a) lost or used in plant operations;
+  (b) used for repressurization of oil-bearing formations.
+  3.3 Casinghead Gasoline
 
-If sold, Lessee shall pay Lessor ${formData.casingheadGasolinePercentage || '_'}% of net proceeds received from casinghead gasoline. No royalty is due if it is reinjected. Sales must reflect fair market value.
-3.4 Own Use Exemption
+  If sold, Lessee shall pay Lessor ${formData.casingheadGasolinePercentage || '_'}% of net proceeds received from casinghead gasoline. No royalty is due if it is reinjected. Sales must reflect fair market value.
+  3.4 Own Use Exemption
 
-Lessee shall not be required to pay royalty on any hydrocarbons or water used in its operations under this Agreement.
+  Lessee shall not be required to pay royalty on any hydrocarbons or water used in its operations under this Agreement.
 
-4. PAYMENT OF ROYALTIES
-All royalties due shall be paid on or before the ${formData.paymentDay || '[Insert Day]'} of each month for production during the preceding month. Payments shall be deemed made when deposited in the United States mail, addressed to Lessor. All unpaid royalties shall be settled at year-end.
+  4. PAYMENT OF ROYALTIES
+  All royalties due shall be paid on or before the ${formData.paymentDay || '[Insert Day]'} of each month for production during the preceding month. Payments shall be deemed made when deposited in the United States mail, addressed to Lessor. All unpaid royalties shall be settled at year-end.
 
-5. DEVELOPMENT CLAUSE
-Lessee has paid all rent due for the primary term. If drilling has not commenced by the end of such term, Lessee shall pay annual rentals of $${formData.rentalAmount || '0.00'} until drilling begins or the lease is terminated.
+  5. DEVELOPMENT CLAUSE
+  Lessee has paid all rent due for the primary term. If drilling has not commenced by the end of such term, Lessee shall pay annual rentals of $${formData.rentalAmount || '0.00'} until drilling begins or the lease is terminated.
 
-6. PAYMENT METHOD
-Rent and royalties shall be considered paid upon mailing via first-class U.S. mail to Lessor's last known address. Lessor may update their address via written notice.
+  6. PAYMENT METHOD
+  Rent and royalties shall be considered paid upon mailing via first-class U.S. mail to Lessor's last known address. Lessor may update their address via written notice.
 
-7. OWNERSHIP INTEREST
-If Lessor owns less than full title to the Premises or mineral rights, royalties shall be reduced proportionally to reflect actual ownership.
+  7. OWNERSHIP INTEREST
+  If Lessor owns less than full title to the Premises or mineral rights, royalties shall be reduced proportionally to reflect actual ownership.
 
-8. OIL AND GAS DEVELOPMENT
-Lessee shall continue to develop the Premises diligently upon discovery of oil or gas. If gas wells do not produce oil in paying quantities, Lessee may either suspend operations and pay rental of $0.00 per acre annually or seek markets to resume production.
+  8. OIL AND GAS DEVELOPMENT
+  Lessee shall continue to develop the Premises diligently upon discovery of oil or gas. If gas wells do not produce oil in paying quantities, Lessee may either suspend operations and pay rental of $0.00 per acre annually or seek markets to resume production.
 
-9. OFFSET WELLS
-Lessee shall drill an offset well if an adjacent well within ${formData.offsetWellDistance || '0'} feet of the boundary produces hydrocarbons in paying quantities for over 30 days, and Lessee has not fulfilled its drilling obligations under the Development Clause.
+  9. OFFSET WELLS
+  Lessee shall drill an offset well if an adjacent well within ${formData.offsetWellDistance || '0'} feet of the boundary produces hydrocarbons in paying quantities for over 30 days, and Lessee has not fulfilled its drilling obligations under the Development Clause.
 
-10. CONDUCT OF OPERATIONS
-Lessee shall bear all costs of operations and perform in a lawful and workmanlike manner. No liens may be placed on the Premises as a result of Lessee's operations.
+  10. CONDUCT OF OPERATIONS
+  Lessee shall bear all costs of operations and perform in a lawful and workmanlike manner. No liens may be placed on the Premises as a result of Lessee's operations.
 
-11. TAXES
-Lessee shall pay taxes on all improvements and oil stored by it, and ${formData.mineralTaxPercentage || '[Insert %]'} of mineral taxes. Lessor shall pay real estate taxes and the remaining mineral taxes.
+  11. TAXES
+  Lessee shall pay taxes on all improvements and oil stored by it, and ${formData.mineralTaxPercentage || '[Insert %]'} of mineral taxes. Lessor shall pay real estate taxes and the remaining mineral taxes.
 
-12. SURFACE USE
-Lessor may use the surface of the Premises for agricultural or other non-interfering activities.
+  12. SURFACE USE
+  Lessor may use the surface of the Premises for agricultural or other non-interfering activities.
 
-13. DEFAULT
-If Lessee defaults in any obligation and fails to cure such default within 15 days of written notice, Lessor may terminate this Lease. However, Lessee shall retain rights to any actively producing or drilling wells and one acre surrounding such wells, including ingress and egress rights.
+  13. DEFAULT
+  If Lessee defaults in any obligation and fails to cure such default within 15 days of written notice, Lessor may terminate this Lease. However, Lessee shall retain rights to any actively producing or drilling wells and one acre surrounding such wells, including ingress and egress rights.
 
-14. TERMINATION AND REMOVAL
-Upon termination, Lessee shall vacate and restore the Premises to its original condition, reasonable wear and tear excepted. Lessee may remove all equipment and improvements.
+  14. TERMINATION AND REMOVAL
+  Upon termination, Lessee shall vacate and restore the Premises to its original condition, reasonable wear and tear excepted. Lessee may remove all equipment and improvements.
 
-15. ASSIGNMENT
-Neither party shall assign its interest without prior written consent of the other, which shall not be unreasonably withheld. Notice of assignment must be given in writing.
+  15. ASSIGNMENT
+  Neither party shall assign its interest without prior written consent of the other, which shall not be unreasonably withheld. Notice of assignment must be given in writing.
 
-16. NOTICES
-All notices shall be in writing and delivered in person or by certified mail to the addresses stated above. Notices shall be deemed received upon delivery or three days after mailing.
+  16. NOTICES
+  All notices shall be in writing and delivered in person or by certified mail to the addresses stated above. Notices shall be deemed received upon delivery or three days after mailing.
 
-17. BINDING EFFECT
-This Lease shall be binding upon and inure to the benefit of the Parties and their respective heirs, executors, administrators, successors, and assigns.
+  17. BINDING EFFECT
+  This Lease shall be binding upon and inure to the benefit of the Parties and their respective heirs, executors, administrators, successors, and assigns.
 
-18. ATTORNEYS' FEES
-In the event of any legal action arising out of this Lease, the prevailing party shall be entitled to recover reasonable attorneys' fees and costs as determined by the court.
+  18. ATTORNEYS' FEES
+  In the event of any legal action arising out of this Lease, the prevailing party shall be entitled to recover reasonable attorneys' fees and costs as determined by the court.
 
-19. ENTIRE AGREEMENT
-This Agreement constitutes the entire agreement between the Parties concerning the Premises. No oral statements or prior agreements shall have any force. This Lease may only be amended in writing, signed by both Parties.
+  19. ENTIRE AGREEMENT
+  This Agreement constitutes the entire agreement between the Parties concerning the Premises. No oral statements or prior agreements shall have any force. This Lease may only be amended in writing, signed by both Parties.
 
-IN WITNESS WHEREOF, the Parties have executed this Gas Lease Agreement as of the date first written above.
-LESSOR
-Signature: ___________________________
-Name: ___________________________
-Date: ___________________________
-LESSEE
-Signature: ___________________________
-Name: ___________________________
-Date: ___________________________
-
-
+  IN WITNESS WHEREOF, the Parties have executed this Gas Lease Agreement as of the date first written above.
+  LESSOR
+  Signature: ___________________________
+  Name: ___________________________
+  Date: ___________________________
+  LESSEE
+  Signature: ___________________________
+  Name: ___________________________
+  Date: ___________________________
 
 
-Make It Legal
 
-This Agreement should be signed in front of a notary public by both parties.
-Once signed in front of a notary, this document should be delivered to the appropriate court for filing.
-Copies
-The original Agreement should be filed with the Clerk of Court or delivered to the requesting business.
-The Affiant should maintain a copy of the Agreement. Your copy should be kept in a safe place. If you signed a paper copy of your document, you can use Rocket Lawyer to store and share it. Safe and secure in your Rocket Lawyer File Manager, you can access it any time from any computer, as well as share it for future reference.
-Additional Assistance
- If you are unsure or have questions regarding this Agreement or need additional assistance with special situations or circumstances, use Legal Gram. Find A Lawyer search engine to find a lawyer in your area to assist you in this matter`;
 
-    addText(agreementText);
+  Make It Legal
 
-    // Save the PDF
-    doc.save('gas-lease-agreement.pdf');
-    toast.success("Document generated successfully!");
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    toast.error("Failed to generate document");
-  } finally {
-    setIsGeneratingPDF(false);
-  }
-};
+  This Agreement should be signed in front of a notary public by both parties.
+  Once signed in front of a notary, this document should be delivered to the appropriate court for filing.
+  Copies
+  The original Agreement should be filed with the Clerk of Court or delivered to the requesting business.
+  The Affiant should maintain a copy of the Agreement. Your copy should be kept in a safe place. If you signed a paper copy of your document, you can use Rocket Lawyer to store and share it. Safe and secure in your Rocket Lawyer File Manager, you can access it any time from any computer, as well as share it for future reference.
+  Additional Assistance
+   If you are unsure or have questions regarding this Agreement or need additional assistance with special situations or circumstances, use Legal Gram. Find A Lawyer search engine to find a lawyer in your area to assist you in this matter`;
+
+      addText(agreementText);
+
+      // Save the PDF
+      doc.save('gas-lease-agreement.pdf');
+      toast.success("Document generated successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate document");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   const nextStep = () => {
     if (currentStep < 4) {

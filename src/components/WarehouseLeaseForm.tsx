@@ -695,7 +695,8 @@ const WarehouseLeaseForm = () => {
       case 5:
         return (
           <UserInfoStep
-            onComplete={generatePDF}
+            onGenerate={generatePDF}
+            onBack={prevStep}
             isGenerating={isGeneratingPDF}
             documentType="Warehouse Lease Agreement"
           />

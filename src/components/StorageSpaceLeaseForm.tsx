@@ -578,7 +578,8 @@ const StorageSpaceLeaseForm = () => {
       case 6:
         return (
           <UserInfoStep
-            onComplete={generatePDF}
+            onBack={prevStep}
+            onGenerate={generatePDF}
             isGenerating={isGeneratingPDF}
             documentType="Storage Space Lease Agreement"
           />

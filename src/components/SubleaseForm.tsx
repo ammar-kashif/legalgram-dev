@@ -571,7 +571,8 @@ const SubleaseForm = () => {
     if (currentSectionId === 'user_info_step') {
       return (
         <UserInfoStep
-          onComplete={generateSubleasePDF}
+          onBack={handleBack}
+          onGenerate={generateSubleasePDF}
           isGenerating={isGeneratingPDF}
           documentType="Sublease Agreement"
         />
@@ -971,7 +972,7 @@ const SubleaseForm = () => {
               Start Over
             </Button>
             <Button 
-              onClick={generateSubleasePDF}
+              onClick={() => generateSubleasePDF()}
             >
               Generate Sublease Agreement
             </Button>
