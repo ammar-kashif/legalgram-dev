@@ -480,7 +480,8 @@ const SpecialPowerOfAttorneyForm = () => {
     if (currentSectionId === 'user_info_step') {
       return (
         <UserInfoStep
-          onComplete={generateSpecialPowerOfAttorneyPDF}
+          onBack={() => setCurrentSectionId('review')}
+          onGenerate={generateSpecialPowerOfAttorneyPDF}
           isGenerating={isGeneratingPDF}
           documentType="Special Power of Attorney"
         />
@@ -869,7 +870,7 @@ const SpecialPowerOfAttorneyForm = () => {
             Start Over
           </Button>
           <Button 
-            onClick={generateSpecialPowerOfAttorneyPDF}
+            onClick={() => generateSpecialPowerOfAttorneyPDF()}
           >
             Generate Power of Attorney
           </Button>

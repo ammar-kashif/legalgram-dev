@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import UserInfoStep from "@/components/UserInfoStep";
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 interface NonprofitFormationData {
   businessStructure: string;

@@ -724,7 +724,8 @@ const SharePurchaseAgreementForm = () => {
     if (currentSectionId === 'user_info_step') {
       return (
         <UserInfoStep
-          onComplete={generateSharePurchaseAgreementPDF}
+          onBack={() => setCurrentSectionId('review')}
+          onGenerate={generateSharePurchaseAgreementPDF}
           isGenerating={isGeneratingPDF}
           documentType="Share Purchase Agreement"
         />
@@ -1089,7 +1090,7 @@ const SharePurchaseAgreementForm = () => {
             Start Over
           </Button>
           <Button 
-            onClick={generateSharePurchaseAgreementPDF}
+            onClick={() => generateSharePurchaseAgreementPDF()}
           >
             Generate Agreement
           </Button>

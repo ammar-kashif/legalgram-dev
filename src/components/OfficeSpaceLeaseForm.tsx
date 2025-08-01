@@ -9,7 +9,7 @@ import { ArrowLeft, ArrowRight, Download } from "lucide-react";
 import jsPDF from 'jspdf';
 import { Country, State, City } from 'country-state-city';
 import UserInfoStep from "@/components/UserInfoStep";
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 interface FormData {
   // Location
